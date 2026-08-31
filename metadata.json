@@ -1,0 +1,7 @@
+{
+  "name": "Cnoopsy",
+  "description": "Cnoopsy edits video content for YouTubers, real estate agents, and personal brands — YouTube videos, real estate listings, home tours, Reels, and talking-head content, edited to actually get watched.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

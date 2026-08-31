@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+@layer base {
+  :root, [data-theme="dark"] {
+    --bg: #0A0A0A;
+    --bg-elevated: #151515;
+    --bg-elevated-2: #1D1D1D;
+    --text-primary: #F5F5F0;
+    --text-secondary: #9C9C96;
+    --text-muted: #666660;
+    --accent: #C6FF3D;
+    --accent-hover: #b5f524;
+    --accent-contrast: #0A0A0A;
+    --border: #262626;
+    --border-subtle: #1f1f1f;
+    --glow: rgba(198, 255, 61, 0.12);
+    --glow-strong: rgba(198, 255, 61, 0.25);
+    --grain-opacity: 0.05;
+
+    /* Inverted CTA band tokens (Light appearance in Dark mode) */
+    --inv-bg: #F7F7F2;
+    --inv-bg-elevated: #FFFFFF;
+    --inv-text-primary: #111111;
+    --inv-text-secondary: #54544E;
+    --inv-border: #E4E4DD;
+    --inv-btn-bg: #111111;
+    --inv-btn-text: #F5F5F0;
+    --inv-accent: #7FAF00;
+  }
+
+  [data-theme="light"] {
+    --bg: #F7F7F2;
+    --bg-elevated: #FFFFFF;
+    --bg-elevated-2: #F0F0EB;
+    --text-primary: #111111;
+    --text-secondary: #54544E;
+    --text-muted: #8A8A83;
+    --accent: #7FAF00;
+    --accent-hover: #6c9600;
+    --accent-solid-btn: #C6FF3D;
+    --accent-contrast: #0A0A0A;
+    --border: #E4E4DD;
+    --border-subtle: #ECECE5;
+    --glow: rgba(127, 175, 0, 0.08);
+    --glow-strong: rgba(127, 175, 0, 0.18);
+    --grain-opacity: 0.02;
+
+    /* Inverted CTA band tokens (Dark appearance in Light mode) */
+    --inv-bg: #0A0A0A;
+    --inv-bg-elevated: #151515;
+    --inv-text-primary: #F5F5F0;
+    --inv-text-secondary: #9C9C96;
+    --inv-border: #262626;
+    --inv-btn-bg: #C6FF3D;
+    --inv-btn-text: #0A0A0A;
+    --inv-accent: #C6FF3D;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    transition: background-color 300ms ease, color 300ms ease;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Utility Classes */
+.font-mono-heading {
+  font-family: 'Space Mono', monospace;
+  letter-spacing: -0.02em;
+}
+
+.font-mono-ui {
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.06em;
+}
+
+.bg-page {
+  background-color: var(--bg);
+}
+
+.bg-elevated {
+  background-color: var(--bg-elevated);
+}
+
+.bg-elevated-2 {
+  background-color: var(--bg-elevated-2);
+}
+
+.text-brand-primary {
+  color: var(--text-primary);
+}
+
+.text-brand-secondary {
+  color: var(--text-secondary);
+}
+
+.text-brand-muted {
+  color: var(--text-muted);
+}
+
+.text-accent-brand {
+  color: var(--accent);
+}
+
+.bg-accent-brand {
+  background-color: var(--accent);
+}
+
+.border-brand {
+  border-color: var(--border);
+}
+
+.border-subtle {
+  border-color: var(--border-subtle);
+}
+
+.glow-card {
+  box-shadow: 0 0 35px var(--glow);
+}
+
+.glow-card-strong {
+  box-shadow: 0 0 50px var(--glow-strong);
+}
+
+/* Film Grain Texture */
+.film-grain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}

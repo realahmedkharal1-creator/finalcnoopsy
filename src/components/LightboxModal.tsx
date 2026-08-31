@@ -1,0 +1,285 @@
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  ExternalLink,
+  MessageCircle,
+  Sparkles,
+  CheckCircle2,
+  Folder,
+  Copy,
+  Check,
+  Film,
+} from 'lucide-react';
+import { PortfolioItem } from '../types';
+import { getWhatsAppQuoteUrl } from '../data/portfolioData';
+
+interface LightboxModalProps {
+  item: PortfolioItem | null;
+  itemsList: PortfolioItem[];
+  onClose: () => void;
+  onNavigate: (newItem: PortfolioItem) => void;
+}
+
+export const LightboxModal: React.FC<LightboxModalProps> = ({
+  item,
+  itemsList,
+  onClose,
+  onNavigate,
+}) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Current item index in filtered list
+  const currentIndex = item ? itemsList.findIndex((p) => p.id === item.id) : -1;
+
+  // Keyboard navigation: Escape to close, Arrow keys to navigate
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (e.key === 'ArrowRight' && currentIndex < itemsList.length - 1) {
+        onNavigate(itemsList[currentIndex + 1]);
+      } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+        onNavigate(itemsList[currentIndex - 1]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentIndex, itemsList, onClose, onNavigate]);
+
+  // Prevent background body scroll while modal is open
+  useEffect(() => {
+    if (item) {
+      document.body.style.overflow = 'hidden';
+      setIsPlaying(false);
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [item]);
+
+  if (!item) return null;
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (currentIndex > 0) {
+      onNavigate(itemsList[currentIndex - 1]);
+    } else {
+      onNavigate(itemsList[itemsList.length - 1]);
+    }
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (currentIndex < itemsList.length - 1) {
+      onNavigate(itemsList[currentIndex + 1]);
+    } else {
+      onNavigate(itemsList[0]);
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(item.driveFolderUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const quoteUrl = getWhatsAppQuoteUrl(
+    `Hi Cnoopsy, I saw "${item.title}" (${item.category}) in your portfolio and would like a custom quote for a similar edit.`
+  );
+
+  return (
+    <div
+      id="portfolio-lightbox-backdrop"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/90 backdrop-blur-xl animate-fade-in"
+      onClick={onClose}
+    >
+      {/* Modal Container */}
+      <div
+        ref={modalRef}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-5xl max-h-[94vh] overflow-y-auto rounded-2xl border border-brand bg-elevated shadow-2xl flex flex-col no-scrollbar animate-scale-up"
+      >
+        {/* Top Control Bar */}
+        <div className="sticky top-0 z-30 px-5 py-3.5 border-b border-brand bg-elevated/95 backdrop-blur-md flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <span className="px-2.5 py-0.5 rounded bg-accent-brand text-black text-xs font-mono-ui font-bold uppercase shrink-0">
+              {item.category}
+            </span>
+            <span className="text-xs font-mono-ui text-brand-muted hidden sm:inline truncate">
+              {item.title}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Previous & Next Navigation */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handlePrev}
+                className="p-1.5 rounded hover:bg-elevated-2 text-brand-secondary hover:text-accent-brand transition-colors"
+                title="Previous video (Left Arrow)"
+                aria-label="Previous project"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleNext}
+                className="p-1.5 rounded hover:bg-elevated-2 text-brand-secondary hover:text-accent-brand transition-colors"
+                title="Next video (Right Arrow)"
+                aria-label="Next project"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Close Button */}
+            <button
+              id="lightbox-close-btn"
+              onClick={onClose}
+              className="p-1.5 rounded-lg border border-brand bg-elevated-2 hover:border-accent-brand text-brand-primary transition-colors focus:outline-none"
+              aria-label="Close modal"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Video Player / Showcase Stage */}
+        <div className="relative w-full bg-black flex flex-col items-center justify-center overflow-hidden">
+          <div
+            className={`relative w-full ${
+              item.aspectRatio === '9:16' ? 'max-w-md aspect-[9/16] my-4' : 'aspect-video'
+            } bg-zinc-950 flex items-center justify-center overflow-hidden`}
+          >
+            <img
+              src={item.thumbnailUrl}
+              alt={item.title}
+              className="w-full h-full object-cover opacity-90"
+            />
+
+            {/* Player Interface Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40 flex flex-col justify-between p-4 sm:p-6">
+              <div className="flex items-center justify-between text-xs font-mono-ui text-white/90">
+                <span className="font-bold tracking-wider">cnoopsy. portfolio cut</span>
+                <span className="px-2 py-0.5 rounded bg-black/60 font-bold text-accent">
+                  {item.specs.resolution}
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center justify-center gap-3">
+                <div
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-accent-brand text-black flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all cursor-pointer group"
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Preview video"
+                >
+                  <Play className="w-8 h-8 fill-current ml-1" />
+                </div>
+                <span className="text-xs font-mono-ui text-white/90 bg-black/70 px-3 py-1 rounded-full border border-white/15">
+                  Portfolio Sample Preview
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] font-mono-ui text-white/90">
+                <span>Duration: {item.duration || 'Full Cut'}</span>
+                <span>{item.specs.fps}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Project Details & Technical Specs Grid */}
+        <div className="p-6 sm:p-8 space-y-8 bg-elevated">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <div className="flex-1">
+              <h2 className="font-mono-heading text-xl sm:text-2xl md:text-3xl font-bold text-brand-primary uppercase mb-2">
+                {item.title}
+              </h2>
+              <p className="text-sm sm:text-base text-brand-secondary leading-relaxed max-w-2xl font-normal">
+                {item.description}
+              </p>
+            </div>
+
+            {/* Actions: Quote + Drive Link */}
+            <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+              <a
+                href={quoteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 rounded-xl bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase inline-flex items-center justify-center gap-2 hover:opacity-95 shadow-md"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Quote for this Style</span>
+              </a>
+
+              <a
+                href={item.driveFolderUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 rounded-xl border border-brand bg-elevated-2 text-brand-primary font-mono-ui font-bold text-xs uppercase inline-flex items-center justify-center gap-2 hover:border-accent-brand hover:text-accent-brand transition-colors"
+              >
+                <Folder className="w-4 h-4 text-accent-brand" />
+                <span>View Drive Asset Folder</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-60 ml-auto" />
+              </a>
+            </div>
+          </div>
+
+          {/* Key Production Features List */}
+          <div>
+            <h4 className="font-mono-ui text-xs font-bold text-brand-primary uppercase mb-3 flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-accent-brand" />
+              <span>Key Editing Treatments Applied:</span>
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {item.keyFeatures.map((feat, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 rounded-lg border border-subtle bg-elevated-2 flex items-center gap-2.5 text-xs text-brand-secondary"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-accent-brand shrink-0" />
+                  <span>{feat}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Technical Render Specifications Panel */}
+          <div className="p-5 rounded-xl border border-brand bg-elevated-2">
+            <h4 className="font-mono-ui text-xs font-bold text-brand-muted uppercase mb-4">
+              Master Export Specifications:
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 text-xs font-mono-ui">
+              <div>
+                <span className="block text-brand-muted text-[10px]">RESOLUTION</span>
+                <span className="font-bold text-brand-primary">{item.specs.resolution}</span>
+              </div>
+              <div>
+                <span className="block text-brand-muted text-[10px]">FRAME RATE</span>
+                <span className="font-bold text-brand-primary">{item.specs.fps}</span>
+              </div>
+              <div>
+                <span className="block text-brand-muted text-[10px]">COLOR GRADE</span>
+                <span className="font-bold text-brand-primary">{item.specs.colorGrade}</span>
+              </div>
+              <div>
+                <span className="block text-brand-muted text-[10px]">SOUND DESIGN</span>
+                <span className="font-bold text-brand-primary">{item.specs.soundDesign}</span>
+              </div>
+              <div>
+                <span className="block text-brand-muted text-[10px]">MOTION GRAPHICS</span>
+                <span className="font-bold text-brand-primary">{item.specs.motionGraphics}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
