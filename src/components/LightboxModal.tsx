@@ -4,11 +4,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Play,
-  ExternalLink,
   MessageCircle,
   Sparkles,
   CheckCircle2,
-  Folder,
   Copy,
   Check,
   Film,
@@ -250,17 +248,6 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Quote for this Style</span>
-              </a>
-
-              <a
-                href={item.driveFolderUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 rounded-xl border border-brand bg-elevated-2 text-brand-primary font-mono-ui font-bold text-xs uppercase inline-flex items-center justify-center gap-2 hover:border-accent-brand hover:text-accent-brand transition-colors"
-              >
-                <Folder className="w-4 h-4 text-accent-brand" />
-                <span>View Drive Asset Folder</span>
-                <ExternalLink className="w-3.5 h-3.5 opacity-60 ml-auto" />
               </a>
             </div>
           </div>
