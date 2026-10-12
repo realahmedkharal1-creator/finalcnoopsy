@@ -54,7 +54,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
     sampleVideoUrl:
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4',
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
     duration: '01:05',
     driveFolderId: '1O2Yr1GuquZpXBrvbkQH5jHCjOmbRVCG9',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1O2Yr1GuquZpXBrvbkQH5jHCjOmbRVCG9',
@@ -128,6 +128,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1FMgsAu0BTIab8ykTCfwzA8EvdBVNnZNw',
+    videoPreviewUrl:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
     embedType: 'placeholder',
     specs: {
       resolution: '4K UHD (3840x2160)',
@@ -156,6 +158,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=1400&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/13wz-LyFgZdiSeKo-1_Ik2-1K63i6_-b3',
+    videoPreviewUrl:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
     embedType: 'placeholder',
     specs: {
       resolution: '1440p QHD',
@@ -184,6 +188,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1Kf2pGtXIGCmNHLWc5M8--up_8n2RQWvM',
+    videoPreviewUrl:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
     embedType: 'placeholder',
     specs: {
       resolution: '1080x1920 Vertical',
@@ -212,6 +218,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1O2Yr1GuquZpXBrvbkQH5jHCjOmbRVCG9',
+    videoPreviewUrl:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
     embedType: 'placeholder',
     specs: {
       resolution: '4K Cinema DCI',
@@ -240,6 +248,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1400&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1oZd4kw1c1O4tzHYmDTDiOSLnqcVCNNxh',
+    videoPreviewUrl:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
     embedType: 'placeholder',
     specs: {
       resolution: '4K Ultra HD',
@@ -268,6 +278,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1400&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1sQQitVSN41mNHNCw6TJEw3lBWFAoEs6j',
+    videoPreviewUrl:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
     embedType: 'placeholder',
     specs: {
       resolution: '4K 10-Bit ProRES',
