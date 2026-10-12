@@ -197,9 +197,6 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40 flex flex-col justify-between p-2.5 sm:p-6">
               <div className="flex items-center justify-between text-xs font-mono-ui text-white/90">
                 <span className="font-bold tracking-wider">cnoopsy. portfolio cut</span>
-                <span className="px-2 py-0.5 rounded bg-black/60 font-bold text-accent">
-                  {item.specs.resolution}
-                </span>
               </div>
 
               <div className="flex flex-col items-center justify-center gap-1.5 sm:gap-3 min-h-0">
@@ -225,10 +222,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-[11px] font-mono-ui text-white/90">
-                <span>Duration: {item.duration || 'Full Cut'}</span>
-                <span>{item.specs.fps}</span>
-              </div>
+              <div />
             </div>
             )}
           </div>
@@ -287,35 +281,6 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
                   <span>{feat}</span>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Technical Render Specifications Panel */}
-          <div className="p-5 rounded-xl border border-brand bg-elevated-2">
-            <h4 className="font-mono-ui text-xs font-bold text-brand-muted uppercase mb-4">
-              Master Export Specifications:
-            </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 text-xs font-mono-ui">
-              <div>
-                <span className="block text-brand-muted text-[10px]">RESOLUTION</span>
-                <span className="font-bold text-brand-primary">{item.specs.resolution}</span>
-              </div>
-              <div>
-                <span className="block text-brand-muted text-[10px]">FRAME RATE</span>
-                <span className="font-bold text-brand-primary">{item.specs.fps}</span>
-              </div>
-              <div>
-                <span className="block text-brand-muted text-[10px]">COLOR GRADE</span>
-                <span className="font-bold text-brand-primary">{item.specs.colorGrade}</span>
-              </div>
-              <div>
-                <span className="block text-brand-muted text-[10px]">SOUND DESIGN</span>
-                <span className="font-bold text-brand-primary">{item.specs.soundDesign}</span>
-              </div>
-              <div>
-                <span className="block text-brand-muted text-[10px]">MOTION GRAPHICS</span>
-                <span className="font-bold text-brand-primary">{item.specs.motionGraphics}</span>
-              </div>
             </div>
           </div>
         </div>
