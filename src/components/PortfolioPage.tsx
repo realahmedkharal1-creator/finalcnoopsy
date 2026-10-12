@@ -19,6 +19,9 @@ const CATEGORIES: VideoCategory[] = [
   'General',
 ];
 
+// Vertical Reels only appear under the Reels filter, never in "All"
+const ALL_TAB_PROJECTS = PORTFOLIO_PROJECTS.filter((p) => p.category !== 'Reels');
+
 export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   initialCategory = 'All',
   onOpenLightbox,
@@ -27,7 +30,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<VideoCategory>(initialCategory);
 
   const filteredProjects = useMemo(() => {
-    if (selectedCategory === 'All') return PORTFOLIO_PROJECTS;
+    if (selectedCategory === 'All') return ALL_TAB_PROJECTS;
     return PORTFOLIO_PROJECTS.filter((item) => item.category === selectedCategory);
   }, [selectedCategory]);
 
@@ -71,7 +74,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             const isActive = selectedCategory === cat;
             const count =
               cat === 'All'
-                ? PORTFOLIO_PROJECTS.length
+                ? ALL_TAB_PROJECTS.length
                 : PORTFOLIO_PROJECTS.filter((p) => p.category === cat).length;
 
             return (
@@ -131,22 +134,9 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                 </div>
 
                 {/* Top Overlay Badges */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                <div className="absolute top-3 left-3 right-3 flex items-center justify-start">
                   <span className="px-2.5 py-1 rounded bg-black/80 backdrop-blur-md border border-white/10 text-xs font-mono-ui font-bold text-accent uppercase">
                     {item.category}
-                  </span>
-                  <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[11px] font-mono-ui text-white/90">
-                    {item.duration}
-                  </span>
-                </div>
-
-                {/* Bottom specs snippet inside thumbnail */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] font-mono-ui text-white/80">
-                  <span className="bg-black/60 px-2 py-0.5 rounded truncate max-w-[60%]">
-                    {item.client || item.platform}
-                  </span>
-                  <span className="bg-black/60 px-2 py-0.5 rounded text-accent font-bold">
-                    {item.specs.resolution}
                   </span>
                 </div>
               </div>
