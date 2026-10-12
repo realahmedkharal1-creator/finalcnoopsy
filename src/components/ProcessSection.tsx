@@ -57,7 +57,9 @@ export const ProcessSection: React.FC = () => {
 
               <div className="mt-6 pt-4 border-t border-subtle flex items-center justify-between text-xs font-mono-ui text-brand-muted">
                 <span>Phase 0{idx + 1} of 06</span>
-                <span className="text-accent-brand">→ Next Step</span>
+                <span className="text-accent-brand">
+                  {idx === PROCESS_STEPS.length - 1 ? "✓ Final Step" : "→ Next Step"}
+                </span>
               </div>
             </div>
           ))}
