@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { ArrowUpRight, Play } from 'lucide-react';
-import { SERVICES_DATA, getWhatsAppQuoteUrl } from '../data/portfolioData';
+import { SERVICES_DATA } from '../data/portfolioData';
 import { ServiceItem } from '../types';
 
 interface ServiceVideoCardProps {
   service: ServiceItem;
   idx: number;
+  onGetQuote: () => void;
 }
 
-const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx }) => {
+const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx, onGetQuote }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-
-  const quoteUrl = getWhatsAppQuoteUrl(service.whatsappMessage);
 
   return (
     <div
@@ -80,22 +79,25 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx }) => 
             ))}
           </div>
 
-          <a
-            href={quoteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={onGetQuote}
             className="inline-flex items-center gap-1 text-xs font-mono-ui font-bold text-accent-brand hover:underline group/btn shrink-0"
           >
             <span>Get a Quote</span>
             <ArrowUpRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-          </a>
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export const ServicesSection: React.FC = () => {
+interface ServicesSectionProps {
+  onGetQuote: () => void;
+}
+
+export const ServicesSection: React.FC<ServicesSectionProps> = ({ onGetQuote }) => {
   return (
     <section id="services" className="py-20 lg:py-28 border-b border-brand relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -124,7 +126,7 @@ export const ServicesSection: React.FC = () => {
         {/* 6 Services Grid (3 cols desktop, 2 tablet, 1 mobile) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {SERVICES_DATA.map((service, idx) => (
-            <ServiceVideoCard key={service.id} service={service} idx={idx} />
+            <ServiceVideoCard key={service.id} service={service} idx={idx} onGetQuote={onGetQuote} />
           ))}
         </div>
       </div>

@@ -1,12 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { Play, Filter, Sparkles, ArrowLeft, ExternalLink, ArrowUpRight } from 'lucide-react';
-import { PORTFOLIO_PROJECTS, getWhatsAppQuoteUrl } from '../data/portfolioData';
+import { PORTFOLIO_PROJECTS } from '../data/portfolioData';
 import { VideoCategory, PortfolioItem } from '../types';
 
 interface PortfolioPageProps {
   initialCategory?: VideoCategory;
   onOpenLightbox: (item: PortfolioItem) => void;
   onBackToHome: () => void;
+  onGetQuote: () => void;
 }
 
 const CATEGORIES: VideoCategory[] = [
@@ -26,6 +27,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   initialCategory = 'All',
   onOpenLightbox,
   onBackToHome,
+  onGetQuote,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<VideoCategory>(initialCategory);
 
@@ -175,15 +177,14 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             We adapt pacing, sound design, and color grading specifically to your brand aesthetics
             and platform requirements.
           </p>
-          <a
-            href={getWhatsAppQuoteUrl("Hi Cnoopsy, I'm looking for a custom video editing style not listed on the portfolio.")}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={onGetQuote}
             className="px-8 py-3.5 rounded-xl bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase inline-flex items-center gap-2 hover:opacity-95 shadow-md"
           >
             <span>Request Custom Style Quote</span>
             <ArrowUpRight className="w-4 h-4" />
-          </a>
+          </button>
         </div>
       </div>
     </div>

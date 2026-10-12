@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, Clock, Video, Zap } from 'lucide-react';
-import { getWhatsAppQuoteUrl, PORTFOLIO_PROJECTS } from '../data/portfolioData';
+import { PORTFOLIO_PROJECTS } from '../data/portfolioData';
 import { ThemeMode } from '../types';
 
 interface InvertedCtaBandProps {
   theme: ThemeMode;
+  onGetQuote: () => void;
 }
 
-export const InvertedCtaBand: React.FC<InvertedCtaBandProps> = ({ theme }) => {
+export const InvertedCtaBand: React.FC<InvertedCtaBandProps> = ({ theme, onGetQuote }) => {
   // Live decorative studio timecode
   const [timecode, setTimecode] = useState('01:24:18:22');
 
@@ -62,11 +63,10 @@ export const InvertedCtaBand: React.FC<InvertedCtaBandProps> = ({ theme }) => {
             </h2>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
-              <a
+              <button
                 id="cta-band-whatsapp-btn"
-                href={getWhatsAppQuoteUrl("Hi Cnoopsy, I'm ready to upgrade my video editing. Let's discuss a quote.")}
-                target="_blank"
-                rel="noopener noreferrer"
+                type="button"
+                onClick={onGetQuote}
                 className="group flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-mono-ui font-bold text-sm uppercase transition-all duration-200 shadow-xl active:scale-95 focus:outline-none"
                 style={{
                   backgroundColor: 'var(--inv-btn-bg)',
@@ -75,7 +75,7 @@ export const InvertedCtaBand: React.FC<InvertedCtaBandProps> = ({ theme }) => {
               >
                 <span>Get a Custom Quote</span>
                 <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </a>
+              </button>
 
               <p
                 className="text-xs font-mono-ui max-w-xs leading-relaxed"

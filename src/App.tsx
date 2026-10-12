@@ -79,6 +79,11 @@ export default function App() {
     }
   };
 
+  const handleGetQuote = () => {
+    setActiveLightboxItem(null);
+    handleNavigate('home', 'contact');
+  };
+
   const handleOpenLightbox = (item: PortfolioItem) => {
     setActiveLightboxItem(item);
   };
@@ -107,7 +112,7 @@ export default function App() {
             {/* Section (#): Hero */}
             <Hero
               onSeeWork={() => handleNavigate('work')}
-              onGetQuote={() => handleNavigate('home', 'contact')}
+              onGetQuote={handleGetQuote}
               onOpenLightbox={handleOpenLightbox}
             />
 
@@ -115,12 +120,7 @@ export default function App() {
             <WhyCnoopsy />
 
             {/* Section (###): Services */}
-            <ServicesSection
-              onSelectServiceForWork={(category) => {
-                setInitialPortfolioCategory(category);
-                setActiveView('work');
-              }}
-            />
+            <ServicesSection onGetQuote={handleGetQuote} />
 
             {/* Section (####): Portfolio Stacked-Card Showcase */}
             <PortfolioPreview
@@ -135,7 +135,7 @@ export default function App() {
             <TestimonialsSection />
 
             {/* Section (#######): Inverted Contrast CTA Band */}
-            <InvertedCtaBand theme={theme} />
+            <InvertedCtaBand theme={theme} onGetQuote={handleGetQuote} />
 
             {/* Section: Direct Contact & Custom Quote Form */}
             <ContactSection />
@@ -146,6 +146,7 @@ export default function App() {
             initialCategory={initialPortfolioCategory}
             onOpenLightbox={handleOpenLightbox}
             onBackToHome={() => handleNavigate('home', 'hero')}
+            onGetQuote={handleGetQuote}
           />
         )}
       </main>
@@ -159,6 +160,7 @@ export default function App() {
         itemsList={PORTFOLIO_PROJECTS}
         onClose={handleCloseLightbox}
         onNavigate={(newItem) => setActiveLightboxItem(newItem)}
+        onGetQuote={handleGetQuote}
       />
     </div>
   );
