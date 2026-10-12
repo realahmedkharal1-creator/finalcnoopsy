@@ -1,14 +1,5 @@
-import React, { useState, useRef } from 'react';
-import {
-  ArrowUpRight,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize2,
-  Folder,
-  RotateCcw,
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowUpRight, Play, Folder } from 'lucide-react';
 import { SERVICES_DATA, getWhatsAppQuoteUrl } from '../data/portfolioData';
 import { ServiceItem } from '../types';
 
@@ -18,85 +9,7 @@ interface ServiceVideoCardProps {
 }
 
 const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState('00:00');
-  const [hasStarted, setHasStarted] = useState(false);
-  const [videoFailed, setVideoFailed] = useState(false);
-
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60);
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const togglePlay = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    if (!videoRef.current) return;
-
-    if (videoRef.current.paused) {
-      videoRef.current
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-          setHasStarted(true);
-        })
-        .catch(() => {
-          setIsPlaying(false);
-        });
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
-
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!videoRef.current) return;
-    videoRef.current.muted = !videoRef.current.muted;
-    setIsMuted(videoRef.current.muted);
-  };
-
-  const handleTimeUpdate = () => {
-    if (!videoRef.current) return;
-    const curr = videoRef.current.currentTime;
-    const dur = videoRef.current.duration || 1;
-    setProgress((curr / dur) * 100);
-    setCurrentTime(formatTime(curr));
-  };
-
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    if (!videoRef.current) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const pos = (e.clientX - rect.left) / rect.width;
-    const newTime = pos * (videoRef.current.duration || 1);
-    videoRef.current.currentTime = newTime;
-    setProgress(pos * 100);
-  };
-
-  const handleFullscreen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!videoRef.current) return;
-    if (videoRef.current.requestFullscreen) {
-      videoRef.current.requestFullscreen();
-    }
-  };
-
-  const restartVideo = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!videoRef.current) return;
-    videoRef.current.currentTime = 0;
-    videoRef.current
-      .play()
-      .then(() => {
-        setIsPlaying(true);
-        setHasStarted(true);
-      })
-      .catch(() => setIsPlaying(false));
-  };
 
   const quoteUrl = getWhatsAppQuoteUrl(service.whatsappMessage);
 
@@ -105,134 +18,42 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx }) => 
       id={`service-card-${service.id}`}
       className="group rounded-2xl border border-brand bg-elevated overflow-hidden flex flex-col justify-between transition-all duration-300 hover:border-accent-brand hover:shadow-2xl"
     >
-      {/* Embedded Single Video Media Stage (No scrollbars, single video) */}
-      <div
-        className="relative aspect-[16/10] w-full overflow-hidden bg-black border-b border-subtle select-none cursor-pointer"
-        onClick={() => togglePlay()}
-      >
-        {/* HTML5 Video Element */}
-        <video
-          ref={videoRef}
-          src={service.sampleVideoUrl}
-          poster={service.thumbnailUrl}
-          playsInline
-          muted={isMuted}
-          loop
-          onTimeUpdate={handleTimeUpdate}
-          onEnded={() => setIsPlaying(false)}
-          onError={() => {
-            setVideoFailed(true);
-            setIsPlaying(false);
-          }}
-          className="w-full h-full object-cover"
-        />
-
-        {/* Top Badges & Controls */}
-        <div className="absolute top-2.5 left-2.5 right-2.5 z-20 flex items-center justify-between pointer-events-none">
-          <div className="flex items-center gap-1.5 pointer-events-auto">
-            <span className="px-2 py-0.5 rounded bg-black/85 backdrop-blur-md border border-white/15 font-mono-ui text-[11px] text-accent font-bold">
-              0{idx + 1}
-            </span>
-            <span className="px-2 py-0.5 rounded bg-black/75 backdrop-blur-md border border-white/10 text-[10px] font-mono-ui text-white/90 uppercase font-semibold">
-              {service.category}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1 pointer-events-auto">
-            {hasStarted && (
-              <button
-                onClick={restartVideo}
-                className="p-1.5 rounded-full bg-black/80 backdrop-blur-md border border-white/15 text-white/80 hover:text-accent hover:border-accent transition-colors"
-                title="Restart video"
-                aria-label="Restart video"
-              >
-                <RotateCcw className="w-3 h-3" />
-              </button>
-            )}
-            <button
-              onClick={toggleMute}
-              className="p-1.5 rounded-full bg-black/80 backdrop-blur-md border border-white/15 text-white/80 hover:text-accent hover:border-accent transition-colors"
-              title={isMuted ? 'Unmute audio' : 'Mute audio'}
-              aria-label={isMuted ? 'Unmute' : 'Mute'}
-            >
-              {isMuted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3 text-accent" />}
-            </button>
-            <button
-              onClick={handleFullscreen}
-              className="p-1.5 rounded-full bg-black/80 backdrop-blur-md border border-white/15 text-white/80 hover:text-accent hover:border-accent transition-colors"
-              title="Fullscreen"
-              aria-label="Fullscreen"
-            >
-              <Maximize2 className="w-3 h-3" />
-            </button>
-          </div>
-        </div>
-
-        {videoFailed && (
-          <div
-            className="absolute inset-0 z-30 bg-black/85 flex flex-col items-center justify-center gap-3 p-4 text-center"
-            onClick={(e) => e.stopPropagation()}
+      {/* Video stage: thumbnail first, YouTube player on click */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-black border-b border-subtle">
+        {isPlaying && service.youtubeId ? (
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${service.youtubeId}?autoplay=1&rel=0`}
+            title={service.title}
+            allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full border-0"
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setIsPlaying(true)}
+            className="group/play absolute inset-0 w-full h-full text-left"
+            aria-label={`Play ${service.title} video`}
           >
-            <span className="text-xs font-mono-ui text-white/90">
-              Preview video couldn't be loaded.
-            </span>
-            <a
-              href={service.driveFolderUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 rounded-lg bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase"
-            >
-              Watch samples on Drive
-            </a>
-          </div>
-        )}
-
-        {/* Central Play/Pause Trigger Button (Visible when paused or hovered) */}
-        {!isPlaying && !videoFailed && (
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2 transition-opacity duration-300">
-            <button
-              onClick={togglePlay}
-              className="w-14 h-14 rounded-full bg-accent-brand text-black flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all"
-              aria-label={`Play ${service.title} video`}
-            >
-              <Play className="w-6 h-6 fill-current ml-0.5" />
-            </button>
-            <span className="text-[11px] font-mono-ui font-bold text-white bg-black/80 px-3 py-1 rounded-full border border-white/15 backdrop-blur-md">
-              Click to Watch Edit ({service.duration || '01:00'})
-            </span>
-          </div>
-        )}
-
-        {/* Bottom Interactive Video Progress Scrubber */}
-        <div
-          className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-2.5 pt-4 transition-opacity duration-300"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div
-            className="w-full h-1.5 bg-white/20 hover:h-2 rounded-full cursor-pointer overflow-hidden transition-all duration-200 relative mb-1.5"
-            onClick={handleSeek}
-          >
-            <div
-              className="h-full bg-accent-brand rounded-full transition-all duration-75"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          <div className="flex items-center justify-between text-[10px] font-mono-ui text-white/80">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={togglePlay}
-                className="hover:text-accent font-bold uppercase flex items-center gap-1 text-[10px]"
-              >
-                {isPlaying ? <Pause className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3 fill-current" />}
-                <span>{isPlaying ? 'Pause' : 'Play'}</span>
-              </button>
-              <span>•</span>
-              <span>{currentTime}</span>
+            <img src={service.thumbnailUrl} alt={service.title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-2">
+              <span className="w-14 h-14 rounded-full bg-accent-brand text-black flex items-center justify-center shadow-2xl transform group-hover/play:scale-110 transition-all">
+                <Play className="w-6 h-6 fill-current ml-0.5" />
+              </span>
+              <span className="text-[11px] font-mono-ui font-bold text-white bg-black/80 px-3 py-1 rounded-full border border-white/15">
+                Click to Watch Edit
+              </span>
             </div>
-            <span className="text-white/60 font-mono-ui">{service.duration || '01:00'}</span>
-          </div>
-        </div>
+            <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+              <span className="px-2 py-0.5 rounded bg-black/85 border border-white/15 font-mono-ui text-[11px] text-accent font-bold">
+                0{idx + 1}
+              </span>
+              <span className="px-2 py-0.5 rounded bg-black/75 border border-white/10 text-[10px] font-mono-ui text-white/90 uppercase font-semibold">
+                {service.category}
+              </span>
+            </div>
+          </button>
+        )}
       </div>
 
       {/* Card Content Information */}

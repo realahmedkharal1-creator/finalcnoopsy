@@ -44,6 +44,7 @@ export interface ServiceItem {
   whatsappMessage: string;
   thumbnailUrl: string;
   sampleVideoUrl?: string;
+  youtubeId?: string;
   duration?: string;
   driveFolderId: string;
   driveFolderUrl: string;
