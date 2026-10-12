@@ -128,9 +128,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1FMgsAu0BTIab8ykTCfwzA8EvdBVNnZNw',
-    videoPreviewUrl:
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-    embedType: 'placeholder',
+    youtubeId: 'IYxO3AqMZgY',
+    embedType: 'youtube',
     specs: {
       resolution: '4K UHD (3840x2160)',
       fps: '60 fps Smooth Motion',
@@ -158,9 +157,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=1400&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/13wz-LyFgZdiSeKo-1_Ik2-1K63i6_-b3',
-    videoPreviewUrl:
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    embedType: 'placeholder',
+    youtubeId: 'tX3WAFQmHGE',
+    embedType: 'youtube',
     specs: {
       resolution: '1440p QHD',
       fps: '30 fps Narrative Pacing',
@@ -188,9 +186,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1Kf2pGtXIGCmNHLWc5M8--up_8n2RQWvM',
-    videoPreviewUrl:
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-    embedType: 'placeholder',
+    youtubeId: 'JnWTrh6C2Io',
+    embedType: 'youtube',
     specs: {
       resolution: '1080x1920 Vertical',
       fps: '60 fps Ultra Crisp',
@@ -218,9 +215,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1O2Yr1GuquZpXBrvbkQH5jHCjOmbRVCG9',
-    videoPreviewUrl:
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-    embedType: 'placeholder',
+    youtubeId: 'JnhKoCtKkQM',
+    embedType: 'youtube',
     specs: {
       resolution: '4K Cinema DCI',
       fps: '24 fps Cinematic Cadence',
@@ -248,9 +244,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1400&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1oZd4kw1c1O4tzHYmDTDiOSLnqcVCNNxh',
-    videoPreviewUrl:
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
-    embedType: 'placeholder',
+    youtubeId: 'GalATixG0AM',
+    embedType: 'youtube',
     specs: {
       resolution: '4K Ultra HD',
       fps: '30 fps Broadcast',
@@ -278,9 +273,8 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     thumbnailUrl:
       'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1400&q=85',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1sQQitVSN41mNHNCw6TJEw3lBWFAoEs6j',
-    videoPreviewUrl:
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-    embedType: 'placeholder',
+    youtubeId: 'gvC1byhS8ws',
+    embedType: 'youtube',
     specs: {
       resolution: '4K 10-Bit ProRES',
       fps: '60 fps High Energy',
@@ -296,6 +290,37 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     ],
   },
 ];
+
+
+const BASE_BY_ID = (id: string) => PORTFOLIO_PROJECTS.find((p) => p.id === id)!;
+
+const EXTRA_VIDEOS: Record<string, string[]> = {
+  'proj-youtube-1': ['b24SIQX-u8U', 'YtPkiBFtKgc', 'lepu4y5okTw'],
+  'proj-real-estate-1': ['xNe42TgWqRE', 'D0F8C7_I1sw', 'JcQ17EQMAjs'],
+  'proj-home-tours-1': ['A9YkiBUs8s0', 'CXbJ5g9l_nw', 'Fj8gtemfLbw'],
+  'proj-reels-1': ['iKq5bzA_fqA', '3aCojHHGqHY', 'Rg5ZCj_LSco'],
+  'proj-talking-head-1': ['cJhfdkDkIKY', 'DK2Oa2oP-9I'],
+  'proj-general-1': ['2treeb2tBVA', 'sGX_myNdeuA'],
+};
+
+PORTFOLIO_PROJECTS.push(
+  ...Object.entries(EXTRA_VIDEOS).flatMap(([baseId, videoIds]) =>
+    videoIds.map((youtubeId, i): PortfolioItem => {
+      const base = BASE_BY_ID(baseId);
+      return {
+        ...base,
+        id: `${baseId}-${i + 2}`,
+        title: `${base.category} Edit ${String(i + 2).padStart(2, '0')}`,
+        youtubeId,
+      };
+    })
+  )
+);
+
+// Use each video's own YouTube thumbnail
+PORTFOLIO_PROJECTS.forEach((p) => {
+  if (p.youtubeId) p.thumbnailUrl = `https://img.youtube.com/vi/${p.youtubeId}/hqdefault.jpg`;
+});
 
 export const TESTIMONIALS_DATA: TestimonialItem[] = [
   {

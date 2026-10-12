@@ -164,7 +164,16 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
               item.aspectRatio === '9:16' ? 'max-w-md aspect-[9/16] my-4' : 'aspect-video'
             } bg-zinc-950 flex items-center justify-center overflow-hidden`}
           >
-            {isPlaying && item.videoPreviewUrl && !videoFailed ? (
+            {isPlaying && item.youtubeId ? (
+              <iframe
+                key={item.id}
+                src={`https://www.youtube-nocookie.com/embed/${item.youtubeId}?autoplay=1&rel=0`}
+                title={item.title}
+                allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full z-20 border-0"
+              />
+            ) : isPlaying && item.videoPreviewUrl && !videoFailed ? (
               <video
                 key={item.id}
                 src={item.videoPreviewUrl}
@@ -177,14 +186,14 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
               />
             ) : (
               <img
-                src={item.thumbnailUrl}
+                src={item.youtubeId ? `https://img.youtube.com/vi/${item.youtubeId}/hqdefault.jpg` : item.thumbnailUrl}
                 alt={item.title}
                 className="w-full h-full object-cover opacity-90"
               />
             )}
 
             {/* Player Interface Overlay */}
-            {!(isPlaying && item.videoPreviewUrl && !videoFailed) && (
+            {!(isPlaying && (item.youtubeId || (item.videoPreviewUrl && !videoFailed))) && (
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40 flex flex-col justify-between p-4 sm:p-6">
               <div className="flex items-center justify-between text-xs font-mono-ui text-white/90">
                 <span className="font-bold tracking-wider">cnoopsy. portfolio cut</span>
@@ -198,19 +207,19 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
                   type="button"
                   className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-accent-brand text-black flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all cursor-pointer group"
                   onClick={() => {
-                    if (item.videoPreviewUrl && !videoFailed) {
+                    if (item.youtubeId || (item.videoPreviewUrl && !videoFailed)) {
                       setIsPlaying(true);
                     } else {
                       // No playable preview: open the full cut in Drive instead of doing nothing
                       window.open(item.driveFolderUrl, '_blank', 'noopener,noreferrer');
                     }
                   }}
-                  aria-label={item.videoPreviewUrl && !videoFailed ? 'Play video' : 'Open full cut in Drive'}
+                  aria-label={item.youtubeId || (item.videoPreviewUrl && !videoFailed) ? 'Play video' : 'Open full cut in Drive'}
                 >
                   <Play className="w-8 h-8 fill-current ml-1" />
                 </button>
                 <span className="text-xs font-mono-ui text-white/90 bg-black/70 px-3 py-1 rounded-full border border-white/15">
-                  {item.videoPreviewUrl && !videoFailed
+                  {item.youtubeId || (item.videoPreviewUrl && !videoFailed)
                     ? 'Portfolio Sample Preview'
                     : 'Opens full cut in Google Drive'}
                 </span>
