@@ -7,9 +7,6 @@ import {
   MessageCircle,
   Sparkles,
   CheckCircle2,
-  Copy,
-  Check,
-  Film,
 } from 'lucide-react';
 import { PortfolioItem } from '../types';
 import { getWhatsAppQuoteUrl } from '../data/portfolioData';
@@ -28,7 +25,6 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
   onNavigate,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -83,16 +79,6 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
     } else {
       onNavigate(itemsList[0]);
     }
-  };
-
-  const handleCopyLink = () => {
-    navigator.clipboard
-      ?.writeText(item.driveFolderUrl)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch(() => {});
   };
 
   const quoteUrl = getWhatsAppQuoteUrl(
@@ -202,21 +188,14 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
                   type="button"
                   className="w-11 h-11 sm:w-20 sm:h-20 rounded-full bg-accent-brand text-black flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all cursor-pointer group"
                   onClick={() => {
-                    if (item.youtubeId || (item.videoPreviewUrl && !videoFailed)) {
-                      setIsPlaying(true);
-                    } else {
-                      // No playable preview: open the full cut in Drive instead of doing nothing
-                      window.open(item.driveFolderUrl, '_blank', 'noopener,noreferrer');
-                    }
+                    setIsPlaying(true);
                   }}
-                  aria-label={item.youtubeId || (item.videoPreviewUrl && !videoFailed) ? 'Play video' : 'Open full cut in Drive'}
+                  aria-label="Play video"
                 >
                   <Play className="w-5 h-5 sm:w-8 sm:h-8 fill-current ml-1" />
                 </button>
                 <span className="hidden sm:inline text-xs font-mono-ui text-white/90 bg-black/70 px-3 py-1 rounded-full border border-white/15">
-                  {item.youtubeId || (item.videoPreviewUrl && !videoFailed)
-                    ? 'Portfolio Sample Preview'
-                    : 'Opens full cut in Google Drive'}
+                  Portfolio Sample Preview
                 </span>
               </div>
 
@@ -238,7 +217,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
               </p>
             </div>
 
-            {/* Actions: Quote + Drive Link */}
+            {/* Actions: Quote */}
             <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
               <a
                 href={quoteUrl}

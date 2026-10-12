@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowUpRight, Play, Folder } from 'lucide-react';
+import { ArrowUpRight, Play } from 'lucide-react';
 import { SERVICES_DATA, getWhatsAppQuoteUrl } from '../data/portfolioData';
 import { ServiceItem } from '../types';
 
@@ -67,23 +67,13 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx }) => 
           </p>
         </div>
 
-        {/* Action Buttons & Drive Reference */}
+        {/* Tags & quote */}
         <div className="pt-4 border-t border-subtle flex items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5 max-w-[60%]">
-            <a
-              href={service.driveFolderUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-2.5 py-1 rounded bg-elevated-2 border border-brand text-[10px] font-mono-ui text-brand-muted hover:text-accent-brand hover:border-accent-brand transition-colors inline-flex items-center gap-1"
-              title="Open Google Drive raw project folder"
-            >
-              <Folder className="w-3 h-3 text-accent-brand" />
-              <span>Drive Folder</span>
-            </a>
             {service.tags.slice(0, 1).map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-0.5 rounded bg-elevated-2 text-[10px] font-mono-ui text-brand-muted truncate hidden sm:inline"
+                className="px-2 py-0.5 rounded bg-elevated-2 text-[10px] font-mono-ui text-brand-muted truncate"
               >
                 {tag}
               </span>

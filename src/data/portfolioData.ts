@@ -21,9 +21,6 @@ export const SERVICES_DATA: ServiceItem[] = [
       'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1200&q=80',
     youtubeId: 'tX3WAFQmHGE',
     duration: '01:15',
-    driveFolderId: '13wz-LyFgZdiSeKo-1_Ik2-1K63i6_-b3',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/13wz-LyFgZdiSeKo-1_Ik2-1K63i6_-b3',
-    driveEmbedUrl: 'https://drive.google.com/drive/folders/13wz-LyFgZdiSeKo-1_Ik2-1K63i6_-b3',
     tags: ['Long-form', 'Shorts', 'Retention Pacing', 'Sound Design'],
   },
   {
@@ -37,9 +34,6 @@ export const SERVICES_DATA: ServiceItem[] = [
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
     youtubeId: 'IYxO3AqMZgY',
     duration: '00:45',
-    driveFolderId: '1FMgsAu0BTIab8ykTCfwzA8EvdBVNnZNw',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1FMgsAu0BTIab8ykTCfwzA8EvdBVNnZNw',
-    driveEmbedUrl: 'https://drive.google.com/drive/folders/1FMgsAu0BTIab8ykTCfwzA8EvdBVNnZNw',
     tags: ['Cinematic Walkthrough', 'Drone Boundary Maps', 'Callout Labels'],
   },
   {
@@ -53,9 +47,6 @@ export const SERVICES_DATA: ServiceItem[] = [
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
     youtubeId: 'JnhKoCtKkQM',
     duration: '01:05',
-    driveFolderId: '1O2Yr1GuquZpXBrvbkQH5jHCjOmbRVCG9',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1O2Yr1GuquZpXBrvbkQH5jHCjOmbRVCG9',
-    driveEmbedUrl: 'https://drive.google.com/drive/folders/1O2Yr1GuquZpXBrvbkQH5jHCjOmbRVCG9',
     tags: ['Guided Walkthrough', 'Stabilized Flow', 'Architectural Showcase'],
   },
   {
@@ -69,9 +60,6 @@ export const SERVICES_DATA: ServiceItem[] = [
       'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1200&q=80',
     youtubeId: 'JnWTrh6C2Io',
     duration: '00:30',
-    driveFolderId: '1Kf2pGtXIGCmNHLWc5M8--up_8n2RQWvM',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1Kf2pGtXIGCmNHLWc5M8--up_8n2RQWvM',
-    driveEmbedUrl: 'https://drive.google.com/drive/folders/1Kf2pGtXIGCmNHLWc5M8--up_8n2RQWvM',
     tags: ['9:16 Vertical', 'Hook-First Beats', 'Kinetic Typography'],
   },
   {
@@ -85,9 +73,6 @@ export const SERVICES_DATA: ServiceItem[] = [
       'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1200&q=80',
     youtubeId: 'GalATixG0AM',
     duration: '01:20',
-    driveFolderId: '1oZd4kw1c1O4tzHYmDTDiOSLnqcVCNNxh',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1oZd4kw1c1O4tzHYmDTDiOSLnqcVCNNxh',
-    driveEmbedUrl: 'https://drive.google.com/drive/folders/1oZd4kw1c1O4tzHYmDTDiOSLnqcVCNNxh',
     tags: ['Podcast Cuts', 'Dynamic B-Roll', 'Multi-Cam Sync', 'Auto-Captions'],
   },
   {
@@ -101,9 +86,6 @@ export const SERVICES_DATA: ServiceItem[] = [
       'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1200&q=80',
     youtubeId: 'gvC1byhS8ws',
     duration: '01:45',
-    driveFolderId: '1sQQitVSN41mNHNCw6TJEw3lBWFAoEs6j',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1sQQitVSN41mNHNCw6TJEw3lBWFAoEs6j',
-    driveEmbedUrl: 'https://drive.google.com/drive/folders/1sQQitVSN41mNHNCw6TJEw3lBWFAoEs6j',
     tags: ['Brand Commercials', 'Event Recaps', 'Product Teasers'],
   },
 ];
@@ -126,7 +108,6 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     aspectRatio: '16:9',
     thumbnailUrl:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1FMgsAu0BTIab8ykTCfwzA8EvdBVNnZNw',
     youtubeId: 'IYxO3AqMZgY',
     embedType: 'youtube',
     specs: {
@@ -155,7 +136,6 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     aspectRatio: '16:9',
     thumbnailUrl:
       'https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=1400&q=85',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/13wz-LyFgZdiSeKo-1_Ik2-1K63i6_-b3',
     youtubeId: 'tX3WAFQmHGE',
     embedType: 'youtube',
     specs: {
@@ -184,7 +164,6 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     aspectRatio: '9:16',
     thumbnailUrl:
       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=85',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1Kf2pGtXIGCmNHLWc5M8--up_8n2RQWvM',
     youtubeId: 'JnWTrh6C2Io',
     embedType: 'youtube',
     specs: {
@@ -213,7 +192,6 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     aspectRatio: '16:9',
     thumbnailUrl:
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1O2Yr1GuquZpXBrvbkQH5jHCjOmbRVCG9',
     youtubeId: 'JnhKoCtKkQM',
     embedType: 'youtube',
     specs: {
@@ -242,7 +220,6 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     aspectRatio: '16:9',
     thumbnailUrl:
       'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1400&q=85',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1oZd4kw1c1O4tzHYmDTDiOSLnqcVCNNxh',
     youtubeId: 'GalATixG0AM',
     embedType: 'youtube',
     specs: {
@@ -271,7 +248,6 @@ export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
     aspectRatio: '16:9',
     thumbnailUrl:
       'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1400&q=85',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1sQQitVSN41mNHNCw6TJEw3lBWFAoEs6j',
     youtubeId: 'gvC1byhS8ws',
     embedType: 'youtube',
     specs: {
