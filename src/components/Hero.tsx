@@ -1,14 +1,15 @@
 import React from 'react';
 import { ArrowUpRight, Play, Sparkles, CheckCircle2 } from 'lucide-react';
-import { getWhatsAppQuoteUrl, PORTFOLIO_PROJECTS } from '../data/portfolioData';
+import { PORTFOLIO_PROJECTS } from '../data/portfolioData';
 import { PortfolioItem } from '../types';
 
 interface HeroProps {
   onSeeWork: () => void;
+  onGetQuote: () => void;
   onOpenLightbox: (item: PortfolioItem) => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onSeeWork, onOpenLightbox }) => {
+export const Hero: React.FC<HeroProps> = ({ onSeeWork, onGetQuote, onOpenLightbox }) => {
   // Vertical Reels are only shown in the Reels section of the Work page
   const showcase = PORTFOLIO_PROJECTS.filter((p) => p.category !== 'Reels');
   const featuredItem = showcase[0]; // Real Estate featured
@@ -59,16 +60,15 @@ export const Hero: React.FC<HeroProps> = ({ onSeeWork, onOpenLightbox }) => {
 
             {/* Call To Action Buttons */}
             <div className="flex flex-wrap items-center gap-4 mb-10 w-full sm:w-auto">
-              <a
+              <button
                 id="hero-primary-cta"
-                href={getWhatsAppQuoteUrl("Hi Cnoopsy, I'd like to talk about a video editing project.")}
-                target="_blank"
-                rel="noopener noreferrer"
+                type="button"
+                onClick={onGetQuote}
                 className="group flex items-center justify-center gap-2 px-7 py-3.5 rounded-lg bg-accent-brand text-black font-mono-ui font-bold text-sm uppercase transition-all duration-200 hover:opacity-95 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-accent"
               >
                 <span>Get a Custom Quote</span>
                 <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </a>
+              </button>
 
               <button
                 id="hero-secondary-cta"
