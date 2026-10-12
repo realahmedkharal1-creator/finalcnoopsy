@@ -12,8 +12,8 @@ export const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({
   onSeeAllWork,
   onOpenLightbox,
 }) => {
-  // Rotate between first 3 featured sample projects
-  const previewItems = PORTFOLIO_PROJECTS.slice(0, 3);
+  // Rotate between first 3 featured sample projects (Reels live only in their own section)
+  const previewItems = PORTFOLIO_PROJECTS.filter((p) => p.category !== 'Reels').slice(0, 3);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const currentItem = previewItems[activeIndex];
@@ -109,14 +109,10 @@ export const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({
                   <span className="px-3 py-1 rounded bg-black/80 backdrop-blur-md border border-white/15 text-xs font-mono-ui font-bold text-accent uppercase">
                     {currentItem.category}
                   </span>
-                  <span className="px-2.5 py-1 rounded bg-black/60 backdrop-blur-sm text-xs font-mono-ui text-white/90">
-                    {currentItem.duration}
-                  </span>
                 </div>
 
                 <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-mono-ui text-white/80">
                   <span className="bg-black/60 px-2 py-0.5 rounded">Click to Play Sample</span>
-                  <span className="bg-black/60 px-2 py-0.5 rounded">{currentItem.platform}</span>
                 </div>
               </div>
 
@@ -150,10 +146,7 @@ export const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({
                 </div>
 
                 <div>
-                  <div className="pt-4 border-t border-subtle mb-6 flex items-center justify-between text-xs font-mono-ui text-brand-muted">
-                    <span>Client: {currentItem.client}</span>
-                    <span className="text-accent-brand font-bold">{currentItem.specs.resolution}</span>
-                  </div>
+                  <div className="pt-4 border-t border-subtle mb-6" />
 
                   <div className="flex items-center gap-3">
                     <button

@@ -9,9 +9,11 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onSeeWork, onOpenLightbox }) => {
-  const featuredItem = PORTFOLIO_PROJECTS[0]; // Real Estate featured
-  const secondaryItem1 = PORTFOLIO_PROJECTS[1]; // YouTube featured
-  const secondaryItem2 = PORTFOLIO_PROJECTS[2]; // Reels featured
+  // Vertical Reels are only shown in the Reels section of the Work page
+  const showcase = PORTFOLIO_PROJECTS.filter((p) => p.category !== 'Reels');
+  const featuredItem = showcase[0]; // Real Estate featured
+  const secondaryItem1 = showcase[1]; // YouTube featured
+  const secondaryItem2 = showcase[2]; // Home Tours featured
 
   return (
     <section
@@ -137,9 +139,6 @@ export const Hero: React.FC<HeroProps> = ({ onSeeWork, onOpenLightbox }) => {
                   <span className="px-2.5 py-1 rounded bg-black/80 backdrop-blur-md border border-white/10 text-xs font-mono-ui font-bold text-accent uppercase">
                     {featuredItem.category}
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[10px] font-mono-ui text-white/80">
-                    {featuredItem.duration}
-                  </span>
                 </div>
 
                 {/* Bottom Card Title Banner */}
@@ -172,7 +171,7 @@ export const Hero: React.FC<HeroProps> = ({ onSeeWork, onOpenLightbox }) => {
                 </div>
                 <div className="overflow-hidden">
                   <span className="block text-[10px] font-mono-ui text-accent-brand uppercase font-bold">
-                    YouTube Edit
+                    {secondaryItem1.category}
                   </span>
                   <span className="block text-xs font-mono-heading text-brand-primary truncate">
                     {secondaryItem1.title}
@@ -196,7 +195,7 @@ export const Hero: React.FC<HeroProps> = ({ onSeeWork, onOpenLightbox }) => {
                 </div>
                 <div className="overflow-hidden">
                   <span className="block text-[10px] font-mono-ui text-accent-brand uppercase font-bold">
-                    Reel Edit
+                    {secondaryItem2.category}
                   </span>
                   <span className="block text-xs font-mono-heading text-brand-primary truncate">
                     {secondaryItem2.title}
@@ -249,7 +248,7 @@ export const Hero: React.FC<HeroProps> = ({ onSeeWork, onOpenLightbox }) => {
 
           {/* Thin Strip Image / Thumbnail Collage */}
           <div className="mt-6 grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
-            {PORTFOLIO_PROJECTS.map((p, idx) => (
+            {showcase.map((p) => (
               <button
                 key={p.id}
                 onClick={() => onOpenLightbox(p)}
