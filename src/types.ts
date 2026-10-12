@@ -20,6 +20,7 @@ export interface PortfolioItem {
   aspectRatio: '16:9' | '9:16' | '4:5' | '1:1';
   thumbnailUrl: string;
   videoPreviewUrl?: string;
+  youtubeId?: string;
   driveFolderId?: string;
   driveFolderUrl: string;
   driveEmbedUrl?: string;
