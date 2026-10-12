@@ -107,6 +107,7 @@ export default function App() {
             {/* Section (#): Hero */}
             <Hero
               onSeeWork={() => handleNavigate('work')}
+              onGetQuote={() => handleNavigate('home', 'contact')}
               onOpenLightbox={handleOpenLightbox}
             />
 
