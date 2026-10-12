@@ -114,7 +114,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
         className="relative w-full max-w-5xl max-h-[94vh] overflow-y-auto rounded-2xl border border-brand bg-elevated shadow-2xl flex flex-col no-scrollbar animate-scale-up"
       >
         {/* Top Control Bar */}
-        <div className="sticky top-0 z-30 px-5 py-3.5 border-b border-brand bg-elevated/95 backdrop-blur-md flex items-center justify-between gap-4">
+        <div className="sticky top-0 z-30 shrink-0 px-5 py-3.5 border-b border-brand bg-elevated/95 backdrop-blur-md flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-hidden">
             <span className="px-2.5 py-0.5 rounded bg-accent-brand text-black text-xs font-mono-ui font-bold uppercase shrink-0">
               {item.category}
@@ -158,7 +158,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
         </div>
 
         {/* Video Player / Showcase Stage */}
-        <div className="relative w-full bg-black flex flex-col items-center justify-center overflow-hidden">
+        <div className="relative w-full shrink-0 bg-black flex flex-col items-center justify-center overflow-hidden">
           <div
             className={`relative w-full ${
               item.aspectRatio === '9:16' ? 'max-w-md aspect-[9/16] my-4' : 'aspect-video'
@@ -194,7 +194,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
 
             {/* Player Interface Overlay */}
             {!(isPlaying && (item.youtubeId || (item.videoPreviewUrl && !videoFailed))) && (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40 flex flex-col justify-between p-4 sm:p-6">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40 flex flex-col justify-between p-2.5 sm:p-6">
               <div className="flex items-center justify-between text-xs font-mono-ui text-white/90">
                 <span className="font-bold tracking-wider">cnoopsy. portfolio cut</span>
                 <span className="px-2 py-0.5 rounded bg-black/60 font-bold text-accent">
@@ -202,10 +202,10 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
                 </span>
               </div>
 
-              <div className="flex flex-col items-center justify-center gap-3">
+              <div className="flex flex-col items-center justify-center gap-1.5 sm:gap-3 min-h-0">
                 <button
                   type="button"
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-accent-brand text-black flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all cursor-pointer group"
+                  className="w-11 h-11 sm:w-20 sm:h-20 rounded-full bg-accent-brand text-black flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all cursor-pointer group"
                   onClick={() => {
                     if (item.youtubeId || (item.videoPreviewUrl && !videoFailed)) {
                       setIsPlaying(true);
@@ -216,9 +216,9 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
                   }}
                   aria-label={item.youtubeId || (item.videoPreviewUrl && !videoFailed) ? 'Play video' : 'Open full cut in Drive'}
                 >
-                  <Play className="w-8 h-8 fill-current ml-1" />
+                  <Play className="w-5 h-5 sm:w-8 sm:h-8 fill-current ml-1" />
                 </button>
-                <span className="text-xs font-mono-ui text-white/90 bg-black/70 px-3 py-1 rounded-full border border-white/15">
+                <span className="hidden sm:inline text-xs font-mono-ui text-white/90 bg-black/70 px-3 py-1 rounded-full border border-white/15">
                   {item.youtubeId || (item.videoPreviewUrl && !videoFailed)
                     ? 'Portfolio Sample Preview'
                     : 'Opens full cut in Google Drive'}
@@ -235,7 +235,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
         </div>
 
         {/* Project Details & Technical Specs Grid */}
-        <div className="p-6 sm:p-8 space-y-8 bg-elevated">
+        <div className="p-6 sm:p-8 space-y-8 bg-elevated shrink-0">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
             <div className="flex-1">
               <h2 className="font-mono-heading text-xl sm:text-2xl md:text-3xl font-bold text-brand-primary uppercase mb-2">
