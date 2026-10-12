@@ -49,29 +49,38 @@ export const ContactSection: React.FC = () => {
        * Example: Formspree, Web3Forms, or EmailJS
        */
       if (AHMED_CONFIG.formEndpoint) {
-        await fetch(AHMED_CONFIG.formEndpoint, {
+        const res = await fetch(AHMED_CONFIG.formEndpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify(formData),
         });
+        if (!res.ok) throw new Error(`Form endpoint responded ${res.status}`);
       } else {
-        // Simulated network delivery for development preview
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        // No form service configured: open a pre-filled email so the brief is really delivered
+        const subject = encodeURIComponent(`Project request: ${formData.projectType} editing`);
+        const body = encodeURIComponent(
+          `Name: ${formData.name}\nEmail: ${formData.email}\nService: ${formData.projectType}\nBudget: ${formData.budget}\n\nBrief:\n${formData.details}`
+        );
+        window.location.href = `mailto:${AHMED_CONFIG.businessEmail}?subject=${subject}&body=${body}`;
       }
 
       setStatus('success');
     } catch (err) {
       console.error('Submission error', err);
-      // Still show successful prompt to direct them to WhatsApp
-      setStatus('success');
+      // Don't claim success: let the visitor retry or use WhatsApp / email instead
+      setStatus('error');
     }
   };
 
   const handleCopySummary = () => {
     const summary = `CNOOPSY PROJECT BRIEF:\nName: ${formData.name}\nEmail: ${formData.email}\nService: ${formData.projectType}\nBudget: ${formData.budget}\nBrief: ${formData.details}`;
-    navigator.clipboard.writeText(summary);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    navigator.clipboard
+      ?.writeText(summary)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      })
+      .catch(() => {});
   };
 
   return (
@@ -382,6 +391,12 @@ export const ContactSection: React.FC = () => {
                     </p>
                   )}
                 </div>
+
+                {status === 'error' && (
+                  <p role="alert" className="text-xs font-mono-ui text-red-500">
+                    Couldn't send the form. Please try again, or message us on WhatsApp / email directly.
+                  </p>
+                )}
 
                 {/* Submit button */}
                 <button

@@ -24,6 +24,7 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx }) => 
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState('00:00');
   const [hasStarted, setHasStarted] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
 
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -88,9 +89,13 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx }) => 
     e.stopPropagation();
     if (!videoRef.current) return;
     videoRef.current.currentTime = 0;
-    videoRef.current.play();
-    setIsPlaying(true);
-    setHasStarted(true);
+    videoRef.current
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+        setHasStarted(true);
+      })
+      .catch(() => setIsPlaying(false));
   };
 
   const quoteUrl = getWhatsAppQuoteUrl(service.whatsappMessage);
@@ -115,6 +120,10 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx }) => 
           loop
           onTimeUpdate={handleTimeUpdate}
           onEnded={() => setIsPlaying(false)}
+          onError={() => {
+            setVideoFailed(true);
+            setIsPlaying(false);
+          }}
           className="w-full h-full object-cover"
         />
 
@@ -159,8 +168,27 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx }) => 
           </div>
         </div>
 
+        {videoFailed && (
+          <div
+            className="absolute inset-0 z-30 bg-black/85 flex flex-col items-center justify-center gap-3 p-4 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="text-xs font-mono-ui text-white/90">
+              Preview video couldn't be loaded.
+            </span>
+            <a
+              href={service.driveFolderUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-lg bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase"
+            >
+              Watch samples on Drive
+            </a>
+          </div>
+        )}
+
         {/* Central Play/Pause Trigger Button (Visible when paused or hovered) */}
-        {!isPlaying && (
+        {!isPlaying && !videoFailed && (
           <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2 transition-opacity duration-300">
             <button
               onClick={togglePlay}

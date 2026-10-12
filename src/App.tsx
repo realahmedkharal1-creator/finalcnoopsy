@@ -47,6 +47,7 @@ export default function App() {
         setActiveView('home');
       }
     };
+    handleHash();
     window.addEventListener('hashchange', handleHash);
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
@@ -58,6 +59,7 @@ export default function App() {
   const handleNavigate = (view: 'home' | 'work', sectionId?: string) => {
     setActiveView(view);
     if (view === 'work') {
+      setInitialPortfolioCategory('All');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (sectionId) {
       setTimeout(() => {

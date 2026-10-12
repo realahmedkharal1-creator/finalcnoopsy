@@ -31,6 +31,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Current item index in filtered list
@@ -38,6 +39,8 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
 
   // Keyboard navigation: Escape to close, Arrow keys to navigate
   useEffect(() => {
+    // Only listen while the modal is open (otherwise arrow keys would pop it open)
+    if (!item) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -50,13 +53,14 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, itemsList, onClose, onNavigate]);
+  }, [item, currentIndex, itemsList, onClose, onNavigate]);
 
   // Prevent background body scroll while modal is open
   useEffect(() => {
     if (item) {
       document.body.style.overflow = 'hidden';
       setIsPlaying(false);
+      setVideoFailed(false);
     }
     return () => {
       document.body.style.overflow = '';
@@ -84,9 +88,13 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(item.driveFolderUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard
+      ?.writeText(item.driveFolderUrl)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => {});
   };
 
   const quoteUrl = getWhatsAppQuoteUrl(
@@ -156,13 +164,27 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
               item.aspectRatio === '9:16' ? 'max-w-md aspect-[9/16] my-4' : 'aspect-video'
             } bg-zinc-950 flex items-center justify-center overflow-hidden`}
           >
-            <img
-              src={item.thumbnailUrl}
-              alt={item.title}
-              className="w-full h-full object-cover opacity-90"
-            />
+            {isPlaying && item.videoPreviewUrl && !videoFailed ? (
+              <video
+                key={item.id}
+                src={item.videoPreviewUrl}
+                poster={item.thumbnailUrl}
+                controls
+                autoPlay
+                playsInline
+                onError={() => setVideoFailed(true)}
+                className="absolute inset-0 w-full h-full object-contain bg-black z-20"
+              />
+            ) : (
+              <img
+                src={item.thumbnailUrl}
+                alt={item.title}
+                className="w-full h-full object-cover opacity-90"
+              />
+            )}
 
             {/* Player Interface Overlay */}
+            {!(isPlaying && item.videoPreviewUrl && !videoFailed) && (
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40 flex flex-col justify-between p-4 sm:p-6">
               <div className="flex items-center justify-between text-xs font-mono-ui text-white/90">
                 <span className="font-bold tracking-wider">cnoopsy. portfolio cut</span>
@@ -172,17 +194,25 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
               </div>
 
               <div className="flex flex-col items-center justify-center gap-3">
-                <div
+                <button
+                  type="button"
                   className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-accent-brand text-black flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all cursor-pointer group"
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Preview video"
+                  onClick={() => {
+                    if (item.videoPreviewUrl && !videoFailed) {
+                      setIsPlaying(true);
+                    } else {
+                      // No playable preview: open the full cut in Drive instead of doing nothing
+                      window.open(item.driveFolderUrl, '_blank', 'noopener,noreferrer');
+                    }
+                  }}
+                  aria-label={item.videoPreviewUrl && !videoFailed ? 'Play video' : 'Open full cut in Drive'}
                 >
                   <Play className="w-8 h-8 fill-current ml-1" />
-                </div>
+                </button>
                 <span className="text-xs font-mono-ui text-white/90 bg-black/70 px-3 py-1 rounded-full border border-white/15">
-                  Portfolio Sample Preview
+                  {item.videoPreviewUrl && !videoFailed
+                    ? 'Portfolio Sample Preview'
+                    : 'Opens full cut in Google Drive'}
                 </span>
               </div>
 
@@ -191,6 +221,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
                 <span>{item.specs.fps}</span>
               </div>
             </div>
+            )}
           </div>
         </div>
 
