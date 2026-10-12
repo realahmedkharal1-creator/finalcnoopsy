@@ -34,16 +34,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </div>
 
               <div className="pt-2">
-                <a
+                <button
                   id="footer-start-project-btn"
-                  href={getWhatsAppQuoteUrl()}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  type="button"
+                  onClick={() => onNavigate('home', 'contact')}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase hover:opacity-95 transition-all shadow-sm"
                 >
                   <span>Start a Project</span>
                   <ArrowUpRight className="w-4 h-4" />
-                </a>
+                </button>
               </div>
             </div>
 

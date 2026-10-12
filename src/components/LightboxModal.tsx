@@ -9,13 +9,13 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { PortfolioItem } from '../types';
-import { getWhatsAppQuoteUrl } from '../data/portfolioData';
 
 interface LightboxModalProps {
   item: PortfolioItem | null;
   itemsList: PortfolioItem[];
   onClose: () => void;
   onNavigate: (newItem: PortfolioItem) => void;
+  onGetQuote: () => void;
 }
 
 export const LightboxModal: React.FC<LightboxModalProps> = ({
@@ -23,6 +23,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
   itemsList,
   onClose,
   onNavigate,
+  onGetQuote,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
@@ -80,10 +81,6 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
       onNavigate(itemsList[0]);
     }
   };
-
-  const quoteUrl = getWhatsAppQuoteUrl(
-    `Hi Cnoopsy, I saw "${item.title}" (${item.category}) in your portfolio and would like a custom quote for a similar edit.`
-  );
 
   return (
     <div
@@ -219,15 +216,14 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
 
             {/* Actions: Quote */}
             <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
-              <a
-                href={quoteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={onGetQuote}
                 className="px-6 py-3 rounded-xl bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase inline-flex items-center justify-center gap-2 hover:opacity-95 shadow-md"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Quote for this Style</span>
-              </a>
+              </button>
             </div>
           </div>
 
