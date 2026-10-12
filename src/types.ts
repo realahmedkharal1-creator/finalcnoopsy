@@ -21,10 +21,7 @@ export interface PortfolioItem {
   thumbnailUrl: string;
   videoPreviewUrl?: string;
   youtubeId?: string;
-  driveFolderId?: string;
-  driveFolderUrl: string;
-  driveEmbedUrl?: string;
-  embedType?: 'video' | 'drive' | 'youtube' | 'vimeo' | 'placeholder';
+  embedType?: 'video' | 'youtube' | 'vimeo' | 'placeholder';
   embedUrl?: string;
   specs: {
     resolution: string;
@@ -46,9 +43,6 @@ export interface ServiceItem {
   sampleVideoUrl?: string;
   youtubeId?: string;
   duration?: string;
-  driveFolderId: string;
-  driveFolderUrl: string;
-  driveEmbedUrl?: string;
   tags: string[];
 }
 
