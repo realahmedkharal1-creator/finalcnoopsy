@@ -395,7 +395,7 @@ export const AHMED_CONFIG = {
   typicalTurnaround: '2–3 days',
   
   // [Ahmed: Add your business email address for direct client inquiries]
-  businessEmail: 'contact@cnoopsy.com',
+  businessEmail: 'cnoopsy@gmail.com',
   fallbackEmail: 'realahmedkharal1@gmail.com',
 
   // [Ahmed: Add links to your real social profiles]
