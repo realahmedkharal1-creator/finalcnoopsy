@@ -399,7 +399,7 @@ export const AHMED_CONFIG = {
   fallbackEmail: 'realahmedkharal1@gmail.com',
 
   // [Ahmed: Add links to your real social profiles]
-  instagramUrl: 'https://instagram.com/cnoopsy',
+  instagramUrl: 'https://instagram.com/cnoopsyagency',
   youtubeUrl: 'https://youtube.com/@cnoopsy',
   
   // [Ahmed: Insert your Formspree, Web3Forms, or EmailJS endpoint here]
