@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowUpRight, Play, Eye, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PORTFOLIO_PROJECTS } from '../data/portfolioData';
 import { PortfolioItem } from '../types';
 
@@ -8,23 +8,28 @@ interface PortfolioPreviewProps {
   onOpenLightbox: (item: PortfolioItem) => void;
 }
 
+const PREVIEW_ORDER: { category: PortfolioItem['category']; label: string }[] = [
+  { category: 'Real Estate', label: 'Real Estate' },
+  { category: 'YouTube', label: 'YouTube' },
+  { category: 'Talking Head', label: 'Talking Head' },
+  { category: 'Reels', label: 'Reels & Shorts' },
+];
+
 export const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({
   onSeeAllWork,
   onOpenLightbox,
 }) => {
-  // Rotate between first 3 featured sample projects (Reels live only in their own section)
-  const previewItems = PORTFOLIO_PROJECTS.filter((p) => p.category !== 'Reels').slice(0, 3);
+  const previewItems = PREVIEW_ORDER.map((o) => ({
+    item: PORTFOLIO_PROJECTS.find((p) => p.category === o.category)!,
+    label: o.label,
+  })).filter((x) => x.item);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const currentItem = previewItems[activeIndex];
+  const { item: currentItem } = previewItems[activeIndex];
+  const isVertical = currentItem.aspectRatio === '9:16';
 
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % previewItems.length);
-  };
-
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + previewItems.length) % previewItems.length);
-  };
+  const handleNext = () => setActiveIndex((prev) => (prev + 1) % previewItems.length);
+  const handlePrev = () => setActiveIndex((prev) => (prev - 1 + previewItems.length) % previewItems.length);
 
   return (
     <section id="portfolio-preview" className="py-20 lg:py-28 border-b border-brand relative">
@@ -32,35 +37,30 @@ export const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 mb-3">
-              <span className="font-mono-ui text-xs font-bold text-brand-muted tracking-widest">
-                (####)
-              </span>
+            <div className="inline-flex items-center gap-2 mb-4">
+              <span className="font-hud text-xs text-brand-muted">(04)</span>
               <span className="h-px w-6 bg-border" />
-              <span className="font-mono-ui text-xs font-bold text-accent-brand uppercase tracking-widest">
-                CASE HIGHLIGHTS
-              </span>
+              <span className="font-hud text-xs text-accent-brand">Case highlights</span>
             </div>
-            <h2 className="font-mono-heading text-2xl sm:text-3xl md:text-4xl font-bold text-brand-primary uppercase">
-              WORK YOU'LL WANT TO WATCH
+            <h2 className="font-mono-heading text-3xl sm:text-4xl md:text-5xl text-brand-primary uppercase">
+              WORK YOU&apos;LL WANT TO <span className="text-accent-brand">WATCH</span>
             </h2>
           </div>
 
-          {/* Quick tab controls */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono-ui text-brand-muted mr-2 hidden sm:inline">
+            <span className="font-hud text-xs text-brand-muted mr-2 hidden sm:inline">
               0{activeIndex + 1} / 0{previewItems.length}
             </span>
             <button
               onClick={handlePrev}
-              className="p-2 rounded-lg border border-brand bg-elevated text-brand-primary hover:border-accent-brand hover:text-accent-brand transition-colors"
+              className="p-2.5 rounded-lg border border-brand bg-elevated text-brand-primary hover:border-accent-brand hover:text-accent-brand transition-colors"
               aria-label="Previous preview project"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleNext}
-              className="p-2 rounded-lg border border-brand bg-elevated text-brand-primary hover:border-accent-brand hover:text-accent-brand transition-colors"
+              className="p-2.5 rounded-lg border border-brand bg-elevated text-brand-primary hover:border-accent-brand hover:text-accent-brand transition-colors"
               aria-label="Next preview project"
             >
               <ChevronRight className="w-4 h-4" />
@@ -68,125 +68,121 @@ export const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({
           </div>
         </div>
 
-        {/* Stacked Card Showcase Layout */}
-        <div className="relative max-w-5xl mx-auto my-8">
-          {/* Card stack decorative offsets (Background layers) */}
+        <div id="featured-preview-card" className="max-w-6xl mx-auto">
+          {/* Hero player: 16:9 widescreen in a dark studio bezel */}
           <div
-            className="absolute -top-3 left-4 right-4 h-full rounded-2xl border border-brand bg-elevated/40 scale-[0.98] pointer-events-none -z-10 transition-all duration-300"
-            style={{ boxShadow: '0 10px 30px var(--glow)' }}
-          />
-          <div className="absolute -top-6 left-8 right-8 h-full rounded-2xl border border-brand bg-elevated/20 scale-[0.96] pointer-events-none -z-20 transition-all duration-300" />
-
-          {/* Front Active Interactive Card */}
-          <div
-            id="featured-preview-card"
-            className="rounded-2xl border border-brand bg-elevated overflow-hidden shadow-2xl transition-all duration-300 group"
+            className="rounded-[1.5rem] p-2 sm:p-3 border border-white/10"
+            style={{
+              background: 'linear-gradient(180deg, #15181B 0%, #0B0D0F 100%)',
+              boxShadow: '0 40px 90px -40px rgba(0,0,0,0.9), 0 0 60px -20px var(--glow)',
+            }}
           >
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
-              {/* Media Player Area (7 cols) */}
-              <div
-                onClick={() => onOpenLightbox(currentItem)}
-                className="lg:col-span-7 relative aspect-video lg:aspect-auto min-h-[320px] sm:min-h-[380px] bg-black overflow-hidden cursor-pointer"
-              >
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label={`Play ${currentItem.title}`}
+              onClick={() => onOpenLightbox(currentItem)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onOpenLightbox(currentItem);
+                }
+              }}
+              className="group relative aspect-video w-full rounded-xl overflow-hidden bg-black cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent"
+            >
+              {isVertical && (
                 <img
                   src={currentItem.thumbnailUrl}
-                  alt={currentItem.title}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110"
                 />
+              )}
+              <img
+                src={currentItem.thumbnailUrl}
+                alt={currentItem.title}
+                className={`relative w-full h-full transform group-hover:scale-[1.02] transition-transform duration-700 ${
+                  isVertical ? 'object-contain' : 'object-cover'
+                }`}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none" />
 
-                {/* Dark Vignette Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <span className="absolute top-4 left-4 px-3 py-1 rounded-full font-hud text-[11px] pill-tint backdrop-blur-md">
+                {currentItem.category}
+              </span>
+              <span className="absolute top-4 right-4 hidden sm:flex items-center gap-2 font-hud text-[10px] text-white/80 bg-black/50 px-2.5 py-1 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> REC 00:14:48:23
+              </span>
 
-                {/* Centered Play Button */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-accent-brand/90 backdrop-blur-md flex items-center justify-center text-black transform group-hover:scale-110 group-hover:bg-accent-brand transition-all shadow-xl">
-                    <Play className="w-7 h-7 fill-current ml-1" />
-                  </div>
-                </div>
-
-                {/* Top badges */}
-                <div className="absolute top-4 left-4 flex items-center gap-2">
-                  <span className="px-3 py-1 rounded bg-black/80 backdrop-blur-md border border-white/15 text-xs font-mono-ui font-bold text-accent uppercase">
-                    {currentItem.category}
-                  </span>
-                </div>
-
-                <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-mono-ui text-white/80">
-                  <span className="bg-black/60 px-2 py-0.5 rounded">Click to Play Sample</span>
-                </div>
-              </div>
-
-              {/* Details & Specs Area (5 cols) */}
-              <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between bg-elevated">
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="w-2 h-2 rounded-full bg-accent-brand animate-pulse" />
-                    <span className="font-mono-ui text-xs text-brand-muted uppercase">
-                      Featured Case Study
-                    </span>
-                  </div>
-
-                  <h3 className="font-mono-heading text-xl sm:text-2xl font-bold text-brand-primary uppercase leading-tight mb-4">
-                    {currentItem.title}
-                  </h3>
-
-                  <p className="text-sm text-brand-secondary leading-relaxed mb-6">
-                    {currentItem.description}
-                  </p>
-
-                  {/* Highlights list */}
-                  <div className="space-y-2 mb-6">
-                    {currentItem.keyFeatures.slice(0, 3).map((feat, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-brand-secondary font-normal">
-                        <span className="text-accent-brand font-mono-ui font-bold">✓</span>
-                        <span>{feat}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="pt-4 border-t border-subtle mb-6" />
-
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => onOpenLightbox(currentItem)}
-                      className="flex-1 py-3 rounded-lg bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase flex items-center justify-center gap-2 hover:opacity-90 transition-all"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>Watch Full Cut</span>
-                    </button>
-                    <button
-                      onClick={onSeeAllWork}
-                      className="px-4 py-3 rounded-lg border border-brand bg-elevated-2 text-brand-primary font-mono-ui font-semibold text-xs uppercase hover:border-accent-brand hover:text-accent-brand transition-all"
-                    >
-                      Archive
-                    </button>
-                  </div>
-                </div>
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <span className="w-16 h-16 sm:w-20 sm:h-20 rounded-full btn-parrot flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform">
+                  <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1" />
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Quick Select Buttons Underneath */}
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            {previewItems.map((item, idx) => (
+          {/* Case details + specification panel */}
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 sm:p-8 rounded-2xl card-surface">
+            <div className="lg:col-span-7">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-2 h-2 rounded-full bg-accent-brand animate-pulse" />
+                <span className="font-hud text-xs text-brand-muted">Featured case study</span>
+              </div>
+              <h3 className="font-mono-heading text-2xl sm:text-3xl text-brand-primary uppercase mb-4">
+                {currentItem.title}
+              </h3>
+              <p className="body-copy text-brand-secondary">{currentItem.description}</p>
+            </div>
+
+            <div className="lg:col-span-5 flex flex-col justify-between gap-6 lg:pl-8 lg:border-l border-subtle">
+              <ul className="space-y-3">
+                {currentItem.keyFeatures.slice(0, 3).map((feat, idx) => (
+                  <li key={idx} className="flex items-start gap-3 text-[0.95rem] leading-snug text-brand-primary/90">
+                    <span className="mt-0.5 w-5 h-5 shrink-0 rounded-full pill-tint flex items-center justify-center text-[11px] font-bold">
+                      ✓
+                    </span>
+                    <span>{feat}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => onOpenLightbox(currentItem)}
+                  className="flex-1 py-3.5 px-4 rounded-xl btn-parrot font-mono-ui text-xs uppercase flex items-center justify-center gap-2"
+                >
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>Watch Full Cut</span>
+                </button>
+                <button
+                  onClick={onSeeAllWork}
+                  className="py-3.5 px-5 rounded-xl border border-brand bg-elevated-2 text-brand-primary font-mono-ui font-semibold text-xs uppercase hover:border-accent-brand hover:text-accent-brand transition-all"
+                >
+                  View All Samples
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Select Tabs */}
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            {previewItems.map(({ item, label }, idx) => (
               <button
                 key={item.id}
                 onClick={() => setActiveIndex(idx)}
-                className={`px-4 py-2 rounded-full font-mono-ui text-xs uppercase transition-all ${
+                className={`px-4 py-2.5 rounded-full font-hud text-[11px] transition-all ${
                   activeIndex === idx
-                    ? 'bg-accent-brand text-black font-bold'
+                    ? 'btn-parrot'
                     : 'border border-brand bg-elevated text-brand-secondary hover:text-brand-primary hover:border-accent-brand/50'
                 }`}
               >
-                0{idx + 1}. {item.category}
+                0{idx + 1}. {label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Center All Work Button (Section 6.4) */}
         <div className="mt-12 text-center">
           <button
             id="portfolio-all-work-btn"
@@ -194,9 +190,7 @@ export const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({
             className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-brand bg-elevated hover:border-accent-brand text-brand-primary font-mono-ui font-bold text-sm uppercase transition-all hover:shadow-lg"
           >
             <span>All Work</span>
-            <span className="text-accent-brand group-hover:translate-x-1 transition-transform">
-              →
-            </span>
+            <span className="text-accent-brand group-hover:translate-x-1 transition-transform">→</span>
           </button>
         </div>
       </div>

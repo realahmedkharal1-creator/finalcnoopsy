@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   MessageCircle,
   Mail,
-  Send,
   CheckCircle2,
   AlertCircle,
   ExternalLink,
@@ -19,18 +18,32 @@ export const ContactSection: React.FC = () => {
     email: '',
     projectType: 'YouTube',
     details: '',
-    budget: '$500 - $1,500',
+    budget: '$250 – $500 (Single Long-Form / Real Estate Listing)',
   });
 
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
   const [copied, setCopied] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
+
+  const handleCopyEmail = () => {
+    navigator.clipboard
+      ?.writeText(AHMED_CONFIG.businessEmail)
+      .then(() => {
+        setEmailCopied(true);
+        setTimeout(() => setEmailCopied(false), 2000);
+      })
+      .catch(() => {});
+  };
 
   const validate = () => {
     const newErrors: Partial<Record<keyof ContactFormData, string>> = {};
     if (!formData.name.trim()) newErrors.name = 'Please enter your name or studio name';
-    if (!formData.email.trim() || !formData.email.includes('@'))
-      newErrors.email = 'Please provide a valid email address';
+    const contact = formData.email.trim();
+    const looksLikeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
+    const looksLikePhone = /^\+?[\d\s().-]{7,}$/.test(contact) && contact.replace(/\D/g, '').length >= 7;
+    if (!looksLikeEmail && !looksLikePhone)
+      newErrors.email = 'Please provide a valid email address or WhatsApp number';
     if (!formData.details.trim() || formData.details.length < 10)
       newErrors.details = 'Please briefly describe your footage, video length, or editing goals (min 10 characters)';
     setErrors(newErrors);
@@ -59,7 +72,7 @@ export const ContactSection: React.FC = () => {
         // No form service configured: open a pre-filled email so the brief is really delivered
         const subject = encodeURIComponent(`Project request: ${formData.projectType} editing`);
         const body = encodeURIComponent(
-          `Name: ${formData.name}\nEmail: ${formData.email}\nService: ${formData.projectType}\nBudget: ${formData.budget}\n\nBrief:\n${formData.details}`
+          `Name: ${formData.name}\nContact: ${formData.email}\nService: ${formData.projectType}\nBudget: ${formData.budget}\n\nBrief:\n${formData.details}`
         );
         window.location.href = `mailto:${AHMED_CONFIG.businessEmail}?subject=${subject}&body=${body}`;
       }
@@ -73,7 +86,7 @@ export const ContactSection: React.FC = () => {
   };
 
   const handleCopySummary = () => {
-    const summary = `CNOOPSY PROJECT BRIEF:\nName: ${formData.name}\nEmail: ${formData.email}\nService: ${formData.projectType}\nBudget: ${formData.budget}\nBrief: ${formData.details}`;
+    const summary = `CNOOPSY PROJECT BRIEF:\nName: ${formData.name}\nContact: ${formData.email}\nService: ${formData.projectType}\nBudget: ${formData.budget}\nBrief: ${formData.details}`;
     navigator.clipboard
       ?.writeText(summary)
       .then(() => {
@@ -88,19 +101,15 @@ export const ContactSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-14">
-          <div className="inline-flex items-center gap-2 mb-3">
-            <span className="font-mono-ui text-xs font-bold text-brand-muted tracking-widest">
-              GET IN TOUCH
-            </span>
+          <div className="inline-flex items-center gap-2 mb-4">
+            <span className="font-hud text-xs text-brand-muted">(08)</span>
             <span className="h-px w-6 bg-border" />
-            <span className="font-mono-ui text-xs font-bold text-accent-brand uppercase tracking-widest">
-              START A PROJECT
-            </span>
+            <span className="font-hud text-xs text-accent-brand">Start a project</span>
           </div>
-          <h2 className="font-mono-heading text-2xl sm:text-3xl md:text-4xl font-bold text-brand-primary uppercase">
-            LET'S TALK ABOUT YOUR NEXT VIDEO
+          <h2 className="font-mono-heading text-3xl sm:text-4xl md:text-5xl text-brand-primary uppercase max-w-4xl">
+            LET&apos;S TALK ABOUT YOUR <span className="text-accent-brand">NEXT VIDEO</span>
           </h2>
-          <p className="text-sm font-mono-ui text-brand-secondary mt-2 max-w-xl">
+          <p className="text-base text-brand-secondary mt-4 max-w-[65ch]">
             Every project gets a custom quote based on footage length, turnaround, and motion design
             requirements.
           </p>
@@ -110,10 +119,12 @@ export const ContactSection: React.FC = () => {
           {/* Left Column (5 cols): Direct Priority Contact Channels */}
           <div className="lg:col-span-5 flex flex-col gap-6">
             {/* Primary Channel: WhatsApp */}
-            <div className="p-6 sm:p-7 rounded-2xl border-2 border-accent-brand/50 bg-elevated transition-all duration-300 hover:border-accent-brand hover:shadow-xl relative overflow-hidden group">
-              <div className="absolute top-3 right-3">
-                <span className="px-2 py-0.5 rounded bg-accent-brand text-black text-[10px] font-mono-ui font-bold uppercase">
-                  Fastest Reply (10-30m)
+            <div className="p-6 sm:p-7 rounded-2xl border border-accent-brand/50 bg-elevated transition-all duration-300 hover:border-accent-brand hover:bg-card-hover relative overflow-hidden group"
+              style={{ boxShadow: 'var(--card-glow)' }}>
+              <div className="mb-4">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full pill-tint font-hud text-[10px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent-brand animate-pulse" />
+                  Fastest Reply &lt; 30 mins
                 </span>
               </div>
 
@@ -125,11 +136,11 @@ export const ContactSection: React.FC = () => {
                   <h3 className="font-mono-heading text-lg font-bold text-brand-primary uppercase">
                     WhatsApp Direct
                   </h3>
-                  <p className="text-xs text-brand-muted font-mono-ui">Primary studio channel</p>
+                  <p className="text-sm text-brand-muted">Primary studio channel</p>
                 </div>
               </div>
 
-              <p className="text-sm text-brand-secondary mb-6 leading-relaxed">
+              <p className="text-base text-brand-secondary mb-6 leading-[1.65]">
                 Send a quick note about your footage and turnaround needs. You'll get an immediate
                 response and custom project pricing.
               </p>
@@ -139,32 +150,33 @@ export const ContactSection: React.FC = () => {
                 href={getWhatsAppQuoteUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase hover:opacity-95 active:scale-98 transition-all shadow-md"
+                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl btn-parrot font-mono-ui font-bold text-xs uppercase transition-all"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Message on WhatsApp (+92 302 6660854)</span>
               </a>
             </div>
 
-            {/* Secondary Channel: Fiverr Profile */}
-            <div className="p-6 rounded-2xl border border-brand bg-elevated flex flex-col justify-between hover:border-accent-brand/50 transition-all">
+            {/* Escrow / marketplace option */}
+            <div className="p-6 rounded-2xl card-surface flex flex-col justify-between">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-8 h-8 rounded-lg bg-elevated-2 border border-brand flex items-center justify-center text-sm font-mono-ui font-bold text-accent-brand">
+                  <span className="w-9 h-9 rounded-lg pill-tint flex items-center justify-center font-hud text-sm">
                     fi
                   </span>
                   <div>
-                    <h3 className="font-mono-heading text-base font-bold text-brand-primary uppercase">
+                    <h3 className="font-mono-heading text-base text-brand-primary uppercase">
                       Fiverr Marketplace
                     </h3>
-                    <span className="text-[10px] font-mono-ui text-brand-muted">5.0 Star Top Rated Seller</span>
+                    <span className="font-hud text-[10px] text-brand-muted">Escrow-protected orders</span>
                   </div>
                 </div>
                 <ExternalLink className="w-4 h-4 text-brand-muted" />
               </div>
 
-              <p className="text-xs text-brand-secondary leading-relaxed mb-4">
-                Prefer milestone escrow and ordering through Fiverr? Visit Cnoopsy's verified profile.
+              <p className="text-base text-brand-secondary leading-[1.65] mb-4">
+                Prefer Escrow / Marketplace Protection? You can also commission us directly via our
+                Top-Rated Fiverr Studio profile.
               </p>
 
               <a
@@ -172,7 +184,7 @@ export const ContactSection: React.FC = () => {
                 href={FIVERR_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-lg border border-brand bg-elevated-2 text-brand-primary hover:border-accent-brand hover:text-accent-brand font-mono-ui font-semibold text-xs uppercase transition-all"
+                className="inline-flex items-center justify-center gap-1.5 py-3 px-4 rounded-xl border border-brand bg-elevated-2 text-brand-primary hover:border-accent-brand hover:text-accent-brand font-mono-ui font-semibold text-xs uppercase transition-all"
               >
                 <span>Hire on Fiverr (fiverr.com/cnoopsy)</span>
                 <span>→</span>
@@ -180,39 +192,48 @@ export const ContactSection: React.FC = () => {
             </div>
 
             {/* Email Contact Detail */}
-            <div className="p-5 rounded-2xl border border-subtle bg-elevated-2/60 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-accent-brand" />
-                <div>
-                  <span className="block text-[10px] font-mono-ui text-brand-muted uppercase">
-                    Direct Email
-                  </span>
-                  <span className="text-xs font-mono-ui text-brand-primary">
+            <div className="p-5 rounded-2xl card-surface flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <Mail className="w-5 h-5 text-accent-brand shrink-0" />
+                <div className="min-w-0">
+                  <span className="block font-hud text-[10px] text-brand-muted">Direct Email</span>
+                  <span className="text-sm sm:text-base text-brand-primary break-all">
                     {AHMED_CONFIG.businessEmail}
                   </span>
                 </div>
               </div>
-              <a
-                href={`mailto:${AHMED_CONFIG.businessEmail}`}
-                className="text-xs font-mono-ui text-accent-brand hover:underline"
-              >
-                Send Email
-              </a>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopyEmail}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-brand bg-elevated-2 text-xs font-semibold text-brand-primary hover:border-accent-brand transition-all"
+                  aria-label="Copy email address"
+                >
+                  {emailCopied ? <Check className="w-3.5 h-3.5 text-accent-brand" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{emailCopied ? 'Copied' : 'Copy'}</span>
+                </button>
+                <a
+                  href={`mailto:${AHMED_CONFIG.businessEmail}`}
+                  className="text-xs font-semibold text-accent-brand hover:text-accent-hover px-1"
+                >
+                  Send Email
+                </a>
+              </div>
             </div>
           </div>
 
           {/* Right Column (7 cols): Contact Form */}
-          <div className="lg:col-span-7 p-6 sm:p-8 rounded-2xl border border-brand bg-elevated shadow-lg relative">
+          <div className="lg:col-span-7 p-6 sm:p-8 rounded-2xl border border-brand bg-elevated relative min-w-0">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-subtle">
               <div>
                 <h3 className="font-mono-heading text-lg font-bold text-brand-primary uppercase">
                   Project Request Form
                 </h3>
-                <p className="text-xs font-mono-ui text-brand-muted mt-0.5">
+                <p className="text-sm text-brand-muted mt-0.5">
                   Or submit your requirements here directly
                 </p>
               </div>
-              <span className="text-xs font-mono-ui text-accent-brand">⚡ 100% Confidential</span>
+              <span className="font-hud text-[10px] text-accent-brand">100% Confidential</span>
             </div>
 
             {status === 'success' ? (
@@ -223,7 +244,7 @@ export const ContactSection: React.FC = () => {
                 <h4 className="font-mono-heading text-xl font-bold text-brand-primary uppercase mb-2">
                   Request Received!
                 </h4>
-                <p className="text-sm text-brand-secondary max-w-md mb-6 leading-relaxed">
+                <p className="text-base text-brand-secondary max-w-md mb-6 leading-relaxed">
                   Thank you, <span className="font-bold text-brand-primary">{formData.name}</span>. We
                   have logged your brief for <span className="font-bold text-brand-primary">{formData.projectType}</span> editing.
                 </p>
@@ -236,7 +257,7 @@ export const ContactSection: React.FC = () => {
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full flex-1 py-3 px-4 rounded-xl bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase flex items-center justify-center gap-2 hover:opacity-95"
+                    className="w-full flex-1 py-3 px-4 rounded-xl btn-parrot font-mono-ui font-bold text-xs uppercase flex items-center justify-center gap-2"
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>Speed up on WhatsApp</span>
@@ -259,7 +280,7 @@ export const ContactSection: React.FC = () => {
                       email: '',
                       projectType: 'YouTube',
                       details: '',
-                      budget: '$500 - $1,500',
+                      budget: '$250 – $500 (Single Long-Form / Real Estate Listing)',
                     });
                   }}
                   className="mt-6 text-xs font-mono-ui text-brand-muted hover:text-accent-brand underline"
@@ -274,9 +295,9 @@ export const ContactSection: React.FC = () => {
                   <div>
                     <label
                       htmlFor="form-name"
-                      className="block text-xs font-mono-ui text-brand-secondary uppercase mb-1.5"
+                      className="block text-sm font-medium text-brand-secondary mb-1.5"
                     >
-                      Your Name / Channel <span className="text-accent-brand">*</span>
+                      Your Name <span className="text-accent-brand">*</span>
                     </label>
                     <input
                       id="form-name"
@@ -284,12 +305,12 @@ export const ContactSection: React.FC = () => {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. Alex Rivera / Prime Properties"
-                      className={`w-full px-3.5 py-2.5 rounded-lg border bg-elevated-2 text-brand-primary text-sm focus:outline-none focus:ring-1 focus:ring-accent ${
-                        errors.name ? 'border-red-500' : 'border-brand'
+                      className={`field w-full px-4 py-3 rounded-xl text-base ${
+                        errors.name ? '!border-red-500' : ''
                       }`}
                     />
                     {errors.name && (
-                      <p className="text-[11px] text-red-400 font-mono-ui mt-1 flex items-center gap-1">
+                      <p className="text-xs text-red-400 font-mono-ui mt-1 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" /> {errors.name}
                       </p>
                     )}
@@ -298,22 +319,24 @@ export const ContactSection: React.FC = () => {
                   <div>
                     <label
                       htmlFor="form-email"
-                      className="block text-xs font-mono-ui text-brand-secondary uppercase mb-1.5"
+                      className="block text-sm font-medium text-brand-secondary mb-1.5"
                     >
-                      Email Address <span className="text-accent-brand">*</span>
+                      Email / WhatsApp <span className="text-accent-brand">*</span>
                     </label>
                     <input
                       id="form-email"
-                      type="email"
+                      type="text"
+                      inputMode="email"
+                      autoComplete="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="you@domain.com"
-                      className={`w-full px-3.5 py-2.5 rounded-lg border bg-elevated-2 text-brand-primary text-sm focus:outline-none focus:ring-1 focus:ring-accent ${
-                        errors.email ? 'border-red-500' : 'border-brand'
+                      placeholder="Email or WhatsApp number"
+                      className={`field w-full px-4 py-3 rounded-xl text-base ${
+                        errors.email ? '!border-red-500' : ''
                       }`}
                     />
                     {errors.email && (
-                      <p className="text-[11px] text-red-400 font-mono-ui mt-1 flex items-center gap-1">
+                      <p className="text-xs text-red-400 font-mono-ui mt-1 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" /> {errors.email}
                       </p>
                     )}
@@ -321,11 +344,11 @@ export const ContactSection: React.FC = () => {
                 </div>
 
                 {/* Project Type & Budget Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <label
                       htmlFor="form-project-type"
-                      className="block text-xs font-mono-ui text-brand-secondary uppercase mb-1.5"
+                      className="block text-sm font-medium text-brand-secondary mb-1.5"
                     >
                       Project Type <span className="text-accent-brand">*</span>
                     </label>
@@ -333,7 +356,7 @@ export const ContactSection: React.FC = () => {
                       id="form-project-type"
                       value={formData.projectType}
                       onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-brand bg-elevated-2 text-brand-primary text-sm focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
+                      className="field w-full px-4 py-3 rounded-xl text-base cursor-pointer"
                     >
                       <option value="YouTube">YouTube Content Editing</option>
                       <option value="Real Estate">Real Estate Video Editing</option>
@@ -348,21 +371,20 @@ export const ContactSection: React.FC = () => {
                   <div>
                     <label
                       htmlFor="form-budget"
-                      className="block text-xs font-mono-ui text-brand-secondary uppercase mb-1.5"
+                      className="block text-sm font-medium text-brand-secondary mb-1.5"
                     >
-                      Estimated Budget (Optional)
+                      Estimated Budget
                     </label>
                     <select
                       id="form-budget"
                       value={formData.budget}
                       onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-brand bg-elevated-2 text-brand-primary text-sm focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
+                      className="field w-full px-4 py-3 rounded-xl text-base cursor-pointer"
                     >
-                      <option value="< $500">&lt; $500 (Single clip / Short)</option>
-                      <option value="$500 - $1,500">$500 – $1,500 (Multi-video / Standard)</option>
-                      <option value="$1,500 - $3,000">$1,500 – $3,000 (Full Campaign / Monthly)</option>
-                      <option value="$3,000+">$3,000+ (High Volume / Dedicated)</option>
-                      <option value="Custom / Retainer">Custom / Ongoing Monthly Retainer</option>
+                      <option value="Under $250 (Single Trial Edit / Short-Form Pack)">Under $250 (Single Trial Edit / Short-Form Pack)</option>
+                      <option value="$250 – $500 (Single Long-Form / Real Estate Listing)">$250 – $500 (Single Long-Form / Real Estate Listing)</option>
+                      <option value="$500 – $1,500 (Monthly Retainer / Multi-Video Package)">$500 – $1,500 (Monthly Retainer / Multi-Video Package)</option>
+                      <option value="$1,500+ (Full Channel Management / Custom Production)">$1,500+ (Full Channel Management / Custom Production)</option>
                     </select>
                   </div>
                 </div>
@@ -371,9 +393,9 @@ export const ContactSection: React.FC = () => {
                 <div>
                   <label
                     htmlFor="form-details"
-                    className="block text-xs font-mono-ui text-brand-secondary uppercase mb-1.5"
+                    className="block text-sm font-medium text-brand-secondary mb-1.5"
                   >
-                    Project Details & Footage Link <span className="text-accent-brand">*</span>
+                    Project Brief & Raw Footage Link <span className="text-accent-brand">*</span>
                   </label>
                   <textarea
                     id="form-details"
@@ -381,12 +403,12 @@ export const ContactSection: React.FC = () => {
                     value={formData.details}
                     onChange={(e) => setFormData({ ...formData, details: e.target.value })}
                     placeholder="Tell us about the project: raw footage length, target platform, reference links, graphics needed, and ideal turnaround date..."
-                    className={`w-full px-3.5 py-2.5 rounded-lg border bg-elevated-2 text-brand-primary text-sm focus:outline-none focus:ring-1 focus:ring-accent ${
-                      errors.details ? 'border-red-500' : 'border-brand'
-                    }`}
+                    className={`field w-full px-4 py-3 rounded-xl text-base ${
+                        errors.details ? '!border-red-500' : ''
+                      }`}
                   />
                   {errors.details && (
-                    <p className="text-[11px] text-red-400 font-mono-ui mt-1 flex items-center gap-1">
+                    <p className="text-xs text-red-400 font-mono-ui mt-1 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" /> {errors.details}
                     </p>
                   )}
@@ -403,10 +425,9 @@ export const ContactSection: React.FC = () => {
                   id="contact-form-submit-btn"
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="w-full py-3.5 px-6 rounded-xl bg-accent-brand text-black font-mono-ui font-bold text-sm uppercase flex items-center justify-center gap-2 hover:opacity-95 active:scale-98 transition-all disabled:opacity-50 cursor-pointer shadow-md"
+                  className="w-full py-4 px-6 rounded-xl btn-parrot font-mono-ui text-sm uppercase flex items-center justify-center gap-2 text-center disabled:opacity-50 cursor-pointer"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>{status === 'submitting' ? 'Submitting Brief...' : 'Send Project Details'}</span>
+                  <span>{status === 'submitting' ? 'Submitting Brief...' : 'Send Project Brief & Get Custom Quote →'}</span>
                 </button>
               </form>
             )}

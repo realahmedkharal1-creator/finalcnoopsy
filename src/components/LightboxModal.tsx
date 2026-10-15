@@ -97,7 +97,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
         {/* Top Control Bar */}
         <div className="sticky top-0 z-30 shrink-0 px-5 py-3.5 border-b border-brand bg-elevated/95 backdrop-blur-md flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-hidden">
-            <span className="px-2.5 py-0.5 rounded bg-accent-brand text-black text-xs font-mono-ui font-bold uppercase shrink-0">
+            <span className="px-2.5 py-0.5 rounded btn-parrot text-xs font-mono-ui font-bold uppercase shrink-0">
               {item.category}
             </span>
             <span className="text-xs font-mono-ui text-brand-muted hidden sm:inline truncate">
@@ -183,7 +183,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
               <div className="flex flex-col items-center justify-center gap-1.5 sm:gap-3 min-h-0">
                 <button
                   type="button"
-                  className="w-11 h-11 sm:w-20 sm:h-20 rounded-full bg-accent-brand text-black flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all cursor-pointer group"
+                  className="w-11 h-11 sm:w-20 sm:h-20 rounded-full btn-parrot flex items-center justify-center shadow-2xl transform hover:scale-110 transition-all cursor-pointer group"
                   onClick={() => {
                     setIsPlaying(true);
                   }}
@@ -219,7 +219,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
               <button
                 type="button"
                 onClick={onGetQuote}
-                className="px-6 py-3 rounded-xl bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase inline-flex items-center justify-center gap-2 hover:opacity-95 shadow-md"
+                className="px-6 py-3 rounded-xl btn-parrot font-mono-ui font-bold text-xs uppercase inline-flex items-center justify-center gap-2"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Quote for this Style</span>

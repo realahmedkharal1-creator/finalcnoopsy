@@ -63,7 +63,7 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ isOpen, 
         <div className="pt-4 border-t border-subtle flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded-lg bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase"
+            className="px-5 py-2.5 rounded-lg btn-parrot font-mono-ui font-bold text-xs uppercase"
           >
             Close Policy
           </button>

@@ -58,6 +58,7 @@ export interface TestimonialItem {
 
 export interface ProcessStep {
   number: string;
+  timing: string;
   title: string;
   description: string;
 }

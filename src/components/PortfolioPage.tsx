@@ -51,11 +51,11 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
         {/* Page Header */}
         <div className="mb-10">
           <div className="inline-flex items-center gap-2 mb-3">
-            <span className="font-mono-ui text-xs font-bold text-accent-brand uppercase tracking-widest">
+            <span className="font-hud text-xs text-accent-brand">
               CASE ARCHIVE
             </span>
             <span className="h-px w-6 bg-border" />
-            <span className="font-mono-ui text-xs text-brand-muted">
+            <span className="font-hud text-xs text-brand-muted">
               {filteredProjects.length} {filteredProjects.length === 1 ? 'Project' : 'Projects'} Shown
             </span>
           </div>
@@ -86,7 +86,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-2 rounded-full text-xs font-mono-ui font-bold uppercase transition-all whitespace-nowrap flex items-center gap-2 shrink-0 ${
                   isActive
-                    ? 'bg-accent-brand text-black shadow-sm'
+                    ? 'btn-parrot'
                     : 'border border-brand bg-elevated text-brand-secondary hover:text-brand-primary hover:border-accent-brand/50'
                 }`}
               >
@@ -109,7 +109,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             <div
               key={item.id}
               id={`portfolio-card-${item.id}`}
-              className="group rounded-2xl border border-brand bg-elevated overflow-hidden flex flex-col justify-between transition-all duration-300 hover:border-accent-brand hover:-translate-y-1.5 hover:shadow-2xl cursor-pointer"
+              className="group rounded-2xl card-surface overflow-hidden flex flex-col justify-between hover:-translate-y-1.5 cursor-pointer"
               onClick={() => onOpenLightbox(item)}
             >
               {/* Media Thumbnail Container */}
@@ -130,14 +130,14 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
 
                 {/* Center Play Icon */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-accent-brand/90 backdrop-blur-md flex items-center justify-center text-black transform group-hover:scale-110 group-hover:bg-accent-brand transition-all shadow-lg">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full btn-parrot flex items-center justify-center transform group-hover:scale-110 transition-transform shadow-lg">
                     <Play className="w-5 h-5 fill-current ml-0.5" />
                   </div>
                 </div>
 
                 {/* Top Overlay Badges */}
                 <div className="absolute top-3 left-3 right-3 flex items-center justify-start">
-                  <span className="px-2.5 py-1 rounded bg-black/80 backdrop-blur-md border border-white/10 text-xs font-mono-ui font-bold text-accent uppercase">
+                  <span className="px-2.5 py-1 rounded bg-black/80 backdrop-blur-md border border-white/10 font-hud text-[11px] text-accent">
                     {item.category}
                   </span>
                 </div>
@@ -149,7 +149,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                   <h3 className="font-mono-heading text-lg font-bold text-brand-primary uppercase mb-2.5 group-hover:text-accent-brand transition-colors line-clamp-2">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-brand-secondary leading-relaxed mb-4 line-clamp-3">
+                  <p className="text-base text-brand-secondary leading-relaxed mb-4 line-clamp-3">
                     {item.description}
                   </p>
                 </div>
@@ -173,14 +173,14 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
           <h2 className="font-mono-heading text-2xl sm:text-3xl font-bold text-brand-primary uppercase mb-3">
             NEED A VIDEO IN A DIFFERENT STYLE?
           </h2>
-          <p className="text-sm text-brand-secondary max-w-lg mb-6 leading-relaxed">
+          <p className="text-base text-brand-secondary max-w-lg mb-6 leading-relaxed">
             We adapt pacing, sound design, and color grading specifically to your brand aesthetics
             and platform requirements.
           </p>
           <button
             type="button"
             onClick={onGetQuote}
-            className="px-8 py-3.5 rounded-xl bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase inline-flex items-center gap-2 hover:opacity-95 shadow-md"
+            className="px-8 py-3.5 rounded-xl btn-parrot font-mono-ui font-bold text-xs uppercase inline-flex items-center gap-2"
           >
             <span>Request Custom Style Quote</span>
             <ArrowUpRight className="w-4 h-4" />

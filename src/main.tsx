@@ -8,3 +8,15 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 );
+
+// If a video has no HD thumbnail, fall back to the standard one
+document.addEventListener(
+  'error',
+  (e) => {
+    const img = e.target;
+    if (img instanceof HTMLImageElement && img.src.includes('/maxresdefault.jpg')) {
+      img.src = img.src.replace('/maxresdefault.jpg', '/hqdefault.jpg');
+    }
+  },
+  true
+);
