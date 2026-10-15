@@ -17,8 +17,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigate,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -28,18 +26,11 @@ export const Navbar: React.FC<NavbarProps> = ({
       // Background elevation trigger
       setIsScrolled(currentScrollY > 60);
 
-      // Hide on scroll down, reveal on scroll up
-      if (currentScrollY > lastScrollY && currentScrollY > 150) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   const handleLinkClick = (view: 'home' | 'work', sectionId?: string) => {
     setMobileMenuOpen(false);
@@ -51,12 +42,14 @@ export const Navbar: React.FC<NavbarProps> = ({
       <header
         id="main-navbar"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isVisible ? 'translate-y-0' : '-translate-y-full'
-        } ${
-          isScrolled
-            ? 'bg-page/90 backdrop-blur-md border-b border-brand shadow-sm py-3.5'
-            : 'bg-transparent py-5'
+          isScrolled ? 'py-3' : 'py-4 sm:py-5'
         }`}
+        style={{
+          backgroundColor: theme === 'dark' ? 'rgba(8, 9, 10, 0.82)' : 'rgba(246, 247, 242, 0.85)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderBottom: '1px solid var(--border)',
+        }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Logo / Wordmark */}
@@ -73,12 +66,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-mono-ui font-medium">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-mono-ui font-medium">
             <button
               id="nav-link-work"
               onClick={() => handleLinkClick('work')}
-              className={`transition-colors uppercase hover:text-accent-brand focus:outline-none ${
-                activeView === 'work' ? 'text-accent-brand font-bold' : 'text-brand-secondary'
+              data-active={activeView === 'work'}
+              className={`nav-link transition-colors hover:text-brand-primary focus:outline-none ${
+                activeView === 'work' ? 'text-brand-primary font-semibold' : 'text-brand-secondary'
               }`}
             >
               Work
@@ -86,42 +80,42 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="nav-link-services"
               onClick={() => handleLinkClick('home', 'services')}
-              className="text-brand-secondary hover:text-accent-brand transition-colors uppercase focus:outline-none"
+              className="nav-link text-brand-secondary hover:text-brand-primary transition-colors focus:outline-none"
             >
               Services
             </button>
             <button
               id="nav-link-why"
               onClick={() => handleLinkClick('home', 'why-cnoopsy')}
-              className="text-brand-secondary hover:text-accent-brand transition-colors uppercase focus:outline-none"
+              className="nav-link text-brand-secondary hover:text-brand-primary transition-colors focus:outline-none"
             >
-              Why Us
+              Why Cnoopsy
             </button>
             <button
               id="nav-link-process"
               onClick={() => handleLinkClick('home', 'process')}
-              className="text-brand-secondary hover:text-accent-brand transition-colors uppercase focus:outline-none"
+              className="nav-link text-brand-secondary hover:text-brand-primary transition-colors focus:outline-none"
             >
               Process
             </button>
             <button
               id="nav-link-testimonials"
               onClick={() => handleLinkClick('home', 'testimonials')}
-              className="text-brand-secondary hover:text-accent-brand transition-colors uppercase focus:outline-none"
+              className="nav-link text-brand-secondary hover:text-brand-primary transition-colors focus:outline-none"
             >
               Reviews
             </button>
             <button
               id="nav-link-contact"
               onClick={() => handleLinkClick('home', 'contact')}
-              className="text-brand-secondary hover:text-accent-brand transition-colors uppercase focus:outline-none"
+              className="nav-link text-brand-secondary hover:text-brand-primary transition-colors focus:outline-none"
             >
               Contact
             </button>
           </nav>
 
           {/* Right Action Bar */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             {/* Theme Toggle Button */}
             <button
               id="theme-toggle-btn"
@@ -146,7 +140,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="flex items-center gap-2 px-3.5 py-2 text-xs font-mono-ui font-semibold rounded-lg border border-brand bg-elevated text-brand-primary hover:border-accent-brand hover:text-accent-brand transition-all"
               aria-label="Contact Cnoopsy on WhatsApp"
             >
-              <MessageCircle className="w-3.5 h-3.5 text-accent-brand" />
+              <span className="relative flex h-2 w-2" aria-hidden="true">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-accent-brand opacity-60 animate-ping" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-accent-brand" />
+              </span>
               <span>WhatsApp</span>
             </a>
 
@@ -154,15 +151,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="nav-quote-cta"
               onClick={() => handleLinkClick('home', 'contact')}
-              className="group flex items-center gap-1.5 px-4 py-2 text-xs font-mono-ui font-bold uppercase rounded-lg bg-accent-brand text-black hover:opacity-90 active:scale-95 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              className="group flex items-center gap-1.5 px-4 py-2 text-xs font-mono-ui uppercase rounded-lg btn-parrot focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <span>Get a Quote</span>
-              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <span aria-hidden="true" className="group-hover:translate-x-0.5 transition-transform">→</span>
             </button>
           </div>
 
           {/* Mobile Menu & Theme button */}
-          <div className="flex sm:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={onToggleTheme}
               className="p-2 rounded-full border border-brand bg-elevated text-brand-primary"
@@ -186,49 +183,49 @@ export const Navbar: React.FC<NavbarProps> = ({
       {mobileMenuOpen && (
         <div
           id="mobile-nav-overlay"
-          className="fixed inset-0 z-40 bg-page/98 backdrop-blur-xl flex flex-col justify-between pt-24 pb-8 px-6 sm:hidden animate-fade-in"
+          className="fixed inset-0 z-40 bg-page/95 backdrop-blur-xl flex flex-col justify-between pt-24 pb-8 px-6 lg:hidden animate-fade-in overflow-y-auto"
         >
-          <div className="flex flex-col gap-6 text-lg font-mono-ui font-semibold uppercase">
+          <div className="flex flex-col gap-6 text-lg font-mono-ui font-semibold">
             <button
               onClick={() => handleLinkClick('work')}
               className="text-left text-brand-primary hover:text-accent-brand py-2 border-b border-subtle flex items-center justify-between"
             >
-              <span>01 // Portfolio Work</span>
+              <span><span className="font-hud text-accent-brand mr-2">01</span>Portfolio Work</span>
               <ArrowUpRight className="w-4 h-4 text-accent-brand" />
             </button>
             <button
               onClick={() => handleLinkClick('home', 'services')}
               className="text-left text-brand-primary hover:text-accent-brand py-2 border-b border-subtle flex items-center justify-between"
             >
-              <span>02 // Services</span>
+              <span><span className="font-hud text-accent-brand mr-2">02</span>Services</span>
               <ArrowUpRight className="w-4 h-4 text-accent-brand" />
             </button>
             <button
               onClick={() => handleLinkClick('home', 'why-cnoopsy')}
               className="text-left text-brand-primary hover:text-accent-brand py-2 border-b border-subtle flex items-center justify-between"
             >
-              <span>03 // Why Cnoopsy</span>
+              <span><span className="font-hud text-accent-brand mr-2">03</span>Why Cnoopsy</span>
               <ArrowUpRight className="w-4 h-4 text-accent-brand" />
             </button>
             <button
               onClick={() => handleLinkClick('home', 'process')}
               className="text-left text-brand-primary hover:text-accent-brand py-2 border-b border-subtle flex items-center justify-between"
             >
-              <span>04 // Process</span>
+              <span><span className="font-hud text-accent-brand mr-2">04</span>Process</span>
               <ArrowUpRight className="w-4 h-4 text-accent-brand" />
             </button>
             <button
               onClick={() => handleLinkClick('home', 'testimonials')}
               className="text-left text-brand-primary hover:text-accent-brand py-2 border-b border-subtle flex items-center justify-between"
             >
-              <span>05 // Reviews</span>
+              <span><span className="font-hud text-accent-brand mr-2">05</span>Reviews</span>
               <ArrowUpRight className="w-4 h-4 text-accent-brand" />
             </button>
             <button
               onClick={() => handleLinkClick('home', 'contact')}
               className="text-left text-brand-primary hover:text-accent-brand py-2 border-b border-subtle flex items-center justify-between"
             >
-              <span>06 // Contact</span>
+              <span><span className="font-hud text-accent-brand mr-2">06</span>Contact</span>
               <ArrowUpRight className="w-4 h-4 text-accent-brand" />
             </button>
           </div>
@@ -245,7 +242,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </a>
             <button
               onClick={() => handleLinkClick('home', 'contact')}
-              className="w-full py-3.5 text-sm font-mono-ui font-bold uppercase rounded-lg bg-accent-brand text-black flex items-center justify-center gap-2"
+              className="w-full py-3.5 text-sm font-mono-ui font-bold uppercase rounded-lg btn-parrot flex items-center justify-center gap-2"
             >
               <span>Get a Custom Quote</span>
               <ArrowUpRight className="w-4 h-4" />

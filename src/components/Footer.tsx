@@ -27,7 +27,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   </span>
                   <span className="w-2.5 h-2.5 rounded-full bg-accent-brand inline-block" />
                 </button>
-                <p className="text-sm font-mono-ui text-brand-secondary max-w-sm mb-6">
+                <p className="text-base text-brand-secondary max-w-sm mb-6">
                   Video editing & content production studio. Built for retention, pacing, and
                   conversions.
                 </p>
@@ -38,7 +38,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   id="footer-start-project-btn"
                   type="button"
                   onClick={() => onNavigate('home', 'contact')}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent-brand text-black font-mono-ui font-bold text-xs uppercase hover:opacity-95 transition-all shadow-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg btn-parrot font-mono-ui font-bold text-xs uppercase transition-all"
                 >
                   <span>Start a Project</span>
                   <ArrowUpRight className="w-4 h-4" />

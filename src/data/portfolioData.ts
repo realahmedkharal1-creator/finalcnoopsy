@@ -3,6 +3,11 @@ import { PortfolioItem, ServiceItem, TestimonialItem, ProcessStep } from '../typ
 export const WHATSAPP_BASE_URL = 'https://wa.me/923026660854';
 export const FIVERR_URL = 'https://www.fiverr.com/cnoopsy';
 
+// HD thumbnails have no letterbox bars; a few older uploads only have the 4:3 'hqdefault'
+const NO_HD_THUMB = new Set(['GalATixG0AM']);
+export const youtubeThumb = (id: string) =>
+  `https://i.ytimg.com/vi/${id}/${NO_HD_THUMB.has(id) ? 'hqdefault' : 'maxresdefault'}.jpg`;
+
 export function getWhatsAppQuoteUrl(message?: string): string {
   const defaultText = "Hi Cnoopsy, I'd like to talk about a video editing project.";
   const encoded = encodeURIComponent(message || defaultText);
@@ -12,10 +17,10 @@ export function getWhatsAppQuoteUrl(message?: string): string {
 export const SERVICES_DATA: ServiceItem[] = [
   {
     id: 'youtube-editing',
-    title: 'YouTube Content Editing',
+    title: 'YouTube Long-Form Editing',
     category: 'YouTube',
     description:
-      'Long-form videos and Shorts edited for retention — pacing, sound design, captions, and thumbnails that match how the algorithm actually works.',
+      'Retention-driven storytelling, dynamic B-roll, custom motion graphics, and sound design built around how the YouTube algorithm actually rewards watch time.',
     whatsappMessage: "Hi Cnoopsy, I'd like a quote for YouTube content editing.",
     thumbnailUrl:
       'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1200&q=80',
@@ -25,10 +30,10 @@ export const SERVICES_DATA: ServiceItem[] = [
   },
   {
     id: 'real-estate-editing',
-    title: 'Real Estate Video Editing',
+    title: 'Real Estate & Land Listings',
     category: 'Real Estate',
     description:
-      'Listing videos with clean transitions, motion graphics, and pacing that makes a property feel like the best one on the street.',
+      'High-converting property and acreage edits featuring 3D motion-tracked boundary lines, drone speed-ramps, location callouts, and cinematic color grading.',
     whatsappMessage: "Hi Cnoopsy, I'd like a quote for Real Estate video editing.",
     thumbnailUrl:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
@@ -38,10 +43,10 @@ export const SERVICES_DATA: ServiceItem[] = [
   },
   {
     id: 'home-tour-videos',
-    title: 'Home Tour Videos',
+    title: 'Luxury Home Tours',
     category: 'Home Tours',
     description:
-      'Walkthrough footage turned into a smooth, guided tour — the kind that gets a listing shared, not just viewed.',
+      'Seamless, rhythm-synced walkthroughs that turn raw agent or gimbal footage into an immersive guided tour that gets listings shared and sold.',
     whatsappMessage: "Hi Cnoopsy, I'd like a quote for Home Tour video editing.",
     thumbnailUrl:
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
@@ -51,10 +56,10 @@ export const SERVICES_DATA: ServiceItem[] = [
   },
   {
     id: 'reels-shorts-editing',
-    title: 'Reels & Shorts Editing',
+    title: 'Reels, TikToks & Shorts',
     category: 'Reels',
     description:
-      'Fast-paced, trend-aware edits for Instagram, TikTok, and Facebook Reels — built to stop the scroll in the first second.',
+      'Scroll-stopping vertical edits engineered with punchy hooks, animated captions, and sound effects designed to capture attention in the first 1.5 seconds.',
     whatsappMessage: "Hi Cnoopsy, I'd like a quote for Reels & Shorts editing.",
     thumbnailUrl:
       'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1200&q=80',
@@ -64,10 +69,10 @@ export const SERVICES_DATA: ServiceItem[] = [
   },
   {
     id: 'talking-head-editing',
-    title: 'Talking Head Video Editing',
+    title: 'Talking Head & Podcasts',
     category: 'Talking Head',
     description:
-      'Podcast clips, interviews, and solo-creator videos — clean cuts, jump-cut pacing, captions, and B-roll that keep a single face on screen genuinely watchable.',
+      'Multi-cam podcast cuts, educational videos, and founder content elevated with clean zoom cuts, visual callouts, and studio-grade audio cleanup.',
     whatsappMessage: "Hi Cnoopsy, I'd like a quote for Talking Head video editing.",
     thumbnailUrl:
       'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1200&q=80',
@@ -77,10 +82,10 @@ export const SERVICES_DATA: ServiceItem[] = [
   },
   {
     id: 'general-video-editing',
-    title: 'General Video Editing',
+    title: 'Commercial & Brand Videos',
     category: 'General',
     description:
-      'Corporate videos, event recaps, ads — anything that doesn\'t fit a neat category still gets the same attention to pacing and polish.',
+      'Polished VSLs, course modules, product promos, and corporate storytelling delivered with agency-grade pacing, color, and motion polish.',
     whatsappMessage: "Hi Cnoopsy, I'd like a quote for General video editing.",
     thumbnailUrl:
       'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1200&q=80',
@@ -92,7 +97,7 @@ export const SERVICES_DATA: ServiceItem[] = [
 
 // Service cards use their video's own YouTube thumbnail
 SERVICES_DATA.forEach((sv) => {
-  if (sv.youtubeId) sv.thumbnailUrl = `https://img.youtube.com/vi/${sv.youtubeId}/hqdefault.jpg`;
+  if (sv.youtubeId) sv.thumbnailUrl = youtubeThumb(sv.youtubeId);
 });
 
 export const PORTFOLIO_PROJECTS: PortfolioItem[] = [
@@ -294,7 +299,7 @@ PORTFOLIO_PROJECTS.push(
 
 // Use each video's own YouTube thumbnail
 PORTFOLIO_PROJECTS.forEach((p) => {
-  if (p.youtubeId) p.thumbnailUrl = `https://img.youtube.com/vi/${p.youtubeId}/hqdefault.jpg`;
+  if (p.youtubeId) p.thumbnailUrl = youtubeThumb(p.youtubeId);
 });
 
 export const TESTIMONIALS_DATA: TestimonialItem[] = [
@@ -341,36 +346,42 @@ export const TESTIMONIALS_DATA: TestimonialItem[] = [
 export const PROCESS_STEPS: ProcessStep[] = [
   {
     number: '01',
+    timing: 'Day 1',
     title: 'Brief & Footage',
     description:
       'You send over your raw footage and a short brief on the goal — YouTube upload, listing video, a Reel, whatever it is.',
   },
   {
     number: '02',
+    timing: 'Day 1',
     title: 'Structure & Plan',
     description:
       'The footage gets reviewed and a cut structure is planned around the hook, pacing, and platform it\'s going to.',
   },
   {
     number: '03',
+    timing: 'Within 48h',
     title: 'First Cut',
     description:
       'A rough edit comes back for your review — structure and pacing locked before the fine details get polished.',
   },
   {
     number: '04',
+    timing: 'Within 72h',
     title: 'Sound, Color & Motion',
     description:
       'Sound design, color grading, captions, and any motion graphics (maps, callouts, lower-thirds) get added.',
   },
   {
     number: '05',
+    timing: 'Fast revisions',
     title: 'Revisions',
     description:
       'Feedback goes in and revisions come back fast — no waiting a week for a two-minute fix.',
   },
   {
     number: '06',
+    timing: 'Ready to publish',
     title: 'Final Delivery',
     description:
       'You get the final file in the format and specs your platform needs, ready to publish.',
@@ -392,7 +403,7 @@ export const EDITING_SOFTWARE_TOOLS = [
  */
 export const AHMED_CONFIG = {
   // [Ahmed: Fill in your real typical turnaround time before launch]
-  typicalTurnaround: '2–3 days',
+  typicalTurnaround: '48–72 hours',
   
   // [Ahmed: Add your business email address for direct client inquiries]
   businessEmail: 'cnoopsy@gmail.com',

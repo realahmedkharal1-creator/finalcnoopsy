@@ -15,7 +15,7 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx, onGet
   return (
     <div
       id={`service-card-${service.id}`}
-      className="group rounded-2xl border border-brand bg-elevated overflow-hidden flex flex-col justify-between transition-all duration-300 hover:border-accent-brand hover:shadow-2xl"
+      className="group h-full rounded-2xl card-surface overflow-hidden flex flex-col justify-between"
     >
       {/* Video stage: thumbnail first, YouTube player on click */}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-black border-b border-subtle">
@@ -34,20 +34,26 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx, onGet
             className="group/play absolute inset-0 w-full h-full text-left"
             aria-label={`Play ${service.title} video`}
           >
-            <img src={service.thumbnailUrl} alt={service.title} className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-2">
-              <span className="w-14 h-14 rounded-full bg-accent-brand text-black flex items-center justify-center shadow-2xl transform group-hover/play:scale-110 transition-all">
+            <img
+              src={service.thumbnailUrl}
+              alt={service.title}
+              className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+            <div className="absolute inset-0 bg-black/35 group-hover:bg-black/20 transition-colors" />
+            <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-[11px] font-semibold text-white">
+              <Play className="w-3 h-3 fill-current text-accent-brand" />
+              Click to Preview Edit
+            </span>
+            <span className="absolute inset-0 flex items-center justify-center">
+              <span className="w-14 h-14 rounded-full btn-parrot flex items-center justify-center shadow-2xl transform group-hover/play:scale-110 transition-transform">
                 <Play className="w-6 h-6 fill-current ml-0.5" />
               </span>
-              <span className="text-[11px] font-mono-ui font-bold text-white bg-black/80 px-3 py-1 rounded-full border border-white/15">
-                Click to Watch Edit
-              </span>
-            </div>
-            <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-              <span className="px-2 py-0.5 rounded bg-black/85 border border-white/15 font-mono-ui text-[11px] text-accent font-bold">
+            </span>
+            <div className="absolute top-3 left-3 flex items-center gap-1.5">
+              <span className="px-2 py-1 rounded bg-black/80 border border-white/15 font-hud text-[11px] text-accent">
                 0{idx + 1}
               </span>
-              <span className="px-2 py-0.5 rounded bg-black/75 border border-white/10 text-[10px] font-mono-ui text-white/90 uppercase font-semibold">
+              <span className="px-2 py-1 rounded bg-black/70 border border-white/10 font-hud text-[10px] text-white/90">
                 {service.category}
               </span>
             </div>
@@ -58,10 +64,10 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx, onGet
       {/* Card Content Information */}
       <div className="p-6 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="font-mono-heading text-lg font-bold text-brand-primary uppercase group-hover:text-accent-brand transition-colors mb-2">
+          <h3 className="font-mono-heading text-xl text-brand-primary uppercase group-hover:text-accent-brand transition-colors mb-3">
             {service.title}
           </h3>
-          <p className="text-sm text-brand-secondary leading-relaxed mb-5 font-normal">
+          <p className="text-base text-brand-secondary leading-[1.65] mb-6">
             {service.description}
           </p>
         </div>
@@ -72,7 +78,7 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx, onGet
             {service.tags.slice(0, 1).map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-0.5 rounded bg-elevated-2 text-[10px] font-mono-ui text-brand-muted truncate"
+                className="px-2.5 py-1 rounded-full pill-tint font-hud text-[10px] truncate"
               >
                 {tag}
               </span>
@@ -82,7 +88,7 @@ const ServiceVideoCard: React.FC<ServiceVideoCardProps> = ({ service, idx, onGet
           <button
             type="button"
             onClick={onGetQuote}
-            className="inline-flex items-center gap-1 text-xs font-mono-ui font-bold text-accent-brand hover:underline group/btn shrink-0"
+            className="inline-flex items-center gap-1 text-sm font-mono-ui font-bold text-accent-brand hover:text-accent-hover group/btn shrink-0"
           >
             <span>Get a Quote</span>
             <ArrowUpRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
@@ -104,27 +110,23 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onGetQuote }) 
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 mb-3">
-              <span className="font-mono-ui text-xs font-bold text-brand-muted tracking-widest">
-                (###)
-              </span>
+            <div className="inline-flex items-center gap-2 mb-4">
+              <span className="font-hud text-xs text-brand-muted">(03)</span>
               <span className="h-px w-6 bg-border" />
-              <span className="font-mono-ui text-xs font-bold text-accent-brand uppercase tracking-widest">
-                SPECIALIZED DISCIPLINES
-              </span>
+              <span className="font-hud text-xs text-accent-brand">Specialized disciplines</span>
             </div>
-            <h2 className="font-mono-heading text-2xl sm:text-3xl md:text-4xl font-bold text-brand-primary uppercase">
-              WHAT WE EDIT
+            <h2 className="font-mono-heading text-3xl sm:text-4xl md:text-5xl text-brand-primary uppercase">
+              WHAT WE <span className="text-accent-brand">EDIT</span>
             </h2>
           </div>
-          <p className="text-sm font-mono-ui text-brand-secondary max-w-md">
+          <p className="text-base text-brand-secondary max-w-md">
             Platform-native video editing tailored to hold viewer attention and maximize retention.
             Click any card to play our sample edit.
           </p>
         </div>
 
         {/* 6 Services Grid (3 cols desktop, 2 tablet, 1 mobile) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
           {SERVICES_DATA.map((service, idx) => (
             <ServiceVideoCard key={service.id} service={service} idx={idx} onGetQuote={onGetQuote} />
           ))}

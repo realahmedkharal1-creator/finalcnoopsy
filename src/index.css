@@ -1,124 +1,196 @@
 @import "tailwindcss";
 
+/* Map brand tokens to Tailwind colors so utilities (hover:, focus:, /opacity) all work */
+@theme inline {
+  --color-page: var(--bg);
+  --color-primary: var(--text-primary);
+  --color-elevated: var(--bg-elevated);
+  --color-elevated-2: var(--bg-elevated-2);
+  --color-card-hover: var(--bg-card-hover);
+  --color-brand: var(--border);
+  --color-subtle: var(--border-subtle);
+  --color-border: var(--border);
+  --color-brand-primary: var(--text-primary);
+  --color-brand-secondary: var(--text-secondary);
+  --color-brand-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-brand: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-press: var(--accent-press);
+  --color-on-accent: var(--accent-contrast);
+}
+
 @layer base {
   :root, [data-theme="dark"] {
-    --bg: #0A0A0A;
-    --bg-elevated: #151515;
-    --bg-elevated-2: #1D1D1D;
-    --text-primary: #F5F5F0;
-    --text-secondary: #9C9C96;
-    --text-muted: #666660;
-    --accent: #C6FF3D;
-    --accent-hover: #b5f524;
-    --accent-contrast: #0A0A0A;
-    --border: #262626;
-    --border-subtle: #1f1f1f;
-    --glow: rgba(198, 255, 61, 0.12);
-    --glow-strong: rgba(198, 255, 61, 0.25);
-    --grain-opacity: 0.05;
+    --bg: #08090A;
+    --bg-elevated: #111315;
+    --bg-elevated-2: #14171A;
+    --bg-card-hover: #16191D;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B4BCC4;
+    --text-muted: #7D8590;
+    --accent: #B8FF01;
+    --accent-hover: #CCFF33;
+    --accent-press: #9EE000;
+    --accent-contrast: #070808;
+    --accent-tint-bg: rgba(184, 255, 1, 0.10);
+    --accent-tint-border: rgba(184, 255, 1, 0.30);
+    --border: rgba(255, 255, 255, 0.08);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-input: rgba(255, 255, 255, 0.12);
+    --border-accent: rgba(184, 255, 1, 0.45);
+    --glow: rgba(184, 255, 1, 0.12);
+    --glow-strong: rgba(184, 255, 1, 0.22);
+    --card-glow: 0 10px 30px -10px rgba(184, 255, 1, 0.12);
+    --grain-opacity: 0.04;
 
-    /* Inverted CTA band tokens (Light appearance in Dark mode) */
-    --inv-bg: #F7F7F2;
-    --inv-bg-elevated: #FFFFFF;
-    --inv-text-primary: #111111;
-    --inv-text-secondary: #54544E;
-    --inv-border: #E4E4DD;
-    --inv-btn-bg: #111111;
-    --inv-btn-text: #F5F5F0;
-    --inv-accent: #7FAF00;
+    /* Pre-footer NLE band: always a dark studio surface */
+    --inv-bg: #0B0D0F;
+    --inv-bg-elevated: #111315;
+    --inv-text-primary: #FFFFFF;
+    --inv-text-secondary: #B4BCC4;
+    --inv-border: rgba(255, 255, 255, 0.10);
+    --inv-btn-bg: #B8FF01;
+    --inv-btn-text: #070808;
+    --inv-accent: #B8FF01;
   }
 
   [data-theme="light"] {
-    --bg: #F7F7F2;
+    --bg: #F6F7F2;
     --bg-elevated: #FFFFFF;
-    --bg-elevated-2: #F0F0EB;
-    --text-primary: #111111;
-    --text-secondary: #54544E;
-    --text-muted: #8A8A83;
-    --accent: #7FAF00;
-    --accent-hover: #6c9600;
-    --accent-solid-btn: #C6FF3D;
-    --accent-contrast: #0A0A0A;
-    --border: #E4E4DD;
-    --border-subtle: #ECECE5;
-    --glow: rgba(127, 175, 0, 0.08);
-    --glow-strong: rgba(127, 175, 0, 0.18);
+    --bg-elevated-2: #F0F2EA;
+    --bg-card-hover: #FAFBF6;
+    --text-primary: #0B0D0F;
+    --text-secondary: #4A5058;
+    --text-muted: #6B727B;
+    --accent: #5E8A00;
+    --accent-hover: #4E7500;
+    --accent-press: #3F6000;
+    --accent-contrast: #070808;
+    --accent-tint-bg: rgba(94, 138, 0, 0.10);
+    --accent-tint-border: rgba(94, 138, 0, 0.30);
+    --border: rgba(11, 13, 15, 0.10);
+    --border-subtle: rgba(11, 13, 15, 0.07);
+    --border-input: rgba(11, 13, 15, 0.16);
+    --border-accent: rgba(94, 138, 0, 0.55);
+    --glow: rgba(94, 138, 0, 0.08);
+    --glow-strong: rgba(94, 138, 0, 0.16);
+    --card-glow: 0 10px 30px -10px rgba(94, 138, 0, 0.18);
     --grain-opacity: 0.02;
 
-    /* Inverted CTA band tokens (Dark appearance in Light mode) */
-    --inv-bg: #0A0A0A;
-    --inv-bg-elevated: #151515;
-    --inv-text-primary: #F5F5F0;
-    --inv-text-secondary: #9C9C96;
-    --inv-border: #262626;
-    --inv-btn-bg: #C6FF3D;
-    --inv-btn-text: #0A0A0A;
-    --inv-accent: #C6FF3D;
+    --inv-bg: #0B0D0F;
+    --inv-bg-elevated: #111315;
+    --inv-text-primary: #FFFFFF;
+    --inv-text-secondary: #B4BCC4;
+    --inv-border: rgba(255, 255, 255, 0.10);
+    --inv-btn-bg: #B8FF01;
+    --inv-btn-text: #070808;
+    --inv-accent: #B8FF01;
   }
 
   html {
     scroll-behavior: smooth;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     background-color: var(--bg);
     color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1.65;
     transition: background-color 300ms ease, color 300ms ease;
     overflow-x: hidden;
   }
+
+  button, a, input, select, textarea { font-family: inherit; }
 }
 
-/* Custom Utility Classes */
+/* ---- 3-tier typography ---- */
+/* 1. Display / headings: Plus Jakarta Sans ExtraBold */
 .font-mono-heading {
-  font-family: 'Space Mono', monospace;
-  letter-spacing: -0.02em;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
 }
-
+/* 2. UI copy (buttons, labels, body-ish text): Inter */
 .font-mono-ui {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: 0.01em;
+}
+/* 3. HUD / technical accents: JetBrains Mono — eyebrows, step numbers, timecodes, badges */
+.font-hud {
+  font-family: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-weight: 500;
   letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.body-copy {
+  font-size: 1rem;
+  line-height: 1.65;
+  max-width: 65ch;
 }
 
-.bg-page {
-  background-color: var(--bg);
-}
-
-.bg-elevated {
+/* Card surfaces */
+.card-surface {
   background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  transition: background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 250ms ease;
+}
+.card-surface:hover {
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-accent);
+  box-shadow: var(--card-glow);
 }
 
-.bg-elevated-2 {
-  background-color: var(--bg-elevated-2);
-}
-
-.text-brand-primary {
-  color: var(--text-primary);
-}
-
-.text-brand-secondary {
-  color: var(--text-secondary);
-}
-
-.text-brand-muted {
-  color: var(--text-muted);
-}
-
-.text-accent-brand {
+/* Soft parrot tint pill / badge */
+.pill-tint {
+  background-color: var(--accent-tint-bg);
+  border: 1px solid var(--accent-tint-border);
   color: var(--accent);
 }
 
-.bg-accent-brand {
+/* Primary parrot button */
+.btn-parrot {
   background-color: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+  transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
+.btn-parrot:hover { background-color: var(--accent-hover); box-shadow: 0 8px 24px -8px var(--glow-strong); }
+.btn-parrot:active { background-color: var(--accent-press); transform: scale(0.98); }
 
-.border-brand {
-  border-color: var(--border);
+/* Form fields */
+.field {
+  background-color: #14171A;
+  border: 1px solid var(--border-input);
+  color: var(--text-primary);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
+[data-theme="light"] .field { background-color: #FFFFFF; }
+.field::placeholder { color: var(--text-muted); }
+.field:focus {
+  outline: none;
+  border-color: #B8FF01;
+  box-shadow: 0 0 0 3px rgba(184, 255, 1, 0.18);
+}
+[data-theme="light"] .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint-bg); }
+.field option { background-color: #14171A; color: #FFFFFF; }
 
-.border-subtle {
-  border-color: var(--border-subtle);
+/* Nav link underline indicator */
+.nav-link { position: relative; padding-bottom: 4px; }
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -2px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms ease;
 }
+.nav-link:hover::after, .nav-link[data-active="true"]::after { transform: scaleX(1); }
 
 .glow-card {
   box-shadow: 0 0 35px var(--glow);
