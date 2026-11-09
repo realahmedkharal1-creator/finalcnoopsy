@@ -880,15 +880,61 @@ async function saveDebug(page, pin, step) {
   } catch { /* page may be gone */ }
 }
 
-async function schedulePin(browser, pin, when) {
-  const page = await browser.newPage();
-  page.on('dialog', (d) => d.accept().catch(() => {}));
+/** Title currently in the builder form ('' if none). */
+async function currentTitle(page) {
+  const el = await waitForAny(page, ['#storyboard-selector-title', '[placeholder="Add a title"]', 'textarea[id*="title" i]', 'input[id*="title" i]'], { timeout: 4000 });
+  return el ? squash(await fieldText(el)) : '';
+}
+
+/**
+ * Pinterest saves a draft the moment an image is uploaded. To never create a
+ * second draft for the same pin, reuse one that already exists:
+ *   1) the form already shows this pin (same tab after a failure, or Pinterest
+ *      re-opened the last draft), or
+ *   2) a draft with exactly this title is in the drafts list -> open it.
+ * Only when neither exists is the image uploaded.
+ */
+async function openOrCreateDraft(page, pin) {
+  const want = squash(pin.title);
+  if ((await currentTitle(page)) === want) return 'reused open draft';
+  const listed = await page.evaluate((want) => {
+    const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
+    let best = null, bestArea = Infinity;
+    for (const el of document.querySelectorAll('div, span, a, [role="button"], li')) {
+      if (el.closest('input, textarea, [contenteditable="true"]')) continue;
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      if (norm(el.innerText) === want && r.width * r.height < bestArea) { best = el; bestArea = r.width * r.height; }
+    }
+    if (!best) return false;
+    (best.closest('a, [role="button"], button, [data-test-id*="draft" i]') || best).click();
+    return true;
+  }, want);
+  if (listed) {
+    await sleep(3000);
+    if ((await currentTitle(page)) === want) return 'reused existing draft';
+  }
+  await stepUpload(page, pin);
+  return 'new draft';
+}
+
+/**
+ * Fills and schedules one pin. Pass `page` to continue in the same tab after a
+ * failure (no new tab, no new upload, so no duplicate drafts).
+ */
+async function schedulePin(browser, pin, when, page = null) {
+  if (!page || page.isClosed()) {
+    page = await browser.newPage();
+    page.on('dialog', (d) => d.accept().catch(() => {}));
+  }
   let step = 'open';
   try {
-    await page.goto(PIN_BUILDER_URL, { waitUntil: 'domcontentloaded', timeout: 90000 });
-    await sleep(3000);
+    if (!page.url().includes('pin-creation-tool')) {
+      await page.goto(PIN_BUILDER_URL, { waitUntil: 'domcontentloaded', timeout: 90000 });
+      await sleep(4000);
+    }
     if (/login/i.test(page.url())) throw new Error('not logged in');
-    step = 'upload'; await stepUpload(page, pin);
+    step = 'upload'; const draft = await openOrCreateDraft(page, pin); log(`   🖼  ${draft}`);
     step = 'title'; await stepTitle(page, pin);
     step = 'description'; await stepDescription(page, pin);
     step = 'link'; await stepLink(page, pin);
@@ -901,7 +947,7 @@ async function schedulePin(browser, pin, when) {
     return { ok: true };
   } catch (err) {
     await saveDebug(page, pin, step);
-    // left open on failure so you can finish it manually; caller closes it
+    // left open on failure: retry continues in this same tab/draft
     return { ok: false, error: `[${step}] ${err.message}`, page };
   }
 }
@@ -979,20 +1025,19 @@ async function main() {
       if (progress.scheduled[pin.n]) { log(`⏭  Pin #${pin.n} already scheduled (${progress.scheduled[pin.n].at}) — skipping`); continue; }
       log(`\n▶ Pin #${pin.n}/${END_AT_PIN} [${pin.cat}] ${pin.title}`);
 
-      let attempt = 0, result;
+      let result, page = null;
       while (true) {
-        attempt++;
-        result = await schedulePin(browser, pin, when);
+        result = await schedulePin(browser, pin, when, page);
         if (result.ok) break;
+        page = result.page; // keep the same tab + draft: never upload this pin twice
         log(`   ❌ ${result.error}`);
-        if (process.env.AUTO_SKIP_ON_ERROR === '1') { await closePage(result.page); break; }
-        if (attempt < 2) { log('   ↻ Retrying automatically once…'); await closePage(result.page); continue; }
-        const a = (await ask(`   Choose: [r]etry  [m]anual (I finished & scheduled it in the open tab)  [s]kip  [q]uit > `)).toLowerCase();
-        if (a === 'm') { await sleep(SAVE_WAIT_MS); await closePage(result.page); result = { ok: true, manual: true }; break; }
-        await closePage(result.page);
+        if (process.env.AUTO_SKIP_ON_ERROR === '1') { await closePage(page); break; }
+        const a = (await ask('   Choose: [r]etry in the same draft  [m]anual (I scheduled it myself in the open tab)  [s]kip  [q]uit > ')).toLowerCase();
         if (a === 'r') continue;
+        if (a === 'm') { await sleep(SAVE_WAIT_MS); await closePage(page); result = { ok: true, manual: true }; break; }
+        await closePage(page);
         if (a === 'q') { await writeJson(PROGRESS_FILE(), progress); return; }
-        break; // skip
+        break; // skip (its draft stays in Pinterest and is reused next run)
       }
 
       if (result.ok) {
