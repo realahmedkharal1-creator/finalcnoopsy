@@ -9,8 +9,8 @@
  *     - Crops away the bottom price-badge strip of the source AND paints a
  *       clean "VERIFIED EXPERT GUIDE — UNBIASED PARTS & SPECS" banner over the
  *       bottom sales area, so no $ badge can ever survive.
- *     - Each master is tagged as  case | gpu | cpu  in master_roles.json (you are asked
- *       once per image: c = case, g = gpu, p = cpu).
+ *     - Each master is tagged as  case | gpu | cpu  in master_setup.json via a Chrome setup
+ *       screen: drag boxes over mid-image price badges, then click the type.
  *       Full PC builds -> case masters, GPU VS -> gpu masters, CPU VS -> cpu.
  *     - A per-pin image (template + headline) is rendered to assets/pins/.
  *
@@ -58,8 +58,8 @@ const DATE_FORMAT = process.env.PIN_DATE_FORMAT || 'MM/DD/YYYY'; // how Pinteres
 const PIN_BUILDER_URL = 'https://www.pinterest.com/pin-creation-tool/';
 
 const MASTER_PREFIX = 'Gemini_Generated_Image_w3ecvww3ecvww3ec';
-const BADGE_CROP_RATIO = Number(process.env.BADGE_CROP_RATIO || 0.18); // bottom % of source removed
-const TOP_CROP_RATIO = Number(process.env.TOP_CROP_RATIO || 0.16);  // top % removed on pin images (source's own headline)
+const BADGE_CROP_RATIO = Number(process.env.BADGE_CROP_RATIO || 0.12); // bottom % removed (SHOP NOW bar, rating, URL footer)
+const TOP_CROP_RATIO = Number(process.env.TOP_CROP_RATIO || 0.22);  // top % removed on pin images (source's own headline)
 const OUT_W = 1000;
 const OUT_H = 1500;
 const BANNER_H = 190;
@@ -237,43 +237,129 @@ async function findMasterImages() {
   return hits.map((f) => ({ name: f, file: path.join(dir, f) }));
 }
 
-/** Opens an image in the default Windows/macOS viewer so you can tag it. */
-async function openInViewer(file) {
-  try {
-    const { spawn } = await import('node:child_process');
-    if (process.platform === 'win32') spawn('cmd', ['/c', 'start', '', file], { detached: true, stdio: 'ignore' }).unref();
-    else if (process.platform === 'darwin') spawn('open', [file], { detached: true, stdio: 'ignore' }).unref();
-  } catch { /* just show the path */ }
+/** HTML for the in-browser setup screen: draw boxes over sales badges, then pick the image type. */
+function taggerHtml(name, idx, total) {
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Master image setup ${idx}/${total}</title>
+<style>
+  body{margin:0;background:#0b1220;color:#e2e8f0;font:15px "Segoe UI",Arial,sans-serif;display:flex;flex-direction:column;height:100vh}
+  header{padding:12px 18px;background:#111a2e;border-bottom:1px solid #22304d;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  header b{color:#fff} .step{color:#22c55e;font-weight:700}
+  button{font:600 14px inherit;padding:9px 14px;border-radius:8px;border:0;cursor:pointer}
+  .role{background:#ef4444;color:#fff} .role:hover{background:#dc2626} .ghost{background:#1e293b;color:#e2e8f0}
+  main{flex:1;display:flex;justify-content:center;align-items:center;overflow:hidden;padding:12px}
+  #wrap{position:relative;max-height:100%;cursor:crosshair;user-select:none}
+  #img{display:block;max-height:calc(100vh - 110px);max-width:calc(100vw - 30px)}
+  .box{position:absolute;border:3px solid #ef4444;background:rgba(239,68,68,.35)}
+</style></head><body>
+<header>
+  <span><b>Image ${idx} of ${total}</b> · ${name}</span>
+  <span><span class="step">1.</span> Drag a box over every price badge / SHOP NOW / rating / "BEST $..." sticker</span>
+  <button class="ghost" id="undo">Undo box</button><span id="count">0 boxes</span>
+  <span><span class="step">2.</span> What does it show?</span>
+  <button class="role" data-r="case">PC case / full build</button>
+  <button class="role" data-r="gpu">GPU vs GPU</button>
+  <button class="role" data-r="cpu">CPU vs CPU</button>
+</header>
+<main><div id="wrap"><img id="img"></div></main>
+<script>
+  const masks=[]; let start=null, cur=null;
+  const wrap=document.getElementById('wrap'), img=document.getElementById('img');
+  window.loadImg=(src)=>new Promise(r=>{img.onload=r;img.src=src;});
+  const rel=(e)=>{const b=img.getBoundingClientRect();return{x:Math.min(Math.max((e.clientX-b.left)/b.width,0),1),y:Math.min(Math.max((e.clientY-b.top)/b.height,0),1)}};
+  const paint=()=>{wrap.querySelectorAll('.box').forEach(b=>b.remove());
+    for(const m of masks.concat(cur?[cur]:[])){const d=document.createElement('div');d.className='box';
+      Object.assign(d.style,{left:m.x*100+'%',top:m.y*100+'%',width:m.w*100+'%',height:m.h*100+'%'});wrap.appendChild(d);}
+    document.getElementById('count').textContent=masks.length+' box'+(masks.length===1?'':'es');};
+  wrap.addEventListener('mousedown',e=>{e.preventDefault();start=rel(e);cur={x:start.x,y:start.y,w:0,h:0};});
+  window.addEventListener('mousemove',e=>{if(!start)return;const p=rel(e);
+    cur={x:Math.min(p.x,start.x),y:Math.min(p.y,start.y),w:Math.abs(p.x-start.x),h:Math.abs(p.y-start.y)};paint();});
+  window.addEventListener('mouseup',()=>{if(cur&&cur.w>0.01&&cur.h>0.01)masks.push(cur);start=null;cur=null;paint();});
+  document.getElementById('undo').onclick=()=>{masks.pop();paint();};
+  document.querySelectorAll('.role').forEach(b=>b.onclick=()=>{window.__result={role:b.dataset.r,masks};});
+</script></body></html>`;
 }
 
 /**
- * master_roles.json tags every source image as case | gpu | cpu.
- * Untagged images are shown to you one by one and you type c / g / p.
- * (File order is NOT used any more — that caused GPU pins to get CPU images.)
+ * master_setup.json stores, per source image: its type (case | gpu | cpu) and the
+ * boxes covering its sales badges. Missing images open in a Chrome setup screen.
+ * Use --retag to redo every image.
  */
 async function loadMasterMap(masters) {
-  const mapFile = path.join(TEMPLATE_DIR(), 'master_roles.json');
-  const map = hasFlag('retag') ? {} : await readJson(mapFile, {});
-  const keys = { c: 'case', g: 'gpu', p: 'cpu', case: 'case', gpu: 'gpu', cpu: 'cpu' };
-  let changed = false;
-  for (const m of masters) {
-    while (!['case', 'gpu', 'cpu'].includes(map[m.name])) {
-      await openInViewer(m.file);
-      console.log(`\n🖼  ${m.file}`);
-      const a = (await ask('   What does this image show?  [c] PC case / full build   [g] GPU vs GPU   [p] CPU vs CPU  > ')).toLowerCase();
-      if (keys[a]) { map[m.name] = keys[a]; changed = true; } else console.log('   Please type c, g or p.');
+  const mapFile = path.join(TEMPLATE_DIR(), 'master_setup.json');
+  const setup = hasFlag('retag') ? {} : await readJson(mapFile, {});
+  const todo = masters.filter((m) => !setup[m.name] || !['case', 'gpu', 'cpu'].includes(setup[m.name].role));
+  if (!todo.length) return setup;
+
+  log(`🖍  ${todo.length} master image(s) need setup — a Chrome window will open.`);
+  log('   For each image: drag boxes over the price/sales badges, then click the image type.');
+  const browser = await puppeteer.launch({ headless: false, defaultViewport: null, args: ['--start-maximized', ...SANDBOX_ARGS] });
+  try {
+    const page = (await browser.pages())[0] || (await browser.newPage());
+    for (const [i, m] of todo.entries()) {
+      const buf = await fsp.readFile(m.file);
+      await page.goto('about:blank'); // fresh window, so the previous image's answer can't carry over
+      await page.setContent(taggerHtml(m.name, i + 1, todo.length));
+      await page.evaluate((src) => window.loadImg(src), `data:image/jpeg;base64,${buf.toString('base64')}`);
+      await page.bringToFront();
+      await page.waitForFunction(() => window.__result, { timeout: 0, polling: 300 });
+      setup[m.name] = await page.evaluate(() => window.__result);
+      await writeJson(mapFile, setup);
+      log(`   ✔ ${m.name}: ${setup[m.name].role}, ${setup[m.name].masks.length} badge box(es) masked`);
     }
+  } finally {
+    await browser.close();
   }
-  if (changed) { await writeJson(mapFile, map); log(`📝 Saved image tags → ${mapFile}  (re-tag any time with --retag)`); }
-  return map;
+  log(`📝 Saved → ${mapFile}  (redo any time with --retag)`);
+  return setup;
 }
 
 /** Runs inside the headless page: crops, de-badges, adds banner and optional headline panel. */
 async function renderInPage(opts) {
-  const { src, W, H, badgeCrop, topCrop, bannerH, bannerText, brandLine, headline, chip } = opts;
-  const img = new Image();
-  img.src = src;
-  await img.decode();
+  const { src, W, H, badgeCrop, topCrop, bannerH, bannerText, brandLine, headline, chip, masks = [] } = opts;
+  const raw = new Image();
+  raw.src = src;
+  await raw.decode();
+
+  // ---- Mask the badge boxes you drew: fill each with the colour around it, feathered ----
+  const img = document.createElement('canvas');
+  img.width = raw.naturalWidth; img.height = raw.naturalHeight;
+  img.naturalWidth = img.width; img.naturalHeight = img.height;
+  const mctx = img.getContext('2d');
+  mctx.drawImage(raw, 0, 0);
+  for (const mk of masks) {
+    const pad = Math.round(Math.max(img.width, img.height) * 0.012);
+    const x = Math.max(0, Math.round(mk.x * img.width) - pad), y = Math.max(0, Math.round(mk.y * img.height) - pad);
+    const w = Math.min(img.width - x, Math.round(mk.w * img.width) + pad * 2), h = Math.min(img.height - y, Math.round(mk.h * img.height) + pad * 2);
+    // most common colour in a ring just outside the box (= the background, not the shadow or the case)
+    const gap = pad * 2, ring = Math.max(8, pad);
+    const bins = new Map();
+    const sample = (sx, sy, sw, sh) => {
+      sx = Math.max(0, sx); sy = Math.max(0, sy);
+      sw = Math.min(img.width - sx, sw); sh = Math.min(img.height - sy, sh);
+      if (sw <= 0 || sh <= 0) return;
+      const d = mctx.getImageData(sx, sy, sw, sh).data;
+      for (let i = 0; i < d.length; i += 16) {
+        const k = (d[i] >> 4) << 8 | (d[i + 1] >> 4) << 4 | (d[i + 2] >> 4);
+        const v = bins.get(k) || [0, 0, 0, 0];
+        v[0] += d[i]; v[1] += d[i + 1]; v[2] += d[i + 2]; v[3]++;
+        bins.set(k, v);
+      }
+    };
+    sample(x - gap - ring, y - gap - ring, w + (gap + ring) * 2, ring);   // above
+    sample(x - gap - ring, y + h + gap, w + (gap + ring) * 2, ring);      // below
+    sample(x - gap - ring, y - gap, ring, h + gap * 2);                   // left
+    sample(x + w + gap, y - gap, ring, h + gap * 2);                      // right
+    let best = null;
+    for (const v of bins.values()) if (!best || v[3] > best[3]) best = v;
+    const col = best ? `rgb(${Math.round(best[0] / best[3])},${Math.round(best[1] / best[3])},${Math.round(best[2] / best[3])})` : '#0b1220';
+    mctx.save();
+    mctx.filter = `blur(${pad}px)`;
+    mctx.fillStyle = col;
+    mctx.fillRect(x - pad / 2, y - pad / 2, w + pad, h + pad);
+    mctx.restore();
+    mctx.fillStyle = col;
+    mctx.fillRect(x + pad / 2, y + pad / 2, w - pad, h - pad);
+  }
   const c = document.createElement('canvas');
   c.width = W; c.height = H;
   const ctx = c.getContext('2d');
@@ -380,7 +466,7 @@ async function renderImage(page, srcFile, outFile, extra = {}) {
   const src = `data:image/jpeg;base64,${buf.toString('base64')}`;
   const res = await page.evaluate(renderInPage, {
     src, W: OUT_W, H: OUT_H, badgeCrop: BADGE_CROP_RATIO, topCrop: TOP_CROP_RATIO, bannerH: BANNER_H,
-    bannerText: BANNER_TEXT, brandLine: BRAND_LINE, headline: extra.headline || null, chip: extra.chip || '',
+    bannerText: BANNER_TEXT, brandLine: BRAND_LINE, headline: extra.headline || null, chip: extra.chip || '', masks: extra.masks || [],
   });
   if (res.w !== OUT_W || res.h !== OUT_H) throw new Error(`Render size mismatch for ${outFile}: ${res.w}x${res.h}`);
   await fsp.writeFile(outFile, Buffer.from(res.data.split(',')[1], 'base64'));
@@ -402,10 +488,10 @@ async function prepareImages(pins) {
     const byRole = { case: [], gpu: [], cpu: [] };
     const roleCount = { case: 0, gpu: 0, cpu: 0 };
     for (const m of masters) {
-      const role = map[m.name];
+      const { role, masks } = map[m.name];
       const out = path.join(TEMPLATE_DIR(), `${role}_master_${++roleCount[role]}.jpg`);
-      await renderImage(page, m.file, out);
-      byRole[role].push(m.file);
+      await renderImage(page, m.file, out, { masks });
+      byRole[role].push({ file: m.file, masks });
       log(`   ✔ ${m.name}  →  ${path.basename(out)} (${role}, ${OUT_W}x${OUT_H})`);
     }
     for (const [cat, role] of Object.entries(CATEGORY_ROLE)) {
@@ -420,7 +506,7 @@ async function prepareImages(pins) {
       const list = byRole[p.role];
       const src = list[used[p.role]++ % list.length];
       p.image = path.join(PIN_IMG_DIR(), `pin_${pad3(p.n)}.jpg`);
-      await renderImage(page, src, p.image, { headline: p.title, chip: CATEGORY_CHIP[p.cat] });
+      await renderImage(page, src.file, p.image, { headline: p.title, chip: CATEGORY_CHIP[p.cat], masks: src.masks });
     }
     log(`🖼  Rendered ${pins.length} pin images → ${PIN_IMG_DIR()}`);
   } finally {
@@ -590,6 +676,22 @@ async function stepBoard(page) {
 
   let btn = await waitForAny(page, dropdownSel, { timeout: 8000 });
   if (!btn) btn = await findByText(page, ['Choose a board'], { selector: 'button, [role="button"], div', exact: false });
+  if (!btn) {
+    // the field may already show another board (e.g. the last one used): click the box under the "Board" label
+    const label = await findByText(page, ['Board'], { selector: 'label, div, span, h2, h3', exact: true, timeout: 4000 });
+    if (label) {
+      const box = await label.evaluateHandle((el) => {
+        let e = el.parentElement;
+        while (e && e !== document.body) {
+          const r = e.getBoundingClientRect();
+          if (e.querySelector('button, [role="button"], [role="combobox"], svg') && r.height > 40) return e.querySelector('button, [role="button"], [role="combobox"]') || e;
+          e = e.parentElement;
+        }
+        return el;
+      });
+      btn = box.asElement();
+    }
+  }
   if (!btn) throw new Error('board dropdown not found');
   await btn.evaluate((e) => e.scrollIntoView({ block: 'center' }));
   await btn.click();
