@@ -9,7 +9,8 @@
  *     - Crops away the bottom price-badge strip of the source AND paints a
  *       clean "VERIFIED EXPERT GUIDE — UNBIASED PARTS & SPECS" banner over the
  *       bottom sales area, so no $ badge can ever survive.
- *     - Each master is tagged as  case | gpu | cpu  in master_map.json.
+ *     - Each master is tagged as  case | gpu | cpu  in master_roles.json (you are asked
+ *       once per image: c = case, g = gpu, p = cpu).
  *       Full PC builds -> case masters, GPU VS -> gpu masters, CPU VS -> cpu.
  *     - A per-pin image (template + headline) is rendered to assets/pins/.
  *
@@ -58,6 +59,7 @@ const PIN_BUILDER_URL = 'https://www.pinterest.com/pin-creation-tool/';
 
 const MASTER_PREFIX = 'Gemini_Generated_Image_w3ecvww3ecvww3ec';
 const BADGE_CROP_RATIO = Number(process.env.BADGE_CROP_RATIO || 0.18); // bottom % of source removed
+const TOP_CROP_RATIO = Number(process.env.TOP_CROP_RATIO || 0.16);  // top % removed on pin images (source's own headline)
 const OUT_W = 1000;
 const OUT_H = 1500;
 const BANNER_H = 190;
@@ -235,75 +237,123 @@ async function findMasterImages() {
   return hits.map((f) => ({ name: f, file: path.join(dir, f) }));
 }
 
-/** master_map.json lets you tag every source as case | gpu | cpu. */
+/** Opens an image in the default Windows/macOS viewer so you can tag it. */
+async function openInViewer(file) {
+  try {
+    const { spawn } = await import('node:child_process');
+    if (process.platform === 'win32') spawn('cmd', ['/c', 'start', '', file], { detached: true, stdio: 'ignore' }).unref();
+    else if (process.platform === 'darwin') spawn('open', [file], { detached: true, stdio: 'ignore' }).unref();
+  } catch { /* just show the path */ }
+}
+
+/**
+ * master_roles.json tags every source image as case | gpu | cpu.
+ * Untagged images are shown to you one by one and you type c / g / p.
+ * (File order is NOT used any more — that caused GPU pins to get CPU images.)
+ */
 async function loadMasterMap(masters) {
-  const mapFile = path.join(TEMPLATE_DIR(), 'master_map.json');
-  const map = await readJson(mapFile, {});
-  const defaults = ['case', 'gpu', 'cpu'];
+  const mapFile = path.join(TEMPLATE_DIR(), 'master_roles.json');
+  const map = hasFlag('retag') ? {} : await readJson(mapFile, {});
+  const keys = { c: 'case', g: 'gpu', p: 'cpu', case: 'case', gpu: 'gpu', cpu: 'cpu' };
   let changed = false;
-  masters.forEach((m, i) => {
-    if (!map[m.name]) { map[m.name] = defaults[i % 3]; changed = true; }
-    if (!['case', 'gpu', 'cpu'].includes(map[m.name])) throw new Error(`master_map.json: "${m.name}" must be case, gpu or cpu`);
-  });
-  if (changed) {
-    await writeJson(mapFile, map);
-    log(`📝 Wrote ${mapFile}`);
-    log('   Default roles were assigned by file order (1st=case, 2nd=gpu, 3rd=cpu, ...).');
-    log('   If any image is tagged wrong, edit that file and re-run.');
+  for (const m of masters) {
+    while (!['case', 'gpu', 'cpu'].includes(map[m.name])) {
+      await openInViewer(m.file);
+      console.log(`\n🖼  ${m.file}`);
+      const a = (await ask('   What does this image show?  [c] PC case / full build   [g] GPU vs GPU   [p] CPU vs CPU  > ')).toLowerCase();
+      if (keys[a]) { map[m.name] = keys[a]; changed = true; } else console.log('   Please type c, g or p.');
+    }
   }
+  if (changed) { await writeJson(mapFile, map); log(`📝 Saved image tags → ${mapFile}  (re-tag any time with --retag)`); }
   return map;
 }
 
-/** Runs inside the headless page: crops, de-badges, adds banner and optional headline. */
+/** Runs inside the headless page: crops, de-badges, adds banner and optional headline panel. */
 async function renderInPage(opts) {
-  const { src, W, H, badgeCrop, bannerH, bannerText, brandLine, headline, chip } = opts;
+  const { src, W, H, badgeCrop, topCrop, bannerH, bannerText, brandLine, headline, chip } = opts;
   const img = new Image();
   img.src = src;
   await img.decode();
   const c = document.createElement('canvas');
   c.width = W; c.height = H;
   const ctx = c.getContext('2d');
+  const FONT = '"Segoe UI", Inter, Arial, sans-serif';
 
-  // Source rect with the bottom badge strip removed
-  const sw = img.naturalWidth;
-  const sh = Math.round(img.naturalHeight * (1 - badgeCrop));
+  // Source rect: bottom price-badge strip removed; for pin images the source's own
+  // top headline is cropped too, so it never clashes with our title.
+  const sx = 0, sw = img.naturalWidth;
+  const sy = Math.round(img.naturalHeight * (headline ? topCrop : 0));
+  const sh = Math.round(img.naturalHeight * (1 - badgeCrop)) - sy;
   const drawCover = (dx, dy, dw, dh) => {
     const s = Math.max(dw / sw, dh / sh);
     const cw = dw / s, ch = dh / s;
-    ctx.drawImage(img, (sw - cw) / 2, (sh - ch) / 2, cw, ch, dx, dy, dw, dh);
+    ctx.drawImage(img, sx + (sw - cw) / 2, sy + (sh - ch) / 2, cw, ch, dx, dy, dw, dh);
   };
 
-  // Blurred backdrop fills the whole 2:3 canvas
+  // ---- Measure the headline panel first (solid, never overlaps the photo) ----
+  let panelH = 0, lines = [], size = 70;
+  const padX = 50, chipH = 46;
+  if (headline) {
+    const maxW = W - padX * 2;
+    const wrap = () => {
+      ctx.font = `800 ${size}px ${FONT}`;
+      lines = []; let line = '';
+      for (const word of headline.split(' ')) {
+        const test = line ? line + ' ' + word : word;
+        if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = word; } else line = test;
+      }
+      if (line) lines.push(line);
+    };
+    wrap();
+    while (lines.length > 3 && size > 44) { size -= 3; wrap(); }
+    panelH = 40 + chipH + 22 + lines.length * size * 1.14 + 34;
+  }
+
+  // Blurred backdrop
   ctx.fillStyle = '#0b1220'; ctx.fillRect(0, 0, W, H);
   ctx.filter = 'blur(42px) brightness(0.45) saturate(1.2)';
   drawCover(-60, -60, W + 120, H + 120);
   ctx.filter = 'none';
 
-  const areaH = H - bannerH;
+  // Photo area sits between the headline panel and the banner
+  const areaY = panelH, areaH = H - bannerH - panelH;
   const srcRatio = sw / sh, areaRatio = W / areaH;
-  if (Math.abs(srcRatio - areaRatio) / areaRatio < 0.15) {
-    drawCover(0, 0, W, areaH);
+  if (Math.abs(srcRatio - areaRatio) / areaRatio < 0.2) {
+    drawCover(0, areaY, W, areaH);
   } else {
-    // contain: keep the whole product visible, centred on the blurred backdrop
     const s = Math.min(W / sw, areaH / sh);
     const dw = sw * s, dh = sh * s;
-    const dy = headline ? Math.max(areaH - dh - 20, (areaH - dh) / 2) : (areaH - dh) / 2;
-    ctx.drawImage(img, 0, 0, sw, sh, (W - dw) / 2, dy, dw, dh);
+    ctx.drawImage(img, sx, sy, sw, sh, (W - dw) / 2, areaY + (areaH - dh) / 2, dw, dh);
   }
 
-  // Fade into banner (also hides any badge remnant above the cut)
-  const fadeTop = areaH - 140;
-  const grad = ctx.createLinearGradient(0, fadeTop, 0, areaH);
+  // Fade into the banner (hides any badge remnant above the cut)
+  const fadeTop = H - bannerH - 120;
+  const grad = ctx.createLinearGradient(0, fadeTop, 0, H - bannerH);
   grad.addColorStop(0, 'rgba(11,18,32,0)');
   grad.addColorStop(1, 'rgba(11,18,32,1)');
-  ctx.fillStyle = grad; ctx.fillRect(0, fadeTop, W, 140);
+  ctx.fillStyle = grad; ctx.fillRect(0, fadeTop, W, 120);
+
+  // ---- Headline panel ----
+  if (headline) {
+    const g2 = ctx.createLinearGradient(0, panelH - 30, 0, panelH + 30);
+    g2.addColorStop(0, 'rgba(11,18,32,1)'); g2.addColorStop(1, 'rgba(11,18,32,0)');
+    ctx.fillStyle = '#0b1220'; ctx.fillRect(0, 0, W, panelH);
+    ctx.fillStyle = g2; ctx.fillRect(0, panelH - 30, W, 60);
+    ctx.font = `800 24px ${FONT}`;
+    const cw = ctx.measureText(chip).width + 40;
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath(); ctx.roundRect(padX, 40, cw, chipH, 23); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+    ctx.fillText(chip, padX + 20, 40 + chipH / 2 + 1);
+    ctx.font = `800 ${size}px ${FONT}`;
+    ctx.textBaseline = 'top';
+    lines.forEach((l, i) => ctx.fillText(l, padX, 40 + chipH + 22 + i * size * 1.14));
+  }
 
   // ---- Bottom banner (replaces the sales/price area completely) ----
-  const by = areaH;
+  const by = H - bannerH;
   ctx.fillStyle = '#0b1220'; ctx.fillRect(0, by, W, bannerH);
   ctx.fillStyle = '#22c55e'; ctx.fillRect(0, by, W, 6);
-
-  // shield-check icon
   const ix = 70, iy = by + bannerH / 2 - 8;
   ctx.fillStyle = '#22c55e';
   ctx.beginPath();
@@ -313,45 +363,14 @@ async function renderInPage(opts) {
   ctx.lineTo(ix - 32, iy - 26); ctx.closePath(); ctx.fill();
   ctx.strokeStyle = '#0b1220'; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ctx.beginPath(); ctx.moveTo(ix - 14, iy + 2); ctx.lineTo(ix - 3, iy + 13); ctx.lineTo(ix + 16, iy - 10); ctx.stroke();
-
   const textX = 128, maxTextW = W - textX - 40;
   let fs = 44;
-  do { ctx.font = `800 ${fs}px "Segoe UI", Inter, Arial, sans-serif`; fs--; } while (ctx.measureText(bannerText).width > maxTextW && fs > 18);
+  do { ctx.font = `800 ${fs}px ${FONT}`; fs--; } while (ctx.measureText(bannerText).width > maxTextW && fs > 18);
   ctx.fillStyle = '#ffffff'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
   ctx.fillText(bannerText, textX, by + bannerH / 2 - 16);
-  ctx.font = '500 26px "Segoe UI", Inter, Arial, sans-serif';
+  ctx.font = `500 26px ${FONT}`;
   ctx.fillStyle = '#94a3b8';
   ctx.fillText(brandLine, textX, by + bannerH / 2 + 34);
-
-  // ---- Optional headline (per-pin images) ----
-  if (headline) {
-    const padX = 50, maxW = W - padX * 2;
-    let size = 72, lines = [];
-    const wrap = () => {
-      ctx.font = `800 ${size}px "Segoe UI", Inter, Arial, sans-serif`;
-      lines = []; let line = '';
-      for (const word of headline.split(' ')) {
-        const test = line ? line + ' ' + word : word;
-        if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = word; } else line = test;
-      }
-      if (line) lines.push(line);
-    };
-    wrap();
-    while (lines.length > 4 && size > 40) { size -= 4; wrap(); }
-    const lh = size * 1.12, chipH = 54, boxH = 40 + chipH + 20 + lines.length * lh + 30;
-    ctx.fillStyle = 'rgba(11,18,32,0.82)';
-    ctx.beginPath(); ctx.roundRect(24, 24, W - 48, boxH, 28); ctx.fill();
-    // chip
-    ctx.font = '800 26px "Segoe UI", Inter, Arial, sans-serif';
-    const cw = ctx.measureText(chip).width + 40;
-    ctx.fillStyle = '#ef4444';
-    ctx.beginPath(); ctx.roundRect(padX, 52, cw, chipH - 10, 22); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.fillText(chip, padX + 20, 52 + (chipH - 10) / 2);
-    // title
-    ctx.font = `800 ${size}px "Segoe UI", Inter, Arial, sans-serif`;
-    ctx.textBaseline = 'top'; ctx.fillStyle = '#ffffff';
-    lines.forEach((l, i) => ctx.fillText(l, padX, 52 + chipH + 14 + i * lh));
-  }
 
   return { data: c.toDataURL('image/jpeg', 0.93), w: c.width, h: c.height };
 }
@@ -360,7 +379,7 @@ async function renderImage(page, srcFile, outFile, extra = {}) {
   const buf = await fsp.readFile(srcFile);
   const src = `data:image/jpeg;base64,${buf.toString('base64')}`;
   const res = await page.evaluate(renderInPage, {
-    src, W: OUT_W, H: OUT_H, badgeCrop: BADGE_CROP_RATIO, bannerH: BANNER_H,
+    src, W: OUT_W, H: OUT_H, badgeCrop: BADGE_CROP_RATIO, topCrop: TOP_CROP_RATIO, bannerH: BANNER_H,
     bannerText: BANNER_TEXT, brandLine: BRAND_LINE, headline: extra.headline || null, chip: extra.chip || '',
   });
   if (res.w !== OUT_W || res.h !== OUT_H) throw new Error(`Render size mismatch for ${outFile}: ${res.w}x${res.h}`);
@@ -391,7 +410,7 @@ async function prepareImages(pins) {
     }
     for (const [cat, role] of Object.entries(CATEGORY_ROLE)) {
       if (pins.some((p) => p.cat === cat) && !byRole[role].length) {
-        throw new Error(`No "${role}" master image tagged. ${cat.toUpperCase()} pins need one — edit master_map.json.`);
+        throw new Error(`No "${role}" master image tagged. ${cat.toUpperCase()} pins need one — run again with --retag.`);
       }
     }
 
@@ -501,6 +520,11 @@ async function stepUpload(page, pin) {
   await sleep(1500);
 }
 
+async function fieldText(handle) {
+  return handle.evaluate((el) => (el.value !== undefined && el.tagName !== 'DIV' ? el.value : el.innerText) || '').catch(() => '');
+}
+const squash = (s) => (s || '').replace(/\s+/g, ' ').trim();
+
 async function stepTitle(page, pin) {
   const el = await waitForAny(page, [
     '#storyboard-selector-title', 'textarea[id*="title" i]', 'input[id*="title" i]',
@@ -508,112 +532,206 @@ async function stepTitle(page, pin) {
   ]);
   if (!el) throw new Error('title field not found');
   await clearAndType(page, el, pin.title);
+  const got = squash(await fieldText(el));
+  if (got !== squash(pin.title)) throw new Error(`title did not stick (got "${got.slice(0, 60)}")`);
 }
 
+/** Pasted, not typed, so Pinterest's hashtag suggestions can't change the text. */
 async function stepDescription(page, pin) {
   const el = await waitForAny(page, [
     '[data-test-id="storyboard-description-field-container"] [contenteditable="true"]',
     '[data-test-id="editor-with-mentions"] [contenteditable="true"]',
     'div[aria-label*="description" i][contenteditable="true"]',
-    '[contenteditable="true"][role="combobox"]', 'textarea[id*="description" i]', '[placeholder*="description" i]',
+    '#storyboard-selector-description', 'textarea[id*="description" i]', '[placeholder*="description" i]',
+    '[contenteditable="true"][role="combobox"]', '[contenteditable="true"][role="textbox"]',
   ]);
   if (!el) throw new Error('description field not found');
   await el.click();
   await page.keyboard.down(SELECT_ALL_KEY); await page.keyboard.press('KeyA'); await page.keyboard.up(SELECT_ALL_KEY);
   await page.keyboard.press('Backspace');
-  for (const [i, line] of pin.description.split('\n').entries()) {
-    if (i) await page.keyboard.press('Enter');
-    await page.keyboard.type(line + (line.endsWith(' ') ? '' : ' '), { delay: 5 });
+  const probe = squash(pin.description).slice(0, 40);
+  const ok = async () => squash(await fieldText(el)).includes(probe);
+
+  await el.evaluate((node, text) => {
+    const dt = new DataTransfer(); dt.setData('text/plain', text);
+    node.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+  }, pin.description);
+  await sleep(700);
+  if (!(await ok())) {
+    await el.evaluate((node, text) => { node.focus(); document.execCommand('insertText', false, text); }, pin.description);
+    await sleep(700);
   }
-  await page.keyboard.press('Escape'); // dismiss hashtag suggestions
+  if (!(await ok())) {
+    await page.keyboard.type(pin.description.replace(/\n+/g, ' '), { delay: 5 });
+  }
+  await page.keyboard.press('Escape'); // close any suggestion popup
+  if (!(await ok())) throw new Error('description did not stick');
 }
 
 async function stepLink(page, pin) {
-  const el = await waitForAny(page, ['#WebsiteField', 'input[id*="link" i]', 'input[placeholder*="link" i]', 'textarea[placeholder*="link" i]']);
+  const el = await waitForAny(page, ['#WebsiteField', 'input[id*="link" i]', 'input[placeholder*="link" i]', 'textarea[placeholder*="link" i]', 'input[type="url"]']);
   if (!el) throw new Error('link field not found');
   await clearAndType(page, el, pin.link);
   await page.keyboard.press('Tab');
+  const got = squash(await fieldText(el));
+  if (!got.includes(`pin=${pin.n}`)) throw new Error(`link did not stick (got "${got}")`);
 }
 
+/** Opens the board picker, chooses BOARD_NAME and verifies it is shown as selected. */
 async function stepBoard(page) {
-  const btn = await waitForAny(page, ['[data-test-id="board-dropdown-select-button"]', 'button[aria-label*="board" i]', '[data-test-id*="board-dropdown"]'], { timeout: 8000 })
-    || await findByText(page, ['Choose a board', 'Select'], { exact: false });
-  if (!btn) throw new Error('board selector not found');
+  const want = BOARD_NAME.trim().toLowerCase();
+  const dropdownSel = ['[data-test-id="board-dropdown-select-button"]', '[data-test-id*="board-dropdown"] button', '[data-test-id*="board-dropdown"]', 'button[aria-label*="board" i]'];
+  const isSelected = async () => {
+    const h = await waitForAny(page, dropdownSel, { timeout: 1500 });
+    const t = h ? squash(await h.evaluate((e) => e.innerText)).toLowerCase() : '';
+    return t.includes(want);
+  };
+  if (await isSelected()) return;
+
+  let btn = await waitForAny(page, dropdownSel, { timeout: 8000 });
+  if (!btn) btn = await findByText(page, ['Choose a board'], { selector: 'button, [role="button"], div', exact: false });
+  if (!btn) throw new Error('board dropdown not found');
+  await btn.evaluate((e) => e.scrollIntoView({ block: 'center' }));
   await btn.click();
-  const search = await waitForAny(page, ['#pickerSearchField', 'input[placeholder*="Search" i]'], { timeout: 8000 });
-  if (search) { await search.type(BOARD_NAME, { delay: 15 }); await sleep(1200); }
-  const row = await waitForAny(page, [`[data-test-id="board-row-${BOARD_NAME}"]`], { timeout: 3000 })
-    || await findByText(page, [BOARD_NAME], { selector: '[role="button"], [role="option"], div[data-test-id*="board-row"], div', timeout: 8000 });
-  if (!row) throw new Error(`board "${BOARD_NAME}" not found (set PIN_BOARD)`);
-  await row.click();
-  await sleep(800);
+  await sleep(1200);
+
+  const search = await waitForAny(page, ['#pickerSearchField', '[role="dialog"] input', 'input[placeholder*="Search" i]', 'input[aria-label*="Search" i]'], { timeout: 6000 });
+  if (search) { await clearAndType(page, search, BOARD_NAME); await sleep(1500); }
+
+  // click the board row whose text starts with the board name (outside the dropdown button)
+  const clicked = await page.evaluate((want, dropdownSel) => {
+    const norm = (s) => (s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    const dd = dropdownSel.map((s) => document.querySelector(s)).filter(Boolean);
+    const cands = [];
+    for (const el of document.querySelectorAll('[data-test-id*="board-row"], [data-test-id*="board"] [role="button"], [role="option"], [role="button"], div, span')) {
+      if (dd.some((d) => d.contains(el)) || el.closest('input')) continue;
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      const t = norm(el.innerText);
+      if (t === want || t.startsWith(want + ' ')) cands.push({ el, area: r.width * r.height, exact: t === want });
+    }
+    if (!cands.length) return false;
+    // smallest exact text node, then climb to its clickable row
+    cands.sort((a, b) => (b.exact - a.exact) || (a.area - b.area));
+    let target = cands[0].el;
+    const row = target.closest('[data-test-id*="board-row"], [role="option"], [role="button"], button');
+    if (row && !dd.some((d) => d.contains(row))) target = row;
+    target.scrollIntoView({ block: 'center' });
+    target.click();
+    return true;
+  }, want, dropdownSel);
+  await sleep(1200);
+  if (await isSelected()) return;
+
+  // keyboard fallback: first result in the filtered list
+  if (search) { await search.focus().catch(() => {}); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter'); await sleep(1200); }
+  if (await isSelected()) return;
+  throw new Error(`board "${BOARD_NAME}" was not selected${clicked ? ' (clicked, but not applied)' : ' (not in list — check the exact name / PIN_BOARD)'}`);
+}
+
+/** Picks a day in Pinterest's calendar popup (react-datepicker based, with generic fallback). */
+async function pickDateInCalendar(page, when) {
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  for (let i = 0; i < 14; i++) {
+    const r = await page.evaluate((y, m, d, months) => {
+      const cal = document.querySelector('.react-datepicker, [role="dialog"] [role="grid"], [role="grid"], table');
+      if (!cal) return { s: 'nocal' };
+      const root = cal.closest('.react-datepicker') || cal.parentElement || cal;
+      const header = (root.querySelector('.react-datepicker__current-month, [aria-live], h2, h3, [role="heading"]') || {}).textContent || root.innerText.slice(0, 40);
+      const hm = months.findIndex((mm) => header.includes(mm));
+      const hy = Number((header.match(/20\d\d/) || [y])[0]);
+      if (hm >= 0 && (hy !== y || hm !== m)) return { s: (hy * 12 + hm) < (y * 12 + m) ? 'next' : 'prev' };
+      const days = [...root.querySelectorAll('.react-datepicker__day, [role="gridcell"], td button, td')]
+        .filter((el) => !/outside-month|disabled/.test(el.className) && el.getAttribute('aria-disabled') !== 'true' && el.textContent.trim() === String(d));
+      if (!days.length) return { s: 'noday' };
+      days[0].click();
+      return { s: 'ok' };
+    }, when.getFullYear(), when.getMonth(), when.getDate(), months);
+    if (r.s === 'ok') return true;
+    if (r.s === 'next' || r.s === 'prev') {
+      const nav = await waitForAny(page, r.s === 'next'
+        ? ['.react-datepicker__navigation--next', 'button[aria-label*="Next" i]']
+        : ['.react-datepicker__navigation--previous', 'button[aria-label*="Previous" i]'], { timeout: 2000 });
+      if (!nav) return false;
+      await nav.click(); await sleep(400); continue;
+    }
+    return false;
+  }
+  return false;
 }
 
 async function stepSchedule(page, when) {
-  // 1) Switch to "Publish at a later date"
-  const later = await waitForAny(page, ['#pin-draft-schedule-publish-later', 'input[value="later"]'], { timeout: 4000, visible: false })
-    || await findByText(page, ['Publish at a later date', 'Publish later', 'Schedule for later'], { exact: false });
+  // 1) "Publish at a later date"
+  const later = await waitForAny(page, ['#pin-draft-schedule-publish-later', 'input[type="radio"][value*="later" i]', 'input[type="radio"][id*="later" i]'], { timeout: 4000, visible: false })
+    || await findByText(page, ['Publish at a later date', 'Publish later', 'Schedule for later', 'Later'], { selector: 'label, [role="radio"], button, div, span' });
   if (!later) throw new Error('"Publish at a later date" option not found');
   await later.evaluate((el) => (el.closest('label') || el).scrollIntoView({ block: 'center' }));
-  await later.click().catch(async () => later.evaluate((el) => el.click()));
-  await sleep(800);
+  await later.click().catch(() => later.evaluate((el) => el.click()));
+  await sleep(1000);
+  const laterOn = await later.evaluate((el) => {
+    const input = el.matches('input') ? el : el.querySelector('input') || document.getElementById(el.getAttribute('for') || '');
+    return input ? input.checked : el.getAttribute('aria-checked') !== 'false';
+  }).catch(() => true);
+  if (!laterOn) await later.evaluate((el) => el.click());
 
-  // 2) Date
+  // 2) Date — open the calendar and click the day; typing is only a fallback
   const date = fmtDate(when);
-  const dateEl = await waitForAny(page, ['#pin-draft-schedule-date-field', 'input[id*="date" i]', 'input[placeholder*="date" i]', 'input[aria-label*="date" i]']);
+  const dateEl = await waitForAny(page, ['#pin-draft-schedule-date-field', 'input[id*="schedule-date" i]', 'input[id*="date" i]', 'input[placeholder*="date" i]', 'input[aria-label*="date" i]']);
   if (!dateEl) throw new Error('schedule date field not found');
-  await clearAndType(page, dateEl, date);
-  await page.keyboard.press('Enter');
+  await dateEl.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+  await dateEl.click();
+  await sleep(700);
+  let picked = await pickDateInCalendar(page, when);
+  if (!picked) {
+    await clearAndType(page, dateEl, date);
+    await page.keyboard.press('Enter');
+  }
   await page.keyboard.press('Escape');
   await sleep(500);
-  const dateVal = await dateEl.evaluate((el) => el.value || el.innerText || '');
-  if (!dateVal.includes(String(when.getDate()))) {
-    // calendar fallback: click the day with an aria-label containing the full date
-    await dateEl.click();
-    const month = when.toLocaleString('en-US', { month: 'long' });
-    let picked = false;
-    for (let i = 0; i < 3 && !picked; i++) {
-      const day = await findByText(page, [`${month} ${when.getDate()}, ${when.getFullYear()}`, `${when.getDate()} ${month} ${when.getFullYear()}`], { exact: false, timeout: 1500 });
-      if (day) { await day.click(); picked = true; break; }
-      const next = await findByText(page, ['Next month', 'Next'], { exact: false, timeout: 1500 });
-      if (next) await next.click(); else break;
-    }
-    if (!picked) throw new Error(`could not set date ${date} (got "${dateVal}") — try PIN_DATE_FORMAT`);
-  }
+  const dateVal = squash(await fieldText(dateEl));
+  const monthShort = when.toLocaleString('en-US', { month: 'short' });
+  const dayOk = new RegExp(`(^|\\D)0?${when.getDate()}(\\D|$)`).test(dateVal);
+  if (!dayOk && !dateVal.includes(monthShort)) throw new Error(`could not set date ${date} (field shows "${dateVal}")`);
 
-  // 3) Time
+  // 3) Time — open the list (type to filter) and click the matching option
   const t12 = fmtTime12(when), t24 = fmtTime24(when);
-  const timeEl = await waitForAny(page, ['#pin-draft-schedule-time-field', 'select[id*="time" i]', 'input[id*="time" i]', '[aria-label*="time" i]']);
+  const timeEl = await waitForAny(page, ['#pin-draft-schedule-time-field', 'select[id*="time" i]', 'input[id*="time" i]', 'input[aria-label*="time" i]', 'input[placeholder*="time" i]']);
   if (!timeEl) throw new Error('schedule time field not found');
   const tag = await timeEl.evaluate((el) => el.tagName);
+  const n = (s) => (s || '').replace(/\s+/g, '').toLowerCase();
   if (tag === 'SELECT') {
     const value = await timeEl.evaluate((el, a, b) => {
-      const n = (s) => s.replace(/\s+/g, '').toLowerCase();
+      const n = (s) => (s || '').replace(/\s+/g, '').toLowerCase();
       const o = [...el.options].find((o) => [n(a), n(b)].includes(n(o.text)) || [n(a), n(b)].includes(n(o.value)));
       return o ? o.value : null;
     }, t12, t24);
     if (!value) throw new Error(`time ${t12} not in dropdown`);
     await timeEl.select(value);
   } else {
+    await timeEl.evaluate((e) => e.scrollIntoView({ block: 'center' }));
     await timeEl.click();
     await sleep(600);
-    const opt = await findByText(page, [t12, t24, t12.replace(' ', '')], { selector: '[role="option"], [role="menuitem"], li, button, div', timeout: 5000 });
-    if (opt) {
-      await opt.evaluate((el) => el.scrollIntoView({ block: 'center' }));
-      await opt.click();
-    } else {
+    let opt = await findByText(page, [t12, t24], { selector: '[role="option"], [role="menuitem"], li, button', timeout: 2500 });
+    if (!opt) {
       await clearAndType(page, timeEl, t12);
-      await page.keyboard.press('Enter');
+      await sleep(600);
+      opt = await findByText(page, [t12, t24], { selector: '[role="option"], [role="menuitem"], li, button', timeout: 2500 });
     }
+    if (opt) { await opt.evaluate((el) => el.scrollIntoView({ block: 'center' })); await opt.click(); }
+    else await page.keyboard.press('Enter');
   }
-  await sleep(600);
-  return { date, time: t12 };
+  await sleep(700);
+  const timeVal = tag === 'SELECT'
+    ? await timeEl.evaluate((el) => el.options[el.selectedIndex]?.text || '')
+    : await fieldText(timeEl);
+  if (![n(t12), n(t24)].some((t) => n(timeVal).includes(t))) throw new Error(`could not set time ${t12} (field shows "${timeVal}")`);
+  return { date: dateVal || date, time: t12 };
 }
 
 /** Clicks the red Schedule button and confirms Pinterest accepted it. */
 async function stepClickScheduleAndConfirm(page) {
   const btn = await findByText(page, ['Schedule'], { selector: 'button, [role="button"]', exact: true, timeout: 10000 });
-  if (!btn) throw new Error('red "Schedule" button not found (Pinterest may still show "Publish" — schedule option not applied)');
+  if (!btn) throw new Error('red "Schedule" button not found (the button still says "Publish", so the later date was not applied)');
   const color = await btn.evaluate((el) => {
     let e = el;
     while (e && e !== document.body) {
@@ -627,13 +745,13 @@ async function stepClickScheduleAndConfirm(page) {
   const isRed = m && +m[0] > 150 && +m[1] < 90 && +m[2] < 90;
   log(`   🔴 Schedule button found (bg ${color || 'unknown'}${isRed ? ', red ✔' : ', not red?'})`);
   const disabled = await btn.evaluate((el) => (el.closest('button') || el).disabled || el.getAttribute('aria-disabled') === 'true');
-  if (disabled) throw new Error('Schedule button is disabled (missing required field?)');
+  if (disabled) throw new Error('Schedule button is disabled (a required field is missing)');
 
   const before = await countScheduledMentions(page);
   const urlBefore = page.url();
+  await btn.evaluate((e) => e.scrollIntoView({ block: 'center' }));
   await btn.click();
 
-  // confirmation: toast/text "scheduled", navigation, or the builder resetting
   const end = Date.now() + 30000;
   while (Date.now() < end) {
     await sleep(700);
@@ -645,30 +763,44 @@ async function stepClickScheduleAndConfirm(page) {
     if (!stillThere && !titleLeft) return 'builder reset';
     if (stillThere) await stillThere.dispose();
   }
-  throw new Error('Clicked Schedule but no confirmation within 30s');
+  throw new Error('clicked Schedule but Pinterest showed no confirmation within 30s');
+}
+
+/** Saves a screenshot + HTML of the page when a step fails (send these to fix selectors). */
+async function saveDebug(page, pin, step) {
+  try {
+    const dir = path.join(ROOT, 'debug');
+    await fsp.mkdir(dir, { recursive: true });
+    const base = path.join(dir, `pin_${pad3(pin.n)}_${step}`);
+    await page.screenshot({ path: `${base}.png`, fullPage: true });
+    await fsp.writeFile(`${base}.html`, await page.content());
+    log(`   🧾 Debug saved: ${base}.png / .html`);
+  } catch { /* page may be gone */ }
 }
 
 async function schedulePin(browser, pin, when) {
   const page = await browser.newPage();
   page.on('dialog', (d) => d.accept().catch(() => {}));
+  let step = 'open';
   try {
-    await page.goto(PIN_BUILDER_URL, { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.goto(PIN_BUILDER_URL, { waitUntil: 'domcontentloaded', timeout: 90000 });
+    await sleep(3000);
     if (/login/i.test(page.url())) throw new Error('not logged in');
-    await stepUpload(page, pin);
-    await stepTitle(page, pin);
-    await stepDescription(page, pin);
-    await stepLink(page, pin);
-    await stepBoard(page);
-    const slot = await stepSchedule(page, when);
-    log(`   🗓  ${slot.date} ${slot.time}`);
-    const how = await stepClickScheduleAndConfirm(page);
+    step = 'upload'; await stepUpload(page, pin);
+    step = 'title'; await stepTitle(page, pin);
+    step = 'description'; await stepDescription(page, pin);
+    step = 'link'; await stepLink(page, pin);
+    step = 'board'; await stepBoard(page); log(`   📋 Board: ${BOARD_NAME} ✔`);
+    step = 'schedule'; const slot = await stepSchedule(page, when); log(`   🗓  ${slot.date} ${slot.time} ✔`);
+    step = 'confirm'; const how = await stepClickScheduleAndConfirm(page);
     log(`   ✅ Confirmed (${how}). Waiting ${SAVE_WAIT_MS / 1000}s for Pinterest to save…`);
     await sleep(SAVE_WAIT_MS);
     await closePage(page); // close the tab cleanly to free RAM
     return { ok: true };
   } catch (err) {
+    await saveDebug(page, pin, step);
     // left open on failure so you can finish it manually; caller closes it
-    return { ok: false, error: err.message, page };
+    return { ok: false, error: `[${step}] ${err.message}`, page };
   }
 }
 
@@ -718,10 +850,10 @@ async function main() {
   const mod = await import('puppeteer');
   puppeteer = mod.default || mod;
 
-  await prepareImages(queue);
-  if (hasFlag('prepare')) { log('✅ Prepare-only run finished. Review assets/ then run without --prepare.'); return; }
-
   rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  await prepareImages(queue);
+  if (hasFlag('prepare')) { log('✅ Prepare-only run finished. Review assets/ then run without --prepare.'); rl.close(); return; }
+
   const progress = await readJson(PROGRESS_FILE(), { scheduled: {}, failed: {} });
   progress.scheduled ||= {}; progress.failed ||= {};
 
