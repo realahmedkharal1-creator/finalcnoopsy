@@ -53,7 +53,7 @@ const SITE_URL = 'https://buildpc.store';
 // Optional per-category landing paths (keep '/' if you have no dedicated pages)
 const DEST_PATH = { build: '/', gpu: '/', cpu: '/' };
 
-const BOARD_NAME = process.env.PIN_BOARD || 'PC Build Guides';
+let BOARD_NAME = process.env.PIN_BOARD || ''; // '' = you pick it once in Chrome; remembered in pinterest_progress.json
 const DATE_FORMAT = process.env.PIN_DATE_FORMAT || 'MM/DD/YYYY'; // how Pinterest's date box expects it
 const PIN_BUILDER_URL = 'https://www.pinterest.com/pin-creation-tool/';
 
@@ -663,15 +663,34 @@ async function stepLink(page, pin) {
   if (!got.includes(`pin=${pin.n}`)) throw new Error(`link did not stick (got "${got}")`);
 }
 
+const BOARD_DROPDOWN_SEL = ['[data-test-id="board-dropdown-select-button"]', '[data-test-id*="board-dropdown"] button', '[data-test-id*="board-dropdown"]', 'button[aria-label*="board" i]'];
+
+/** The board name currently shown in the builder's Board field ('' if none). */
+async function selectedBoardText(page) {
+  const t = await page.evaluate((sels) => {
+    for (const s of sels) { const el = document.querySelector(s); if (el && el.innerText.trim()) return el.innerText; }
+    const label = [...document.querySelectorAll('label, div, span, h2, h3')]
+      .find((e) => e.children.length === 0 && (e.innerText || '').trim() === 'Board' && e.getBoundingClientRect().width);
+    if (!label) return '';
+    let e = label.parentElement;
+    for (let i = 0; i < 5 && e; i++, e = e.parentElement) {
+      const rest = (e.innerText || '').replace(/^\s*Board\s*/, '').split('\n').map((x) => x.trim()).filter(Boolean)[0];
+      if (rest) return rest;
+    }
+    return '';
+  }, BOARD_DROPDOWN_SEL).catch(() => '');
+  const clean = squash(t);
+  return /^(choose a board|select)$/i.test(clean) ? '' : clean;
+}
+
+class BoardNotFound extends Error {}
+
 /** Opens the board picker, chooses BOARD_NAME and verifies it is shown as selected. */
 async function stepBoard(page) {
   const want = BOARD_NAME.trim().toLowerCase();
-  const dropdownSel = ['[data-test-id="board-dropdown-select-button"]', '[data-test-id*="board-dropdown"] button', '[data-test-id*="board-dropdown"]', 'button[aria-label*="board" i]'];
-  const isSelected = async () => {
-    const h = await waitForAny(page, dropdownSel, { timeout: 1500 });
-    const t = h ? squash(await h.evaluate((e) => e.innerText)).toLowerCase() : '';
-    return t.includes(want);
-  };
+  const dropdownSel = BOARD_DROPDOWN_SEL;
+  const isSelected = async () => (await selectedBoardText(page)).toLowerCase().includes(want);
+  if (!want) throw new BoardNotFound('no board name set yet');
   if (await isSelected()) return;
 
   let btn = await waitForAny(page, dropdownSel, { timeout: 8000 });
@@ -728,7 +747,8 @@ async function stepBoard(page) {
   // keyboard fallback: first result in the filtered list
   if (search) { await search.focus().catch(() => {}); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter'); await sleep(1200); }
   if (await isSelected()) return;
-  throw new Error(`board "${BOARD_NAME}" was not selected${clicked ? ' (clicked, but not applied)' : ' (not in list — check the exact name / PIN_BOARD)'}`);
+  await page.keyboard.press('Escape').catch(() => {});
+  throw new BoardNotFound(`board "${BOARD_NAME}" was not selected${clicked ? ' (clicked, but not applied)' : ' (no board with that exact name)'}`);
 }
 
 /** Picks a day in Pinterest's calendar popup (react-datepicker based, with generic fallback). */
@@ -948,7 +968,7 @@ async function schedulePin(browser, pin, when, page = null) {
   } catch (err) {
     await saveDebug(page, pin, step);
     // left open on failure: retry continues in this same tab/draft
-    return { ok: false, error: `[${step}] ${err.message}`, page };
+    return { ok: false, error: `[${step}] ${err.message}`, page, boardMissing: err instanceof BoardNotFound };
   }
 }
 
@@ -1004,6 +1024,8 @@ async function main() {
 
   const progress = await readJson(PROGRESS_FILE(), { scheduled: {}, failed: {} });
   progress.scheduled ||= {}; progress.failed ||= {};
+  if (progress.board) BOARD_NAME = progress.board; // the board you picked earlier wins
+  log(BOARD_NAME ? `📋 Board: "${BOARD_NAME}"` : '📋 Board: not set yet — you will pick it in Chrome on the first pin');
 
   const browser = await puppeteer.launch({
     headless: false,
@@ -1031,6 +1053,19 @@ async function main() {
         if (result.ok) break;
         page = result.page; // keep the same tab + draft: never upload this pin twice
         log(`   ❌ ${result.error}`);
+        if (result.boardMissing) {
+          // let you choose the board once by hand, then remember its exact name
+          await page.bringToFront().catch(() => {});
+          await ask('   👉 In the Chrome tab, click the Board field and choose your board, then press ENTER here… ');
+          const picked = await selectedBoardText(page);
+          if (picked) {
+            BOARD_NAME = picked; progress.board = picked;
+            await writeJson(PROGRESS_FILE(), progress);
+            log(`   📋 Board set to "${picked}" — used for every remaining pin.`);
+            continue; // same tab, same draft
+          }
+          log('   ⚠ Could not read the board name from the page.');
+        }
         if (process.env.AUTO_SKIP_ON_ERROR === '1') { await closePage(page); break; }
         const a = (await ask('   Choose: [r]etry in the same draft  [m]anual (I scheduled it myself in the open tab)  [s]kip  [q]uit > ')).toLowerCase();
         if (a === 'r') continue;
