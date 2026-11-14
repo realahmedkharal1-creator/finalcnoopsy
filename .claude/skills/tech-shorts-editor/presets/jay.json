@@ -1,0 +1,100 @@
+{
+ "name": "jay",
+ "about": "DasIstJay style: fast, one-word white display captions on the talking head, flash-cut transitions, heavy B-roll.",
+ "cut": {
+  "silence_db": -35,
+  "min_silence_s": 0.25,
+  "pad_s": 0.06,
+  "min_keep_s": 0.15
+ },
+ "hook": {
+  "title": true,
+  "title_end_s": 3.5,
+  "title_y": 0.5,
+  "title_scale": 1.25,
+  "sub_max_chars": 20,
+  "zoom_in_s": 0.4,
+  "zoom_from": 1.25,
+  "word_pills": false
+ },
+ "zoom": {
+  "punch": 1.12,
+  "creep": 1.08,
+  "anchor_y": 0.3
+ },
+ "captions": {
+  "mode": "emphasis",
+  "font": "Lilita One",
+  "size": 150,
+  "char_w": 0.56,
+  "max_width": 0.86,
+  "spacing": 1,
+  "y": 0.48,
+  "fill": "#FFFFFF",
+  "stroke": 0,
+  "stroke_color": "#000000",
+  "shadow": "#000000",
+  "shadow_alpha": 110,
+  "shadow_blur": 14,
+  "shadow_spread": 6,
+  "pop_from": 72,
+  "pop_ms": 130,
+  "glow_ms": 130,
+  "min_score": 2.0,
+  "max_per_sentence": 3,
+  "hold_s": 0.8,
+  "min_show_s": 0.4,
+  "max_show_s": 1.1
+ },
+ "labels": {
+  "style": "display",
+  "y": 0.13,
+  "size": 120,
+  "hold_s": 3.0
+ },
+ "hook_pill": null,
+ "broll": {
+  "push_to": 1.06
+ },
+ "cta": {
+  "lead_s": 3.0,
+  "y": 0.77,
+  "pills": [
+   {
+    "text": "SAVE THIS?",
+    "fill": "#FFF3A6",
+    "text_color": "#111111"
+   },
+   {
+    "text": "& SHARE",
+    "fill": "#C9F2D4",
+    "text_color": "#111111"
+   }
+  ],
+  "style": {
+   "font": "Poppins Bold",
+   "size": 96,
+   "char_w": 0.42,
+   "pad_x": 44,
+   "pad_y": 14,
+   "radius": 60,
+   "fill_alpha": 0,
+   "wipe_ms": 130
+  }
+ },
+ "audio": {
+  "lufs": -14,
+  "true_peak": -1.0,
+  "bgm_db": -20,
+  "duck_ratio": 6,
+  "sfx_offset_s": -0.03,
+  "sfx_db": {
+   "whoosh": -12,
+   "pop": -14,
+   "click": -16,
+   "ding": -12,
+   "riser": -14
+  },
+  "bgm": "bgm.mp3"
+ }
+}

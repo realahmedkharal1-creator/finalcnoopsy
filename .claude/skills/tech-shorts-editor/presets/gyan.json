@@ -1,0 +1,117 @@
+{
+ "name": "gyan",
+ "about": "Gyan Therapy style: no running subtitles; glass-pill spec labels at the top of B-roll, word pills only in the hook, subscribe card at the end.",
+ "cut": {
+  "silence_db": -35,
+  "min_silence_s": 0.25,
+  "pad_s": 0.06,
+  "min_keep_s": 0.15
+ },
+ "hook": {
+  "title": false,
+  "title_end_s": 3.0,
+  "title_y": 0.5,
+  "title_scale": 1.0,
+  "sub_max_chars": 20,
+  "zoom_in_s": 0.9,
+  "zoom_from": 1.0,
+  "word_pills": true
+ },
+ "zoom": {
+  "punch": 1.12,
+  "creep": 1.08,
+  "anchor_y": 0.3
+ },
+ "captions": {
+  "mode": "hook_only",
+  "font": "Poppins Bold",
+  "size": 110,
+  "char_w": 0.62,
+  "max_width": 0.86,
+  "spacing": 0,
+  "y": 0.48,
+  "fill": "#FFFFFF",
+  "stroke": 0,
+  "stroke_color": "#000000",
+  "shadow": "#000000",
+  "shadow_alpha": 110,
+  "shadow_blur": 14,
+  "shadow_spread": 6,
+  "pop_from": 80,
+  "pop_ms": 120,
+  "glow_ms": 100,
+  "min_score": 2.0,
+  "max_per_sentence": 0,
+  "hold_s": 0.8,
+  "min_show_s": 0.4,
+  "max_show_s": 1.1
+ },
+ "labels": {
+  "style": "pill",
+  "y": 0.16,
+  "hold_s": 3.5,
+  "font": "Poppins SemiBold",
+  "size": 92,
+  "char_w": 0.39,
+  "pad_x": 36,
+  "pad_y": 14,
+  "radius": 22,
+  "fill": "#DCE9F7",
+  "fill_alpha": 70,
+  "text": "#FFFFFF",
+  "sub_text": "#EAF1F8",
+  "wipe_ms": 450
+ },
+ "hook_pill": {
+  "y": 0.6,
+  "font": "Poppins Bold",
+  "size": 120,
+  "char_w": 0.43,
+  "pad_x": 36,
+  "pad_y": 10,
+  "radius": 20,
+  "fill": "#7FA8D9",
+  "fill_alpha": 60,
+  "text": "#FFFFFF",
+  "wipe_ms": 100
+ },
+ "broll": {
+  "push_to": 1.04
+ },
+ "cta": {
+  "lead_s": 3.5,
+  "y": 0.72,
+  "pills": [
+   {
+    "text": "SUBSCRIBE",
+    "fill": "#FF4D6D",
+    "text_color": "#FFFFFF"
+   }
+  ],
+  "style": {
+   "font": "Poppins Bold",
+   "size": 96,
+   "char_w": 0.42,
+   "pad_x": 44,
+   "pad_y": 14,
+   "radius": 60,
+   "fill_alpha": 0,
+   "wipe_ms": 200
+  }
+ },
+ "audio": {
+  "lufs": -14,
+  "true_peak": -1.0,
+  "bgm_db": -22,
+  "duck_ratio": 6,
+  "sfx_offset_s": -0.03,
+  "sfx_db": {
+   "whoosh": -14,
+   "pop": -16,
+   "click": -16,
+   "ding": -12,
+   "riser": -14
+  },
+  "bgm": "bgm.mp3"
+ }
+}
