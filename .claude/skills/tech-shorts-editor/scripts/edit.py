@@ -339,6 +339,12 @@ def render(src, work, out, P, base):
         fc.append(f"[{n}:v]format=rgba,setpts=PTS-STARTPTS+{c['start']}/TB[c{n}]")
         fc.append(f"[{last}][c{n}]overlay={x}:{y}:enable='between(t,{c['start']},{c['end']})':eof_action=pass[v{n}]")
         last = f"v{n}"
+        if c["type"] == "tag" and c.get("progress"):       # yellow bar along the top edge, fills over the tag's life
+            d, bh = c["end"] - c["start"], 2 * int(11 * min(W, H) / 1080)
+            fc.append(f"color=c=0xFFF200:s={W}x{bh}:r={FPS}:d={d:.2f},setpts=PTS-STARTPTS+{c['start']}/TB[p{n}]")
+            fc.append(f"[{last}][p{n}]overlay=x='-W+W*(t-{c['start']})/{d:.2f}':y=0:"
+                      f"enable='between(t,{c['start']},{c['end']})':eof_action=pass[vp{n}]")
+            last = f"vp{n}"
         n += 1
     fc.append(f"[{last}]format=yuv420p[vout]")
 
@@ -374,14 +380,19 @@ def render(src, work, out, P, base):
 DEMO_CARDS = [
     {"type": "words", "start": 0.3, "end": 2.4, "words": [{"text": "KYA", "t": 0.0}, {"text": "AAPNE", "t": 0.35}]},
     {"type": "price", "start": 0.6, "end": 2.6, "lines": ["₹15K", "₹60K"], "y": 0.80},
-    {"type": "pill", "start": 2.8, "end": 5.6, "text": ["*6500 mAh* Battery", "*45W* Charging"]},
-    {"type": "badge", "start": 2.8, "end": 5.6, "text": "1", "y": 0.045},
-    {"type": "display", "start": 3.2, "end": 5.6, "text": ["SNAPDRAGON", "8 GEN3"], "color": "#8E86C9", "size": 120,
-     "y": 0.42},
-    {"type": "spec", "start": 5.8, "end": 8.6, "lines": ["*Snapdragon 6s Gen 4*", "*LPDDR5X* RAM", "*UFS 3.1* Storage"]},
-    {"type": "text", "start": 6.0, "end": 8.6, "text": "*Intel Core Ultra X7 358H*", "sub": "( 16 cores aur 16 threads )",
-     "color": "#7A1022", "y": 0.42},
-    {"type": "display", "start": 6.4, "end": 8.6, "text": "LUXUS", "sub": "LOHNT SICH NICHT", "size": 190, "y": 0.62},
+    {"type": "tag", "start": 2.8, "end": 8.6, "text": "moto edge 70 pro", "progress": True},
+    {"type": "product", "start": 2.8, "end": 5.6, "brand": "motorola", "model": "edge 70 pro", "bar": "#0B3D12"},
+    {"type": "pill", "start": 3.2, "end": 5.6, "text": ["*6500 mAh* Battery", "*45W* Charging"], "y": 0.40},
+    {"type": "badge", "start": 3.2, "end": 5.6, "text": "1", "x": 0.86, "y": 0.066},
+    {"type": "display", "start": 3.4, "end": 5.6, "text": ["SNAPDRAGON", "8 GEN3"], "color": "#8E86C9", "size": 120,
+     "y": 0.62},
+    {"type": "spec", "start": 5.8, "end": 8.6, "style": "white", "y": 0.22,
+     "lines": ["*Dimensity 8500* (4nm)", "*LPDDR5X* RAM", "*UFS 4.1* Storage"]},
+    {"type": "spec", "start": 6.0, "end": 8.6, "y": 0.43,
+     "lines": ["*Snapdragon 6s Gen 4*", "*LPDDR5X* RAM", "*UFS 3.1* Storage"]},
+    {"type": "text", "start": 6.2, "end": 8.6, "text": "*Intel Core Ultra X7 358H*", "sub": "( 16 cores aur 16 threads )",
+     "color": "#FFFFFF", "y": 0.60},
+    {"type": "display", "start": 6.4, "end": 8.6, "text": "LUXUS", "sub": "LOHNT SICH NICHT", "size": 190, "y": 0.78},
     {"type": "sheet", "start": 8.8, "end": 12.4, "title": "motorola edge 70 Pro", "tint": "#DDE5C9",
      "rows": ['6.8" 1.5K 144Hz Quad Curved AMOLED', "Dimensity 8500 (4nm)", "LPDDR5X RAM  |  UFS 4.1 Storage",
               "6500mAh Battery  |  90W Charger", "50MP Main + 50MP UW  |  50MP Front", "IP68 & IP69",

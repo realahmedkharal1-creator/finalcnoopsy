@@ -13,11 +13,15 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 FONT_DIR = Path(__file__).resolve().parent.parent / "fonts"
 FONT_FILES = {"regular": "Poppins-Regular.ttf", "medium": "Poppins-Medium.ttf", "semibold": "Poppins-SemiBold.ttf",
-              "bold": "Poppins-Bold.ttf", "italic": "Poppins-ExtraBoldItalic.ttf", "display": "LilitaOne-Regular.ttf"}
+              "bold": "Poppins-Bold.ttf", "italic": "Poppins-ExtraBoldItalic.ttf", "display": "LilitaOne-Regular.ttf",
+              "light": "Poppins-Light.ttf", "ital": "Poppins-Italic.ttf", "bolditalic": "Poppins-BoldItalic.ttf",
+              "serif": "PlayfairDisplay-Italic.ttf"}
 DEFAULT_Y = {"pill": 0.16, "spec": 0.20, "words": 0.60, "price": 0.68, "text": 0.14, "display": 0.48,
-             "badge": 0.07, "subscribe": 0.72, "sheet": 0.50}
-GRADIENTS = {"green": ("#C8FF7A", "#16C24A"), "cyan": ("#F2FFFF", "#19CDEE"), "yellow": ("#FFF6A8", "#FFB800"),
-             "red": ("#FFB0A8", "#F03A2E"), "white": ("#FFFFFF", "#DDE6F2"), "purple": ("#E3D4FF", "#8B5CF6")}
+             "badge": 0.07, "subscribe": 0.72, "sheet": 0.50, "tag": 0.066, "product": 0.21}
+GRADIENTS = {"green": ("#FFFFFF", "#6CF58A"), "cyan": ("#FFFFFF", "#8FE6FF"), "yellow": ("#FFFFFF", "#FFD84A"),
+             "red": ("#FFFFFF", "#FF8A80"), "white": ("#FFFFFF", "#DDE6F2"), "purple": ("#FFFFFF", "#C4A6FF")}
+OUTLINES = {"green": "#10B83A", "cyan": "#1B78E2", "yellow": "#E09A00", "red": "#D42A20", "white": "#1E2430",
+            "purple": "#6D3FE0"}
 _cache = {}
 
 
@@ -174,13 +178,19 @@ def card_pill(c, W, H, U):
 
 
 def card_spec(c, W, H, U):
-    size = c.get("size", 52) * U
-    color = c.get("color", "#0C1F15")
-    txts = [rich(l, fit_size(l.replace("*", ""), size, "semibold", W * 0.8), color, light_alpha=255)
-            for l in c["lines"]]
-    tw, th, tl = stack([(t, 0.12 + 0.14 * n, "wipe") for n, t in enumerate(txts)], int(2 * U))
+    white = c.get("style") == "white"                 # white card, italic text, left aligned
+    size = c.get("size", 60 if white else 52) * U
+    color = c.get("color", "#111111" if white else "#0C1F15")
+    bold, light = ("bolditalic", "ital") if white else ("semibold", "regular")
+    txts = [rich(l, fit_size(l.replace("*", ""), size, bold, W * 0.8), color, bold=bold, light=light,
+                 light_alpha=255) for l in c["lines"]]
+    tw, th, tl = stack([(t, 0.12 + 0.14 * n, "wipe") for n, t in enumerate(txts)], int((-14 if white else 2) * U),
+                       "left" if white else "center")
     px, py = 44 * U, 26 * U
-    p = panel(tw + 2 * px, th + 2 * py, 26 * U, c.get("top", "#E6FDEE"), c.get("bottom", "#A6EBBF"), alpha=238)
+    if white:
+        p = panel(tw + 2 * px, th + 2 * py, 34 * U, "#FFFFFF", "#FFFFFF", alpha=255, bw=0, shadow=60)
+    else:
+        p = panel(tw + 2 * px, th + 2 * py, 26 * U, c.get("top", "#E6FDEE"), c.get("bottom", "#A6EBBF"), alpha=238)
     ox, oy = (p.width - tw) // 2, (p.height - th) // 2
     return p.width, p.height, [(p, 0, 0, 0.0, "pop")] + [(i, x + ox, y + oy, t, a) for i, x, y, t, a in tl]
 
@@ -206,7 +216,7 @@ def card_price(c, W, H, U):
     for n, ln in enumerate(lines):
         text, fill = (ln, palette[n % 4]) if isinstance(ln, str) else (ln["text"], ln.get("color", palette[n % 4]))
         s = fit_size(text, size * (1.0 + 0.12 * n), "italic", W * 0.8)
-        img = fancy(text, s, "italic", fill, stroke=7 * U, shadow=10 * U)
+        img = fancy(text, s, "italic", fill, stroke=7 * U, stroke_color=OUTLINES.get(fill, "#FFFFFF"), shadow=10 * U)
         x = int(n * 46 * U)
         layers.append((img, x, y, n * 0.4, "pop"))
         w, y = max(w, x + img.width), y + int(img.height * 0.62)
@@ -275,12 +285,14 @@ def card_subscribe(c, W, H, U):
         tag = rich(c["tagline"], 22 * U, "#FFFFFF", bold="regular", shadow=2 * U)
         layers.append((tag, (p.width - tag.width) // 2, y, 0.42, "fade"))
         y += tag.height - int(2 * U)
-    for label, col, t0 in ((c.get("button", "Subscribe"), ("#FF5C7A", "#F0305A"), 0.55),
-                           (c.get("button_done", "Subscribed"), ("#8A93A0", "#646C78"), 1.7)):
-        t = rich(label, 28 * U, "#FFFFFF", bold="semibold")
-        b = panel(t.width + 70 * U, t.height + 14 * U, 999, col[0], col[1], alpha=255, bw=0, shadow=60, margin=14)
+    states = ((c.get("button", "Subscribe"), "#FFFFFF", "#111111", 0.55, 1.15, "pop"),      # white
+              ("Subscribing", "#F0305A", "#FFFFFF", 1.15, 1.75, "wipe"),                    # pink while "clicked"
+              (c.get("button_done", "Subscribed"), "#FFFFFF", "#111111", 1.75, 1e9, "pop"))  # white again
+    for label, bg, fg, t0, t1, anim in states:
+        t = rich(label, 28 * U, fg, bold="semibold")
+        b = panel(t.width + 70 * U, t.height + 14 * U, 999, bg, bg, alpha=255, bw=0, shadow=60, margin=14)
         b.alpha_composite(t, ((b.width - t.width) // 2, (b.height - t.height) // 2))
-        layers.append((b, (p.width - b.width) // 2, y, t0, "pop" if t0 < 1 else "fade"))
+        layers.append((b, (p.width - b.width) // 2, y, t0, anim, t1))
     return p.width, top + p.height, layers
 
 
@@ -321,7 +333,7 @@ def card_sheet(c, W, H, U):
         label, _, value = c["price"].partition(" - ")
         text = f"{label} - *{value}*" if value else f"*{label}*"
         t = rich(text, fit_size(c["price"], 58 * U, "bold", cw * 0.7), "#3A3A3A", bold="bold", light="semibold",
-                 light_alpha=255, bold_color=c.get("price_color", "#2E8B3A"))
+                 light_alpha=255, bold_color=c.get("price_color", accent(tint, 0.42, 0.45)))
         pp = panel(t.width + 60 * U, t.height + 16 * U, 18 * U, "#FFFFFF", "#F3F3F3", alpha=255, bw=0, shadow=70)
         pp.alpha_composite(t, ((pp.width - t.width) // 2, (pp.height - t.height) // 2))
         layers.append((pp, ox + (cw - pp.width) // 2, int(H * 0.82 - pp.height / 2),
@@ -329,7 +341,34 @@ def card_sheet(c, W, H, U):
     return W, H, layers
 
 
-BUILDERS = {"pill": card_pill, "spec": card_spec, "words": card_words, "price": card_price, "text": card_text,
+def card_tag(c, W, H, U):
+    """Small white name tag for the top-left corner (pair it with "progress": true for the yellow bar)."""
+    t = rich(c["text"], c.get("size", 40) * U, "#111111", bold="bolditalic")
+    p = panel(t.width + 28 * U, t.height + 2 * U, 10 * U, "#FFFFFF", "#FFFFFF", alpha=255, bw=0, shadow=40, margin=16)
+    p.alpha_composite(t, ((p.width - t.width) // 2, (p.height - t.height) // 2))
+    return p.width, p.height, [(p, 0, 0, 0.0, "wipe")]
+
+
+def card_product(c, W, H, U):
+    """Product title: thin brand line, then the model in italic serif sitting on a colour bar."""
+    color = c.get("color", "#FFFFFF")
+    brand = rich(c.get("brand", ""), fit_size(c.get("brand", ""), c.get("size", 104) * U, "light", W * 0.8), color,
+                 bold="light", shadow=3 * U if is_light(color) else 0)
+    model_color = c.get("model_color", color)
+    ms = fit_size(c["model"], c.get("size", 104) * 1.12 * U, "serif", W * 0.8)
+    model = rich(c["model"], ms, model_color, bold="serif")
+    bar_w, bar_h = max(model.width + 70 * U, brand.width), ms * 0.62
+    bar = panel(bar_w, bar_h, 8 * U, c.get("bar", "#0B3D12"), c.get("bar", "#0B3D12"), alpha=255, bw=0, shadow=0,
+                margin=0)
+    w = int(max(bar_w, brand.width, model.width))
+    by = brand.height - int(34 * U)
+    layers = [(brand, (w - brand.width) // 2, 0, 0.0, "wipe"),
+              (bar, (w - bar.width) // 2, by + int(model.height * 0.44), 0.1, "wipe"),
+              (model, (w - model.width) // 2, by, 0.3, "wipe")]
+    return w, by + model.height, layers
+
+
+BUILDERS = {"tag": card_tag, "product": card_product, "pill": card_pill, "spec": card_spec, "words": card_words, "price": card_price, "text": card_text,
             "display": card_display, "badge": card_badge, "subscribe": card_subscribe, "sheet": card_sheet}
 ANIM_S = {"pop": 0.24, "wipe": 0.45, "slide": 0.32, "fade": 0.2, "none": 0.0}
 
@@ -352,9 +391,9 @@ def comp(canvas, img, x, y):
 
 
 def draw_layer(canvas, layer, t, U):
-    img, x, y, t0, anim = layer
+    img, x, y, t0, anim = layer[:5]
     lt = t - t0
-    if lt < 0:
+    if lt < 0 or (len(layer) > 5 and t >= layer[5]):
         return
     p = min(1.0, lt / ANIM_S[anim]) if ANIM_S[anim] else 1.0
     ease = 1 - (1 - p) ** 3
@@ -383,10 +422,10 @@ def render_card(card, W, H, fps, out_dir):
     w, h, layers = BUILDERS[card["type"]](card, W, H, U)
     margin = 0 if card["type"] == "sheet" else int(40 * U)       # room for the pop overshoot
     cw, ch = w + 2 * margin, h + 2 * margin
-    layers = [(i, x + margin, y + margin, t, a) for i, x, y, t, a in layers]
+    layers = [(l[0], l[1] + margin, l[2] + margin) + tuple(l[3:]) for l in layers]
     dur = max(0.2, card["end"] - card["start"])
     n = max(2, int(round(dur * fps)))
-    settled = max(t + ANIM_S[a] for _, _, _, t, a in layers) + 1 / fps
+    settled = max(max(l[3] + ANIM_S[l[4]], l[5] if len(l) > 5 and l[5] < 1e8 else 0) for l in layers) + 1 / fps
     out_s = min(0.15, dur / 4)
     out_dir = Path(out_dir)
     if out_dir.exists():
@@ -410,6 +449,8 @@ def render_card(card, W, H, fps, out_dir):
             held = path
     cx = card.get("x", 0.5) * W
     cy = card.get("y", DEFAULT_Y[card["type"]]) * H
+    if card["type"] == "tag" and "x" not in card:        # tags hug the left edge
+        cx = 0.047 * W + cw / 2 - margin
     x = min(max(cx - cw / 2, -margin), W - cw + margin)
     y = min(max(cy - ch / 2, -margin), H - ch + margin)
     return str(out_dir / "f_%04d.png"), int(x), int(y)

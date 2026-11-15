@@ -100,7 +100,9 @@ In text, `*asterisks*` mark the bold part: `"*6500 mAh* Battery"`. Use `₹`, `R
 |---|---|---|---|---|
 | `pill` | blue glass pill, bold value + light descriptor, wipes in | `text` (string, or list for stacked pills that appear one by one); optional `top`, `bottom` colours | 0.16 | one spec per B-roll shot: `"*45W* Charging"` |
 | `pill` + `fill` | solid colour pill, dark text, pops in | `text`, `fill` (hex) | set `y` | calls to action: `SAVE THIS?` `#FFF3A6`, `& SHARE` `#C9F2D4` |
-| `spec` | mint glass card, 2-4 centred lines | `lines` (list, with `*bold*` parts) | 0.20 | chipset + RAM + storage together |
+| `spec` | mint glass card, 2-4 centred lines; with `"style": "white"` a white card, italic, left-aligned | `lines` (list, with `*bold*` parts) | 0.20 | chipset + RAM + storage together |
+| `tag` | small white name tag, top-left; `"progress": true` adds a yellow bar along the top that fills over the tag's duration | `text` | 0.066 | which product is on screen, for a whole product segment |
+| `product` | thin brand line, then the model in italic serif on a colour bar | `model`, optional `brand`, `bar` (hex), `color`, `model_color` | 0.21 | first shot of each product |
 | `sheet` | full-screen spec sheet: product image, name chip, bullet rows, price pill | `title`, `rows` (up to 8), `price` (`"Offer Price - ₹36,999"`), optional `image` (PNG path), `tint` (pale hex) | full screen | product summary, 2-3 s each; one per product in a deal list |
 | `price` | huge italic gradient numbers with white outline | `lines` (1-2 strings, or `{"text","color"}` with color green, cyan, yellow, red, white, purple) | 0.68 | price ranges in the hook, discounts |
 | `words` | one glass pill per word, each pops on its own time | `words`: `[{"text":"KYA","t":0.0},{"text":"AAPNE","t":0.35}]` (`t` = seconds after card start) | 0.60 | hook only, max 2-3 words per card |
@@ -138,6 +140,12 @@ Scan the transcript and add cards and B-roll (files from the user's `broll/` fol
 | Joke or exaggeration | 1-1.5 s meme clip, full screen |
 | End of video | `subscribe` card for the last 3.5 s (jay: two colour pills) |
 
+**Multi-phone deal or "best under a price" videos**: follow the per-product loop in
+`reference/budget-smartphones/notes.md` - `price` range in the hook; then for each phone a
+`tag` (with `progress`) for the whole segment, a `product` title on the hero shot (2.3 s), a
+white `spec` card over B-roll (3.5 s), and a `sheet` with the offer price (2.1 s). Pick the
+sheet `tint` and the title `bar` from the phone's colour. About 13 s per phone.
+
 B-roll entry: `{"start": 12.4, "end": 15.0, "file": "broll/camera.mp4", "layout": "full"}`;
 layouts: `full`, `top_half`, `bottom_half`, `left_half`, `right_half`. If there is no B-roll,
 say so and rely on zooms and cards. Never invent footage, specs or prices: every value on a
@@ -172,5 +180,6 @@ SFX entry: `{"t": 4.06, "name": "pop"}` (optional `"db"`). The script already pl
 ## Limits
 
 - Cards are drawn flat: no background blur behind the glass, no 3D text orbiting a product,
-  no hand-drawn callout lines to camera lenses, no handwriting-style write-on.
-- Fonts are Poppins and Lilita One (Latin only). Reference fonts and colours were matched by eye.
+  no hand-drawn callout lines to camera lenses, no handwriting-style write-on, no row icons,
+  torn-paper edges or hanging tags on sheets, no cursor or sparkles on the subscribe card.
+- Fonts are Poppins, Playfair Display and Lilita One (Latin only). Reference fonts and colours were matched by eye.
