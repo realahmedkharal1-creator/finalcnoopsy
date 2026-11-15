@@ -52,3 +52,24 @@ and typed-on price, price text, three-state subscribe button.
 Not reproduced: row icons (dots instead), torn-paper edges, hanging store tags, the curved
 arrow, sparkles and the cursor on the subscribe card. Logos and posters must be supplied as
 image files.
+
+## Second reference: `smartphone_review_editing_reference.mp4` (Samsung Galaxy S24, 19.2 s)
+
+Measured: 9 cuts, average shot 1.6 s, no pauses over 0.12 s, loudness -10.3 LUFS (range 1.1 LU),
+1080x1920. No talking head after the first second; no subscribe card in this cut.
+
+| Time | On screen | Text style |
+|---|---|---|
+| 0.0-1.2 s | Creator pushes the phone to the lens. `This / SAMSUNG / Phone` top-right, hand-drawn curved arrow pointing at the phone | small thin + heavy black + small thin, dark text |
+| 1.2-3.0 s | Hands-on scrolling. `SNAPDRAGON / 8 GEN3` top centre | heavy rounded caps, lavender `#8E86C9`, letters fly in scrambled then settle |
+| 3.0-5.0 s | Camera close-up. Three callouts `12MP Ultrawide`, `50MP Main OIS`, `10MP 3x Telephoto OIS`, right-aligned on the left, thin white lines to each lens | bold white value, lighter descriptor below |
+| 5.0-5.9 s | `7 GEN / OS Updates` over the phone | heavy black + regular black |
+| 5.9-8.7 s | `4000mAh / Battery` with white glow; a cyan "liquid" fills the back of the phone | glowing white, types on |
+| 8.7-10.3 s | `6.2" FHD+ 120Hz` / `LTPO Dynamic AMOLED 2x` / `2600Nits Peak Brightness` / `Gorilla Glass Victus 2` | white, one highlighted value in mint |
+| 10.3-11.6 s | `Samsung Galaxy / S24` | white rounded, handwriting-style write-on |
+| 11.6-14.3 s | Full-screen offer card: red `Offer Price` box, `8/128GB`, big grey `₹39,999`, product render, sale badge top-right, footnote `* Price incl. Card Discount` | price digits roll in |
+| 14.3-19.2 s | Camera demo. `128GB - UFS3.1` / `256GB - UFS4.0` top | heavy black, 2 lines |
+
+Pattern: one spec per shot, text sits in the top 30% above the product, each text style is
+chosen to contrast with the backdrop (dark text on light, white on dark or colourful).
+Colour of text is often picked from the scene (lavender on grey blinds, mint on teal).
