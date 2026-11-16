@@ -103,7 +103,7 @@ In text, `*asterisks*` mark the bold part: `"*6500 mAh* Battery"`. Use `₹`, `R
 | `spec` | mint glass card, 2-4 centred lines; with `"style": "white"` a white card, italic, left-aligned | `lines` (list, with `*bold*` parts) | 0.20 | chipset + RAM + storage together |
 | `tag` | small white name tag, top-left; `"progress": true` adds a yellow bar along the top that fills over the tag's duration | `text` | 0.066 | which product is on screen, for a whole product segment |
 | `product` | thin brand line, then the model in italic serif on a colour bar | `model`, optional `brand`, `bar` (hex), `color`, `model_color` | 0.21 | first shot of each product |
-| `sheet` | full-screen spec sheet: product image, name chip, bullet rows, price pill | `title`, `rows` (up to 8), `price` (`"Offer Price - ₹36,999"`), optional `image` (PNG path), `tint` (pale hex) | full screen | product summary, 2-3 s each; one per product in a deal list |
+| `sheet` | full-screen spec sheet: paper-textured tinted top with the product picture and its shadow, name chip, torn-edge white panel with an icon per row, big price pill on a dark band, optional tags hanging on strings | `title`, `rows` (up to 8; icons are picked from the words, long rows wrap at ` | ` or ` + `, or use `\n`), `price` (`"Offer Price - Rs 36,999"`), `image` (product picture; a plain white background is removed automatically), `tint` (pale hex), optional `dark` (band colour), `badges` (up to 2: text like `"SALE"` or a PNG path), `icons` (display, chip, storage, battery, camera, water, os) | full screen | product summary, 2-3 s each; one per product in a deal list. Pick `tint` as a pale version of the phone colour and `dark` as a deep version of it |
 | `price` | huge italic gradient numbers with white outline | `lines` (1-2 strings, or `{"text","color"}` with color green, cyan, yellow, red, white, purple) | 0.68 | price ranges in the hook, discounts |
 | `words` | one glass pill per word, each pops on its own time | `words`: `[{"text":"KYA","t":0.0},{"text":"AAPNE","t":0.35}]` (`t` = seconds after card start) | 0.60 | hook only, max 2-3 words per card |
 | `display` | big display lettering with soft shadow, pops in | `text` (string or list of lines), optional `sub`, `color` (hex or gradient name), `size` (150 default) | 0.48 | product/chip names at top (`y` 0.13), Jay one-word captions, hook titles |
@@ -180,6 +180,6 @@ SFX entry: `{"t": 4.06, "name": "pop"}` (optional `"db"`). The script already pl
 ## Limits
 
 - Cards are drawn flat: no background blur behind the glass, no 3D text orbiting a product,
-  no hand-drawn callout lines to camera lenses, no handwriting-style write-on, no row icons,
-  torn-paper edges or hanging tags on sheets, no cursor or sparkles on the subscribe card.
+  no hand-drawn callout lines to camera lenses, no handwriting-style write-on, no cursor or sparkles on the subscribe card.
+- Sheet badges are generic seals or the user's own PNGs; store and brand logos are not bundled.
 - Fonts are Poppins, Playfair Display and Lilita One (Latin only). Reference fonts and colours were matched by eye.

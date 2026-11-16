@@ -327,6 +327,9 @@ def render(src, work, out, P, base):
         for key in ("image", "avatar"):
             if c.get(key):
                 c[key] = str(resolve(c[key], base))
+        if c.get("badges"):                               # picture badges are paths; anything else is badge text
+            c["badges"] = [str(resolve(b, base)) if Path(str(b)).suffix.lower() in (".png", ".jpg", ".jpeg", ".webp")
+                           else b for b in c["badges"]]
         c["end"] = min(c["end"], total)
         if c["end"] - c["start"] < 0.1:
             continue

@@ -7,9 +7,9 @@ own entrance animation (pop / wipe / slide / fade) and start time.
 Card types: pill, spec, words, price, text, display, sheet, subscribe, badge.
 See SKILL.md section "Card catalogue" for the fields of each.
 """
-import colorsys, shutil
+import colorsys, math, shutil
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 FONT_DIR = Path(__file__).resolve().parent.parent / "fonts"
 FONT_FILES = {"regular": "Poppins-Regular.ttf", "medium": "Poppins-Medium.ttf", "semibold": "Poppins-SemiBold.ttf",
@@ -296,48 +296,237 @@ def card_subscribe(c, W, H, U):
     return p.width, top + p.height, layers
 
 
+def load_product(path):
+    """Open a product picture. If it has no transparency and sits on a plain background, cut the background out."""
+    im = Image.open(path).convert("RGBA")
+    if im.getchannel("A").getextrema()[0] < 250:
+        return im.crop(im.getchannel("A").getbbox())
+    rgb, (w, h) = im.convert("RGB"), im.size
+    corners = [rgb.getpixel(p) for p in ((1, 1), (w - 2, 1), (1, h - 2), (w - 2, h - 2))]
+    if max(max(abs(a - b) for a, b in zip(c, corners[0])) for c in corners) > 24:
+        return im                                       # busy background: leave as it is
+    magic = (255, 0, 254)
+    for p in ((0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1), (w // 2, 0), (w // 2, h - 1), (0, h // 2), (w - 1, h // 2)):
+        if rgb.getpixel(p) != magic:
+            ImageDraw.floodfill(rgb, p, magic, thresh=28)
+    mask = rgb.point(lambda v: 0).convert("L")
+    mask.putdata([0 if px == magic else 255 for px in rgb.getdata()])
+    mask = mask.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(1.2))
+    im.putalpha(mask)
+    return im.crop(mask.point(lambda v: 255 if v > 20 else 0).getbbox())
+
+
+def paper(img, strength=0.55):
+    """Subtle paper grain."""
+    noise = Image.effect_noise(img.size, 22).filter(ImageFilter.GaussianBlur(0.8)).convert("RGB")
+    return Image.blend(img, ImageChops.soft_light(img, noise), strength)
+
+
+def wavy_band(W, y0, y1, amp, phase):
+    """Polygon for a horizontal band whose top and bottom edges wave gently (torn-paper look)."""
+    def off(x, p):
+        return amp * (0.6 * math.sin(x / (W * 0.16) + p) + 0.4 * math.sin(x / (W * 0.057) + p * 2.3))
+    xs = list(range(0, W + 8, 8))
+    return [(x, y0 + off(x, phase)) for x in xs] + [(x, y1 + off(x, phase + 1.7)) for x in reversed(xs)]
+
+
+def row_icon(kind, d, ink="#3C3C3C"):
+    """Small pictogram in a white circle. Drawn 4x and scaled down for smooth edges."""
+    s = d * 4
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    g = ImageDraw.Draw(img)
+    g.ellipse((0, 0, s - 1, s - 1), fill=(255, 255, 255, 255))
+    c, u, k = s / 2, s / 46, rgb(ink) + (255,)
+    if kind == "display":
+        g.rounded_rectangle((c - 7 * u, c - 12 * u, c + 7 * u, c + 12 * u), 3 * u, fill=k)
+        g.line((c - 4 * u, c + 7 * u, c + 4 * u, c - 7 * u), fill=(255, 255, 255, 255), width=int(3 * u))
+    elif kind == "chip":
+        g.rounded_rectangle((c - 8 * u, c - 8 * u, c + 8 * u, c + 8 * u), 2 * u, fill=k)
+        g.rectangle((c - 4 * u, c - 4 * u, c + 4 * u, c + 4 * u), fill=(255, 255, 255, 255))
+        for i in (-5, 0, 5):
+            g.line((c + i * u, c - 13 * u, c + i * u, c + 13 * u), fill=k, width=int(2 * u))
+            g.line((c - 13 * u, c + i * u, c + 13 * u, c + i * u), fill=k, width=int(2 * u))
+        g.rounded_rectangle((c - 8 * u, c - 8 * u, c + 8 * u, c + 8 * u), 2 * u, fill=k)
+        g.rectangle((c - 3.5 * u, c - 3.5 * u, c + 3.5 * u, c + 3.5 * u), fill=(255, 255, 255, 255))
+    elif kind == "storage":
+        for j in (-9, -2, 5):
+            g.rounded_rectangle((c - 12 * u, c + j * u, c + 12 * u, c + (j + 5) * u), 2 * u, fill=k)
+            g.ellipse((c + 6 * u, c + (j + 1.2) * u, c + 8.6 * u, c + (j + 3.8) * u), fill=(255, 255, 255, 255))
+    elif kind == "battery":
+        g.rounded_rectangle((c - 7 * u, c - 10 * u, c + 7 * u, c + 13 * u), 3 * u, fill=k)
+        g.rectangle((c - 3 * u, c - 13 * u, c + 3 * u, c - 10 * u), fill=k)
+        g.polygon([(c + 1 * u, c - 6 * u), (c - 4 * u, c + 2 * u), (c - 0.5 * u, c + 2 * u), (c - 1.5 * u, c + 9 * u),
+                   (c + 4 * u, c + 0 * u), (c + 0.5 * u, c + 0 * u)], fill=(255, 255, 255, 255))
+    elif kind == "camera":
+        g.rounded_rectangle((c - 12 * u, c - 7 * u, c + 12 * u, c + 10 * u), 3 * u, fill=k)
+        g.rectangle((c - 5 * u, c - 10 * u, c + 5 * u, c - 6 * u), fill=k)
+        g.ellipse((c - 5.5 * u, c - 4 * u, c + 5.5 * u, c + 7 * u), fill=(255, 255, 255, 255))
+        g.ellipse((c - 3 * u, c - 1.5 * u, c + 3 * u, c + 4.5 * u), fill=k)
+    elif kind == "water":
+        g.ellipse((c - 8 * u, c - 3 * u, c + 8 * u, c + 13 * u), fill=k)
+        g.polygon([(c, c - 13 * u), (c - 7.4 * u, c + 2 * u), (c + 7.4 * u, c + 2 * u)], fill=k)
+    elif kind == "os":
+        g.pieslice((c - 12 * u, c - 8 * u, c + 12 * u, c + 16 * u), 180, 360, fill=k)
+        g.line((c - 7 * u, c - 6 * u, c - 10 * u, c - 11 * u), fill=k, width=int(2 * u))
+        g.line((c + 7 * u, c - 6 * u, c + 10 * u, c - 11 * u), fill=k, width=int(2 * u))
+        for ex in (-5, 5):
+            g.ellipse((c + (ex - 1.6) * u, c - 2 * u, c + (ex + 1.6) * u, c + 1.2 * u), fill=(255, 255, 255, 255))
+    else:
+        g.ellipse((c - 5 * u, c - 5 * u, c + 5 * u, c + 5 * u), fill=k)
+    return img.resize((d, d), Image.LANCZOS)
+
+
+ICON_WORDS = [("battery", ("mah", "battery", "charg", "wh ")), ("camera", ("mp ", "mp+", "camera", "selfie")),
+              ("water", ("ip5", "ip6", "water", "atm")),
+              ("chip", ("snapdragon", "dimensity", "helio", "exynos", "tensor", "bionic", "unisoc", "intel", "ryzen",
+                        "chip", "nm)")),
+              ("storage", ("ram", "ufs", "storage", "ssd", "rom")),
+              ("display", ('"', "”", "amoled", "oled", "lcd", "display", "hz")),
+              ("os", ("android", " ui", "os", "years", "update", "windows"))]
+
+
+def guess_icon(row):
+    low = row.lower() + " "
+    return next((kind for kind, words in ICON_WORDS if any(w in low for w in words)), "dot")
+
+
+def seal(text, d, top="#2F6BE0", bottom="#1B3FA8", ribbon="#FFD43B"):
+    """Round sale badge with a ribbon, for a hanging tag."""
+    s = d * 3
+    img = Image.new("RGBA", (int(s * 1.3), s), (0, 0, 0, 0))
+    g, cx = ImageDraw.Draw(img), int(s * 0.65)
+    g.ellipse((cx - s * 0.46, s * 0.04, cx + s * 0.46, s * 0.96), fill=rgb(ribbon) + (255,))
+    body = gradient(int(s * 0.8), int(s * 0.8), top, bottom).convert("RGBA")
+    body.putalpha(rounded_mask(int(s * 0.8), int(s * 0.8), s))
+    img.alpha_composite(body, (cx - int(s * 0.4), int(s * 0.1)))
+    g.polygon([(s * 0.02, s * 0.36), (s * 1.28, s * 0.36), (s * 1.2, s * 0.5), (s * 1.28, s * 0.64), (s * 0.02, s * 0.64),
+               (s * 0.1, s * 0.5)], fill=rgb(ribbon) + (255,))
+    t = rich(text.upper(), fit_size(text.upper(), s * 0.2, "bold", s * 0.95), "#1B2F7A", bold="bold")
+    img.alpha_composite(t, (cx - t.width // 2, int(s * 0.5 - t.height / 2)))
+    return img.resize((int(d * 1.3), d), Image.LANCZOS).rotate(-8, expand=True, resample=Image.BICUBIC)
+
+
+def hanging(badge, x, length, W, u, lean):
+    """A badge hanging on a thin string from the top edge. Returns (image, left x)."""
+    if isinstance(badge, str) and Path(badge).suffix.lower() in (".png", ".jpg", ".jpeg", ".webp") and Path(badge).exists():
+        b = load_product(badge)
+        k = 150 * u / max(b.size)
+        b = b.resize((int(b.width * k), int(b.height * k)), Image.LANCZOS)
+    else:
+        b = seal(str(badge), int(130 * u))
+    w = b.width + int(abs(lean)) + 20
+    img = Image.new("RGBA", (w, int(length) + b.height), (0, 0, 0, 0))
+    bx = 10 if lean > 0 else w - b.width - 10
+    top_x = bx + b.width / 2 + lean
+    ImageDraw.Draw(img).line((top_x, 0, bx + b.width / 2, length + b.height * 0.12), fill=(255, 255, 255, 215),
+                             width=max(2, int(3 * u)))
+    sh = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    sh.paste((0, 0, 0, 70), (bx + int(6 * u), int(length) + int(10 * u)), b.getchannel("A"))
+    img = Image.alpha_composite(img, sh.filter(ImageFilter.GaussianBlur(8 * u)))
+    img.alpha_composite(b, (bx, int(length)))
+    return img, int(x - bx - b.width / 2)
+
+
 def card_sheet(c, W, H, U):
-    """Full-screen spec sheet: product image, name chip, bullet rows, price pill."""
-    tint = c.get("tint", "#DDE5C9")
-    cw = int(min(W, H * 9 / 16))
+    """Full-screen spec sheet: textured tinted top with the product, torn white panel with icon rows, price pill."""
+    u = min(W / 1080, H / 1920) * c.get("scale", 1.0)
+    cw = int(1080 * u)
     ox = (W - cw) // 2
-    bg = Image.new("RGBA", (W, H), rgb(tint) + (255,))
-    d = ImageDraw.Draw(bg)
-    d.rectangle((0, int(H * 0.455), W, int(H * 0.725)), fill=rgb(shade(tint, 1.08)) + (255,))
-    d.rectangle((0, int(H * 0.725), W, H), fill=rgb(accent(tint)) + (255,))
+    tint = c.get("tint", "#DDE5C9")
+    dark = c.get("dark") or accent(tint, 0.50, 0.42)
+    rows = [str(r) for r in c.get("rows", [])]
+    size = 37 * u
+    max_w = cw * 0.70
+    lines = []                                             # per row: list of text images
+    for row in rows:
+        parts = row.split("\n")
+        if len(parts) == 1 and font("medium", size).getlength(row) > max_w:
+            if font("medium", size * 0.88).getlength(row) > max_w:
+                for sep in (" | ", "  |  ", " + "):
+                    if sep in row:
+                        a, _, b = row.rpartition(sep)
+                        parts = [a, b]
+                        break
+        lines.append([rich(p.strip(), fit_size(p.strip(), size, "medium", max_w), "#4A4A4A", bold="medium")
+                      for p in parts])
+    pitch, extra = 60 * u, 40 * u
+    panel_top = int(H * 0.461)
+    rows_h = sum(pitch + extra * (len(l) - 1) for l in lines)
+    panel_bot = int(panel_top + 58 * u + rows_h + 26 * u)
+
+    bg = Image.new("RGB", (W, H), rgb(tint))
+    g = ImageDraw.Draw(bg)
+    g.rectangle((0, panel_bot - 30 * u, W, H), fill=rgb(dark))
+    bg = paper(bg)
+    g = ImageDraw.Draw(bg)
+    g.polygon(wavy_band(W, panel_top - 7 * u, panel_top + 20 * u, 7 * u, 0.4), fill=rgb(dark))   # dark rim
+    bg = bg.convert("RGBA")
+    shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(shadow).polygon(wavy_band(W, panel_top + 6 * u, panel_bot + 8 * u, 8 * u, 0.9), fill=(0, 0, 0, 90))
+    bg = Image.alpha_composite(bg, shadow.filter(ImageFilter.GaussianBlur(10 * u)))
+    white = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(white).polygon(wavy_band(W, panel_top, panel_bot, 8 * u, 0.9), fill=(242, 242, 242, 255))
+    grid = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    gd = ImageDraw.Draw(grid)
+    for x in range(0, W, int(54 * u)):
+        gd.line((x, panel_top, x, panel_bot), fill=(0, 0, 0, 7), width=1)
+    for y in range(panel_top, panel_bot, int(54 * u)):
+        gd.line((0, y, W, y), fill=(0, 0, 0, 7), width=1)
+    grid.putalpha(ImageChops.multiply(grid.getchannel("A"), white.getchannel("A")))
+    bg = Image.alpha_composite(Image.alpha_composite(bg, white), grid)
     layers = [(bg, 0, 0, 0.0, "fade")]
+
+    badges = c.get("badges") or []
+    spots = [(ox + cw * 0.15, 290 * u, 60 * u), (ox + cw * 0.88, 470 * u, -110 * u)]
+    for n, b in enumerate(badges[:2]):
+        img, bx = hanging(b, spots[n][0], spots[n][1], W, u, spots[n][2])
+        layers.append((img, bx, 0, 0.15 + 0.15 * n, "slide"))
+
     src = c.get("image")
     if src and Path(src).exists():
-        im = Image.open(src).convert("RGBA")
-        k = min(cw * 0.62 / im.width, H * 0.36 / im.height)
+        im = load_product(src)
+        k = min(cw * 0.70 / im.width, (panel_top - 170 * u) / im.height)
         im = im.resize((int(im.width * k), int(im.height * k)), Image.LANCZOS)
-        layers.append((im, ox + (cw - im.width) // 2, int(H * 0.235 - im.height / 2), 0.1, "slide"))
-    t = rich(c.get("title", ""), 34 * U, "#FFFFFF", bold="semibold")
-    chip = panel(t.width + 56 * U, t.height + 14 * U, 999, accent(tint, 0.6), accent(tint, 0.55), alpha=255, bw=0,
-                 shadow=0, margin=4)
+        pad = int(60 * u)
+        holder = Image.new("RGBA", (im.width + 2 * pad, im.height + 2 * pad), (0, 0, 0, 0))
+        sh = Image.new("RGBA", holder.size, (0, 0, 0, 0))
+        sh.paste((0, 0, 0, 105), (pad + int(8 * u), pad + int(18 * u)), im.getchannel("A"))
+        holder = Image.alpha_composite(holder, sh.filter(ImageFilter.GaussianBlur(16 * u)))
+        holder.alpha_composite(im, (pad, pad))
+        layers.append((holder, ox + (cw - holder.width) // 2, int(panel_top - 80 * u - im.height - pad), 0.1, "slide"))
+
+    title = c.get("title", "")
+    t = rich(title, fit_size(title, 35 * u, "semibold", cw * 0.6), "#FFFFFF", bold="semibold")
+    chip_col = c.get("chip") or shade(dark, 1.12)
+    chip = Image.new("RGBA", (int(t.width + 96 * u), int(74 * u)), (0, 0, 0, 0))
+    ImageDraw.Draw(chip).rounded_rectangle((0, 0, chip.width - 1, chip.height - 1), radius=chip.height // 2,
+                                           fill=rgb(chip_col) + (255,))
     chip.alpha_composite(t, ((chip.width - t.width) // 2, (chip.height - t.height) // 2))
-    layers.append((chip, ox + (cw - chip.width) // 2, int(H * 0.455 - chip.height / 2), 0.25, "pop"))
-    rows = c.get("rows", [])
-    rs = min(36 * U, H * 0.235 / max(1, len(rows)) / 1.45)
-    y = H * 0.485
-    for n, row in enumerate(rows):
-        t = rich(row, fit_size(row, rs, "medium", cw * 0.74), "#2B2F26", bold="medium")
-        dot = Image.new("RGBA", (t.height, t.height), (0, 0, 0, 0))
-        r = int(rs * 0.2)
-        ImageDraw.Draw(dot).ellipse((t.height // 2 - r, t.height // 2 - r, t.height // 2 + r, t.height // 2 + r),
-                                    fill=rgb(accent(tint, 0.5)) + (255,))
-        layers.append((dot, ox + int(cw * 0.13), int(y), 0.35 + 0.08 * n, "fade"))
-        layers.append((t, ox + int(cw * 0.2), int(y), 0.35 + 0.08 * n, "wipe"))
-        y += rs * 1.45
+    layers.append((chip, ox + (cw - chip.width) // 2, int(panel_top + 3 * u - chip.height / 2), 0.25, "pop"))
+
+    icons = c.get("icons") or []
+    d = int(46 * u)
+    y = panel_top + 58 * u
+    block_w = max((max(i.width for i in l) for l in lines), default=0) + 80 * u
+    left = ox + max(cw * 0.115, (cw - block_w) / 2)
+    for n, l in enumerate(lines):
+        kind = icons[n] if n < len(icons) else guess_icon(rows[n])
+        t0 = 0.35 + 0.08 * n
+        layers.append((row_icon(kind, d), int(left), int(y + (pitch - d) / 2 - 2 * u), t0, "pop"))
+        for m, img in enumerate(l):
+            layers.append((img, int(left + 80 * u), int(y + m * extra + (pitch - img.height) / 2), t0, "wipe"))
+        y += pitch + extra * (len(l) - 1)
+
     if c.get("price"):
-        label, _, value = c["price"].partition(" - ")
-        text = f"{label} - *{value}*" if value else f"*{label}*"
-        t = rich(text, fit_size(c["price"], 58 * U, "bold", cw * 0.7), "#3A3A3A", bold="bold", light="semibold",
-                 light_alpha=255, bold_color=c.get("price_color", accent(tint, 0.42, 0.45)))
-        pp = panel(t.width + 60 * U, t.height + 16 * U, 18 * U, "#FFFFFF", "#F3F3F3", alpha=255, bw=0, shadow=70)
+        label, sep, value = c["price"].partition(" - ")
+        text = f"{label} - *{value}*" if sep else f"*{label}*"
+        ps = fit_size(c["price"], 78 * u, "bold", cw * 0.68)
+        t = rich(text, ps, "#3F3F3F", bold="bold", light="bold", light_alpha=255,
+                 bold_color=c.get("price_color") or shade(dark, 0.82))
+        pp = panel(max(t.width + 90 * u, cw * 0.74), 100 * u, 22 * u, "#FFFFFF", "#FFFFFF", alpha=255, bw=0, shadow=95)
         pp.alpha_composite(t, ((pp.width - t.width) // 2, (pp.height - t.height) // 2))
-        layers.append((pp, ox + (cw - pp.width) // 2, int(H * 0.82 - pp.height / 2),
-                       0.55 + 0.08 * len(rows), "wipe"))
+        py = panel_bot + (H - panel_bot) * 0.36
+        layers.append((pp, ox + (cw - pp.width) // 2, int(py - pp.height / 2), 0.55 + 0.08 * len(rows), "wipe"))
     return W, H, layers
 
 
