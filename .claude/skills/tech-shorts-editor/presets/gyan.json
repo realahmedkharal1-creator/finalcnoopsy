@@ -1,0 +1,15 @@
+{
+ "name": "gyan",
+ "about": "Gyan Therapy style (default): no running subtitles. Glass-pill spec labels at the top of B-roll, word pills only in the hook, spec sheets, price text, subscribe card at the end.",
+ "channel": {"name": "Your Channel", "tagline": "Tech & Reviews  •  Made Simple", "avatar": "avatar.png"},
+ "cut": {"silence_db": -35, "min_silence_s": 0.25, "pad_s": 0.06, "min_keep_s": 0.15},
+ "hook": {"style": "words", "end_s": 3.0, "sub_max_chars": 20, "zoom_in_s": 0.9, "zoom_from": 1.0},
+ "zoom": {"punch": 1.12, "creep": 1.08, "anchor_y": 0.3},
+ "captions": {"mode": "none", "y": 0.48, "min_score": 2.0, "max_per_sentence": 0, "hold_s": 0.8,
+              "min_show_s": 0.4, "max_show_s": 1.1},
+ "labels": {"style": "pill", "y": 0.16, "hold_s": 3.5},
+ "broll": {"push_to": 1.04},
+ "cta": {"style": "subscribe", "lead_s": 3.5, "y": 0.72},
+ "audio": {"lufs": -14, "true_peak": -1.0, "bgm_db": -22, "duck_ratio": 6, "sfx_offset_s": -0.03,
+           "sfx_db": {"whoosh": -14, "pop": -16, "click": -16, "ding": -12, "riser": -14}, "bgm": "bgm.mp3"}
+}
