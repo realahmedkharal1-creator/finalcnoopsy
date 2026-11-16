@@ -7,7 +7,8 @@ own entrance animation (pop / wipe / slide / fade) and start time.
 Card types: pill, spec, words, price, text, display, sheet, subscribe, badge.
 See SKILL.md section "Card catalogue" for the fields of each.
 """
-import colorsys, math, shutil
+import colorsys, math, re, shutil
+import numpy as np
 from pathlib import Path
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
@@ -28,7 +29,17 @@ _cache = {}
 def font(name, size):
     key = (name, int(size))
     if key not in _cache:
-        _cache[key] = ImageFont.truetype(str(FONT_DIR / FONT_FILES[name]), int(size))
+        if name.startswith("gs"):                          # Google Sans, variable weight: "gs500", "gs700"
+            f = ImageFont.truetype(str(FONT_DIR / "GoogleSans.ttf"), int(size))
+            f.set_variation_by_axes([18, int(name[2:]), 0])
+            _cache[key] = f
+        elif name.startswith("is"):                        # Instrument Sans: "is95_700" = width 95, weight 700
+            wd, wt = name[2:].split("_")
+            f = ImageFont.truetype(str(FONT_DIR / "InstrumentSans.ttf"), int(size))
+            f.set_variation_by_axes([int(wd), int(wt)])
+            _cache[key] = f
+        else:
+            _cache[key] = ImageFont.truetype(str(FONT_DIR / FONT_FILES[name]), int(size))
     return _cache[key]
 
 
@@ -318,8 +329,12 @@ def load_product(path):
 
 def paper(img, strength=0.55):
     """Subtle paper grain."""
-    noise = Image.effect_noise(img.size, 22).filter(ImageFilter.GaussianBlur(0.8)).convert("RGB")
-    return Image.blend(img, ImageChops.soft_light(img, noise), strength)
+    w, h = img.size
+    lumps = Image.effect_noise((w // 3 + 1, h // 3 + 1), 46).filter(ImageFilter.GaussianBlur(1.1))
+    lumps = lumps.resize((w, h), Image.BICUBIC).filter(ImageFilter.EMBOSS)          # raised, canvas-like relief
+    fibres = Image.effect_noise((w // 10 + 1, h), 30).resize((w, h), Image.BILINEAR)  # short horizontal fibres
+    tex = Image.blend(lumps, fibres, 0.3).convert("RGB")
+    return Image.blend(img, ImageChops.soft_light(img, tex), strength)
 
 
 def wavy_band(W, y0, y1, amp, phase):
@@ -330,13 +345,13 @@ def wavy_band(W, y0, y1, amp, phase):
     return [(x, y0 + off(x, phase)) for x in xs] + [(x, y1 + off(x, phase + 1.7)) for x in reversed(xs)]
 
 
-def row_icon(kind, d, ink="#3C3C3C"):
+def row_icon(kind, d, ink="#505050"):
     """Small pictogram in a white circle. Drawn 4x and scaled down for smooth edges."""
     s = d * 4
     img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     g = ImageDraw.Draw(img)
     g.ellipse((0, 0, s - 1, s - 1), fill=(255, 255, 255, 255))
-    c, u, k = s / 2, s / 46, rgb(ink) + (255,)
+    c, u, k = s / 2, s / 52, rgb(ink) + (255,)
     if kind == "display":
         g.rounded_rectangle((c - 7 * u, c - 12 * u, c + 7 * u, c + 12 * u), 3 * u, fill=k)
         g.line((c - 4 * u, c + 7 * u, c + 4 * u, c - 7 * u), fill=(255, 255, 255, 255), width=int(3 * u))
@@ -406,127 +421,279 @@ def seal(text, d, top="#2F6BE0", bottom="#1B3FA8", ribbon="#FFD43B"):
     return img.resize((int(d * 1.3), d), Image.LANCZOS).rotate(-8, expand=True, resample=Image.BICUBIC)
 
 
-def hanging(badge, x, length, W, u, lean):
-    """A badge hanging on a thin string from the top edge. Returns (image, left x)."""
+def gtext(text, size, weight=500, color="#474747", track=0.0):
+    """Google Sans text with letter-spacing (track, in px at this size). Returns a tight RGBA image."""
+    f = font(f"gs{int(weight)}", size)
+    asc, desc = f.getmetrics()
+    xs, x = [], 0.0
+    for ch in text:
+        xs.append(x)
+        x += f.getlength(ch) + track
+    img = Image.new("RGBA", (max(2, int(x - track) + 4), asc + desc + 2), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    thin = font("gs400", size)
+    for ch, cx in zip(text, xs):
+        if ch == "|" and weight < 650:                     # separators are thinner and lighter than the words
+            d.text((cx + 1, asc), ch, font=thin, fill=rgb(color) + (150,), anchor="ls")
+        else:
+            d.text((cx + 1, asc), ch, font=f, fill=rgb(color) + (255,), anchor="ls")
+    return img
+
+
+def rough(mask, u, amount=1.0):
+    """Give a shape mask slightly irregular, torn-paper edges."""
+    soft = mask.filter(ImageFilter.GaussianBlur(2.2 * u))
+    noise = Image.effect_noise(mask.size, 70 * amount).filter(ImageFilter.GaussianBlur(1.6 * u))
+    mixed = ImageChops.add(soft, noise, 2.0)               # (soft + noise) / 2
+    return mixed.point(lambda v: 255 if v > 128 else 0).filter(ImageFilter.GaussianBlur(0.7))
+
+
+def deepen(h):
+    """Same hue, more saturated and darker: the colour of the price digits."""
+    hh, sat, val = colorsys.rgb_to_hsv(*[c / 255 for c in rgb(h)])
+    val = val * 0.74 if val > 0.35 else min(0.5, val + 0.12)
+    return "#%02X%02X%02X" % tuple(int(c * 255) for c in colorsys.hsv_to_rgb(hh, min(1.0, sat + 0.22), val))
+
+
+def gfit(text, size, weight, track, max_w):
+    w = gtext(text, size, weight, track=track).width
+    return size * min(1.0, max_w / max(1, w))
+
+
+def swinging(badge, ax, length, u, centre, amp, period, phase):
+    """A badge on a string that swings like a pendulum. Returns a draw(canvas, t) function."""
     if isinstance(badge, str) and Path(badge).suffix.lower() in (".png", ".jpg", ".jpeg", ".webp") and Path(badge).exists():
         b = load_product(badge)
         k = 150 * u / max(b.size)
-        b = b.resize((int(b.width * k), int(b.height * k)), Image.LANCZOS)
+        b = b.resize((max(1, int(b.width * k)), max(1, int(b.height * k))), Image.LANCZOS)
     else:
-        b = seal(str(badge), int(130 * u))
-    w = b.width + int(abs(lean)) + 20
-    img = Image.new("RGBA", (w, int(length) + b.height), (0, 0, 0, 0))
-    bx = 10 if lean > 0 else w - b.width - 10
-    top_x = bx + b.width / 2 + lean
-    ImageDraw.Draw(img).line((top_x, 0, bx + b.width / 2, length + b.height * 0.12), fill=(255, 255, 255, 215),
-                             width=max(2, int(3 * u)))
-    sh = Image.new("RGBA", img.size, (0, 0, 0, 0))
-    sh.paste((0, 0, 0, 70), (bx + int(6 * u), int(length) + int(10 * u)), b.getchannel("A"))
-    img = Image.alpha_composite(img, sh.filter(ImageFilter.GaussianBlur(8 * u)))
-    img.alpha_composite(b, (bx, int(length)))
-    return img, int(x - bx - b.width / 2)
+        b = seal(str(badge), int(125 * u))
+    pad = int(26 * u)
+    tag = Image.new("RGBA", (b.width + 2 * pad, b.height + 2 * pad), (0, 0, 0, 0))
+    sh = Image.new("RGBA", tag.size, (0, 0, 0, 0))
+    sh.paste((0, 0, 0, 80), (pad + int(7 * u), pad + int(10 * u)), b.getchannel("A"))
+    tag = Image.alpha_composite(tag, sh.filter(ImageFilter.GaussianBlur(7 * u)))
+    tag.alpha_composite(b, (pad, pad))
+
+    def draw(canvas, t):
+        a = math.radians(centre + amp * math.exp(-0.18 * t) * math.cos(2 * math.pi * t / period + phase))
+        tx, ty = ax + length * math.sin(a), -20 * u + length * math.cos(a)        # where the string meets the badge
+        x0, pad_ = min(ax, tx) - 12, 12                    # draw the string on its own layer so it blends
+        line = Image.new("RGBA", (int(abs(tx - ax)) + 2 * pad_ + 8, int(ty) + 8), (0, 0, 0, 0))
+        g = ImageDraw.Draw(line)
+        g.line((ax - x0 + 3 * u, 0, tx - x0 + 3 * u, ty + 3 * u), fill=(0, 0, 0, 30), width=max(2, int(5 * u)))
+        g.line((ax - x0, 0, tx - x0, ty), fill=(255, 255, 255, 215), width=max(2, int(5 * u)))
+        comp(canvas, line.filter(ImageFilter.GaussianBlur(0.8 * u)), x0, 0)
+        r = tag.rotate(-math.degrees(a), resample=Image.BICUBIC, expand=True)
+        cx, cy = tx + (b.height * 0.42) * math.sin(a), ty + (b.height * 0.42) * math.cos(a)
+        comp(canvas, r, cx - r.width / 2, cy - r.height / 2)
+    return draw
+
+
+# Edge waves measured from the reference clip (pixels on a 1080x1920 frame). Each edge is a smooth wave that
+# slides sideways while the sheet is on screen: the top edge drifts right, the bottom edge drifts left.
+EDGE_TOP = dict(base=4.7, period=250, terms=((-3.6, -2.98, 1), (0.9, 0.4, 0.41)), speed=111)
+EDGE_BOTTOM = dict(base=3.5, period=240, terms=((-0.52, 3.82, 1), (0.44, -0.11, 2), (0.8, 0.5, 0.39)), speed=-126)
+
+
+def edge_wave(xs, t, e):
+    """Edge offset (px) at positions xs (1080-scale) and time t (s)."""
+    x = xs - e["speed"] * t
+    out = np.full(xs.shape, e["base"], dtype=np.float32)
+    for sn, cs, h in e["terms"]:
+        k = 2 * np.pi * h * x / e["period"]
+        out += sn * np.sin(k) + cs * np.cos(k)
+    return out
 
 
 def card_sheet(c, W, H, U):
-    """Full-screen spec sheet: textured tinted top with the product, torn white panel with icon rows, price pill."""
+    """Full-screen spec sheet in the reference layout (all numbers are pixels on a 1080x1920 frame)."""
     u = min(W / 1080, H / 1920) * c.get("scale", 1.0)
-    cw = int(1080 * u)
-    ox = (W - cw) // 2
-    tint = c.get("tint", "#DDE5C9")
-    dark = c.get("dark") or accent(tint, 0.50, 0.42)
-    rows = [str(r) for r in c.get("rows", [])]
-    size = 37 * u
-    max_w = cw * 0.70
-    lines = []                                             # per row: list of text images
-    for row in rows:
-        parts = row.split("\n")
-        if len(parts) == 1 and font("medium", size).getlength(row) > max_w:
-            if font("medium", size * 0.88).getlength(row) > max_w:
-                for sep in (" | ", "  |  ", " + "):
-                    if sep in row:
-                        a, _, b = row.rpartition(sep)
-                        parts = [a, b]
-                        break
-        lines.append([rich(p.strip(), fit_size(p.strip(), size, "medium", max_w), "#4A4A4A", bold="medium")
-                      for p in parts])
-    pitch, extra = 60 * u, 40 * u
-    panel_top = int(H * 0.461)
-    rows_h = sum(pitch + extra * (len(l) - 1) for l in lines)
-    panel_bot = int(panel_top + 58 * u + rows_h + 26 * u)
+    ox, oy = (W - 1080 * u) / 2, (H - 1920 * u) / 2
+    X = lambda v: int(ox + v * u)
+    Y = lambda v: int(oy + v * u)
+    tint = c.get("tint", "#D7DCC1")
+    dark = c.get("dark") or accent(tint, 0.51, 0.31)
+    chip_col = c.get("chip") or shade(dark, 1.09)
+    rows = [re.sub(r"[ ]*\|[ ]*", "   |   ", str(r)) for r in c.get("rows", [])]     # airy separators
+    size, track = 37 * u, -0.8 * u
 
-    bg = Image.new("RGB", (W, H), rgb(tint))
-    g = ImageDraw.Draw(bg)
-    g.rectangle((0, panel_bot - 30 * u, W, H), fill=rgb(dark))
-    bg = paper(bg)
-    g = ImageDraw.Draw(bg)
-    g.polygon(wavy_band(W, panel_top - 7 * u, panel_top + 20 * u, 7 * u, 0.4), fill=rgb(dark))   # dark rim
-    bg = bg.convert("RGBA")
-    shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(shadow).polygon(wavy_band(W, panel_top + 6 * u, panel_bot + 8 * u, 8 * u, 0.9), fill=(0, 0, 0, 90))
-    bg = Image.alpha_composite(bg, shadow.filter(ImageFilter.GaussianBlur(10 * u)))
-    white = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(white).polygon(wavy_band(W, panel_top, panel_bot, 8 * u, 0.9), fill=(242, 242, 242, 255))
-    grid = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    gd = ImageDraw.Draw(grid)
-    for x in range(0, W, int(54 * u)):
-        gd.line((x, panel_top, x, panel_bot), fill=(0, 0, 0, 7), width=1)
-    for y in range(panel_top, panel_bot, int(54 * u)):
-        gd.line((0, y, W, y), fill=(0, 0, 0, 7), width=1)
-    grid.putalpha(ImageChops.multiply(grid.getchannel("A"), white.getchannel("A")))
-    bg = Image.alpha_composite(Image.alpha_composite(bg, white), grid)
-    layers = [(bg, 0, 0, 0.0, "fade")]
+    def width(s):
+        return gtext(s, size, 500, track=track).width
+    split = []
+    for row in rows:                                       # wrap rows that are too long, as the reference does
+        parts = [p.strip() for p in row.split("\n")]
+        if len(parts) == 1 and width(row) > 790 * u:
+            for sep in ("   |   ", " + "):
+                if sep in row:
+                    a, _, b = row.rpartition(sep)
+                    parts = [a.strip(), b.strip()]
+                    break
+        split.append(parts)
+    widest = max((width(p) for parts in split for p in parts), default=0)
+    icon_x, text_x = (165, 244) if widest <= 700 * u else (125, 203)
+    cy, centres = 972.0, []
+    for parts in split:
+        centres.append(cy)
+        cy += 60 + 40 * (len(parts) - 1)
+    panel_top, panel_bot = 885, (centres[-1] + 40 * (len(split[-1]) - 1) + 46 if rows else 1100)
 
-    badges = c.get("badges") or []
-    spots = [(ox + cw * 0.15, 290 * u, 60 * u), (ox + cw * 0.88, 470 * u, -110 * u)]
-    for n, b in enumerate(badges[:2]):
-        img, bx = hanging(b, spots[n][0], spots[n][1], W, u, spots[n][2])
-        layers.append((img, bx, 0, 0.15 + 0.15 * n, "slide"))
+    xs = (np.arange(W) - ox) / u
+    yy = np.arange(H, dtype=np.float32)[:, None]
+    tex_top = np.asarray(paper(Image.new("RGB", (W, H), rgb(tint)), 0.8), dtype=np.float32)
+    tex_low = np.asarray(paper(Image.new("RGB", (W, H), rgb(dark)), 0.8), dtype=np.float32)
+    rim = np.array(rgb(shade(chip_col, 0.86)), dtype=np.float32)
+    pale = np.array([v + (255 - v) * 0.18 for v in rgb(tint)], dtype=np.float32)
+    gx = ((np.arange(W) - ox) % (54 * u) < 1)[None, :]
+    reach = 60 * u                                         # rows that can change as the edges move
 
+    def cover(dist):                                      # anti-aliased step: 1 where dist > 0
+        return np.clip(dist + 0.5, 0, 1)[..., None]
+
+    def paint(y0, y1, top, bot):
+        """Pixels of rows y0..y1 for given top/bottom edge curves (absolute rows)."""
+        y = yy[y0:y1]
+        img = tex_top[y0:y1] * (1 - cover(y - bot)) + tex_low[y0:y1] * cover(y - bot)
+        grey = 239 - 38 * np.clip(1 - (y - top) / (38 * u), 0, 1) - 27 * np.clip(1 - (bot - y) / (38 * u), 0, 1)
+        grey = grey - 3 * (gx | ((y - Y(panel_top)) % (54 * u) < 1))   # faint squared-paper grid
+        a_ = cover(y - top - 2 * u) * cover(bot - 3.5 * u - y)
+        img = img * (1 - a_) + grey[..., None] * a_       # white panel, shaded towards both edges
+        a_ = cover(2 * u - np.abs(y - top))
+        img = img * (1 - a_) + rim * a_                   # dark line on the top edge
+        a_ = cover(y - bot + 4 * u) * cover(bot - y) * 0.92
+        return img * (1 - a_) + pale * a_                 # pale line on the bottom edge
+
+    def edges(t):
+        top = (oy + u * (panel_top - 2 + edge_wave(xs, t, EDGE_TOP)))[None, :]
+        bot = (oy + u * (panel_bot + edge_wave(xs, t, EDGE_BOTTOM)))[None, :]
+        return top, bot
+    t0_top, t0_bot = edges(0.0)
+    still = np.clip(paint(0, H, t0_top, t0_bot), 0, 255).astype(np.uint8)
+    bands = [(max(0, int(Y(panel_top) - reach)), int(Y(panel_top) + reach)),
+             (int(Y(panel_bot) - reach), min(H, int(Y(panel_bot) + reach)))]
+
+    def background(canvas, t):
+        top, bot = edges(t)
+        frame = still.copy()
+        for y0, y1 in bands:
+            frame[y0:y1] = np.clip(paint(y0, y1, top, bot), 0, 255).astype(np.uint8)
+        canvas.alpha_composite(Image.fromarray(frame).convert("RGBA"))
+
+    bg = Image.new("RGBA", (W, H), (0, 0, 0, 0))           # everything that sits on the paper
     src = c.get("image")
     if src and Path(src).exists():
         im = load_product(src)
-        k = min(cw * 0.70 / im.width, (panel_top - 170 * u) / im.height)
+        k = min(700 * u / im.width, 714 * u / im.height)
         im = im.resize((int(im.width * k), int(im.height * k)), Image.LANCZOS)
-        pad = int(60 * u)
-        holder = Image.new("RGBA", (im.width + 2 * pad, im.height + 2 * pad), (0, 0, 0, 0))
-        sh = Image.new("RGBA", holder.size, (0, 0, 0, 0))
-        sh.paste((0, 0, 0, 105), (pad + int(8 * u), pad + int(18 * u)), im.getchannel("A"))
-        holder = Image.alpha_composite(holder, sh.filter(ImageFilter.GaussianBlur(16 * u)))
-        holder.alpha_composite(im, (pad, pad))
-        layers.append((holder, ox + (cw - holder.width) // 2, int(panel_top - 80 * u - im.height - pad), 0.1, "slide"))
+        sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        px, py = X(538) - im.width // 2, Y(806) - im.height
+        sh.paste((0, 0, 0, 105), (px + int(5 * u), py + int(8 * u)), im.getchannel("A"))
+        bg = Image.alpha_composite(bg, sh.filter(ImageFilter.GaussianBlur(7 * u)))
+        bg.alpha_composite(im, (px, py))
 
     title = c.get("title", "")
-    t = rich(title, fit_size(title, 35 * u, "semibold", cw * 0.6), "#FFFFFF", bold="semibold")
-    chip_col = c.get("chip") or shade(dark, 1.12)
-    chip = Image.new("RGBA", (int(t.width + 96 * u), int(74 * u)), (0, 0, 0, 0))
-    ImageDraw.Draw(chip).rounded_rectangle((0, 0, chip.width - 1, chip.height - 1), radius=chip.height // 2,
-                                           fill=rgb(chip_col) + (255,))
-    chip.alpha_composite(t, ((chip.width - t.width) // 2, (chip.height - t.height) // 2))
-    layers.append((chip, ox + (cw - chip.width) // 2, int(panel_top + 3 * u - chip.height / 2), 0.25, "pop"))
+    t = gtext(title, gfit(title, 35.5 * u, 560, track, 640 * u), 560, "#FFFFFF", track)
+    cw_, ch_ = int(t.width + 88 * u), int(74 * u)
+    chip = Image.new("RGBA", (cw_ * 2, ch_ * 2), (0, 0, 0, 0))
+    ImageDraw.Draw(chip).rounded_rectangle((0, 0, cw_ * 2 - 1, ch_ * 2 - 1), radius=ch_, fill=rgb(chip_col) + (255,),
+                                           outline=rgb(shade(chip_col, 0.88)) + (255,), width=max(2, int(5 * u)))
+    chip = chip.resize((cw_, ch_), Image.LANCZOS)
+    chip.alpha_composite(t, ((cw_ - t.width) // 2, (ch_ - t.height) // 2))
+    bg.alpha_composite(chip, (X(540) - cw_ // 2, Y(888) - ch_ // 2))
 
     icons = c.get("icons") or []
     d = int(46 * u)
-    y = panel_top + 58 * u
-    block_w = max((max(i.width for i in l) for l in lines), default=0) + 80 * u
-    left = ox + max(cw * 0.115, (cw - block_w) / 2)
-    for n, l in enumerate(lines):
+    for n, parts in enumerate(split):
         kind = icons[n] if n < len(icons) else guess_icon(rows[n])
-        t0 = 0.35 + 0.08 * n
-        layers.append((row_icon(kind, d), int(left), int(y + (pitch - d) / 2 - 2 * u), t0, "pop"))
-        for m, img in enumerate(l):
-            layers.append((img, int(left + 80 * u), int(y + m * extra + (pitch - img.height) / 2), t0, "wipe"))
-        y += pitch + extra * (len(l) - 1)
+        ic = row_icon(kind, d)
+        ish = Image.new("RGBA", (d + 20, d + 20), (0, 0, 0, 0))
+        ish.paste((0, 0, 0, 40), (10, 12), ic.getchannel("A"))
+        ish = ish.filter(ImageFilter.GaussianBlur(4 * u))
+        ish.alpha_composite(ic, (10, 10))
+        bg.alpha_composite(ish, (X(icon_x) - 10, Y(centres[n]) - d // 2 - 10))
+        for m, p in enumerate(parts):
+            img = gtext(p, gfit(p, size, 500, track, 800 * u), 500, "#4B4B4B", track)
+            bg.alpha_composite(img, (X(text_x), Y(centres[n] + 40 * m) - img.height // 2))
 
+    layers = []
     if c.get("price"):
         label, sep, value = c["price"].partition(" - ")
-        text = f"{label} - *{value}*" if sep else f"*{label}*"
-        ps = fit_size(c["price"], 78 * u, "bold", cw * 0.68)
-        t = rich(text, ps, "#3F3F3F", bold="bold", light="bold", light_alpha=255,
-                 bold_color=c.get("price_color") or shade(dark, 0.82))
-        pp = panel(max(t.width + 90 * u, cw * 0.74), 100 * u, 22 * u, "#FFFFFF", "#FFFFFF", alpha=255, bw=0, shadow=95)
-        pp.alpha_composite(t, ((pp.width - t.width) // 2, (pp.height - t.height) // 2))
-        py = panel_bot + (H - panel_bot) * 0.36
-        layers.append((pp, ox + (cw - pp.width) // 2, int(py - pp.height / 2), 0.55 + 0.08 * len(rows), "wipe"))
+        label = label.strip() + " -" if sep else ""
+        value = (value if sep else c["price"]).strip()
+        value = re.sub(r"₹\s*", "Rs ", value)             # prices are written with "Rs"
+        pw, ph = int(800 * u), int(95 * u)
+        pill = Image.new("RGBA", (pw + 60, ph + 60), (0, 0, 0, 0))
+        psh = Image.new("RGBA", pill.size, (0, 0, 0, 0))
+        shape = Image.new("L", pill.size, 0)
+        ImageDraw.Draw(shape).rounded_rectangle((30, 30, 30 + pw, 30 + ph), 22 * u, fill=255)
+        shape = rough(shape, u, 0.55)
+        psh.paste((0, 0, 0, 150), (int(8 * u), int(10 * u)), shape)
+        pill = Image.alpha_composite(pill, psh.filter(ImageFilter.GaussianBlur(2.5 * u)))
+        pill.paste((254, 254, 252, 255), (0, 0), shape)
+        py = Y(panel_bot + 203) - ph // 2
+        px = X(540) - pw // 2
+
+        # Lettering measured from the reference: Instrument Sans, 74 px, label width 95, digits width 100,
+        # wider word spaces and a 28 px gap before the price.
+        def plan(k):
+            fl, fd = font("is95_700", 73 * u * k), font("is100_700", 73 * u * k)
+            items, pen = [], 0.0                           # (char, font, pen x)
+            for ch in label:
+                items.append((ch, fl, pen))
+                pen += fl.getlength(ch) - 0.47 * u * k + (3.5 * u * k if ch == " " else 0)
+            ink_end = pen - fl.getlength("-") + 0.47 * u * k + fl.getbbox("-", anchor="ls")[2] if label else 0
+            pen = ink_end + 25 * u * k if label else 0
+            first = True
+            for ch in value:
+                if first:
+                    pen -= fd.getbbox(ch, anchor="ls")[0]  # line glyph ink up with the gap, not its side bearing
+                items.append((ch, fd, pen))
+                pen += fd.getlength(ch) - 0.21 * u * k
+                first = False
+            return items, pen
+        k = 1.0
+        items, total = plan(k)
+        if total > 740 * u:                                # long prices shrink to fit the pill
+            k = 740 * u / total
+            items, total = plan(k)
+        base = py + 74.5 * u * k + (ph - 95 * u * k) / 2   # baseline inside the pill
+        x0 = X(540) - total / 2
+        lab_img = Image.new("RGBA", pill.size, (0, 0, 0, 0))
+        dl = ImageDraw.Draw(lab_img)
+        nlabel = len(label)
+        for ch, f, x in items[:nlabel]:
+            dl.text((x0 + x - px + 30, base - py + 30), ch, font=f, fill=(0x53, 0x53, 0x53, 255), anchor="ls")
+        pill.alpha_composite(lab_img)
+        bg.alpha_composite(pill, (px - 30, py - 30))
+
+        hh, ss, vv = colorsys.rgb_to_hsv(*[v / 255 for v in rgb(dark)])
+        top_c = np.array(colorsys.hsv_to_rgb(hh, max(0.0, ss - 0.02), min(1.0, vv * 1.07))) * 255
+        bot_c = np.array(colorsys.hsv_to_rgb(hh, min(1.0, ss + 0.30), vv * 0.66)) * 255
+        if c.get("price_color"):
+            top_c = bot_c = np.array(rgb(c["price_color"]), dtype=float)
+        cap = 55 * u * k
+        for i, (ch, f, x) in enumerate(items[nlabel:]):  # digits arrive one by one, growing up from the baseline
+            if not ch.strip():
+                continue
+            bb = f.getbbox(ch, anchor="ls")
+            m = Image.new("L", (int(bb[2] - bb[0]) + 4, int(bb[3] - bb[1]) + 4), 0)
+            ImageDraw.Draw(m).text((2 - bb[0], 2 - bb[1]), ch, font=f, fill=255, anchor="ls")
+            lx, ly = x0 + x + bb[0] - 2, base + bb[1] - 2
+            rows = (ly + np.arange(m.height) - (base - cap)) / cap        # 0 at cap height, 1 on the baseline
+            t = np.clip(rows, -0.1, 1.25)[:, None]
+            col = top_c[None, :] + (bot_c - top_c)[None, :] * t
+            fill = np.repeat(col[:, None, :], m.width, axis=1).clip(0, 255).astype(np.uint8)
+            glyph = Image.fromarray(fill, "RGB").convert("RGBA")
+            glyph.putalpha(m)
+            layers.append((glyph, int(round(lx)), int(round(ly)), 0.07 + 0.09 * i, "grow"))
+    layers.insert(0, (bg, 0, 0, 0.0, "none"))
+    layers.insert(0, (background, 0, 0, 0.0, "dyn"))
+
+    badges = (c.get("badges") or [])[:2]
+    spots = [(X(255), 330 * u, 3, 21, 1.6, -0.9), (X(830), 500 * u, 12, 14, 1.8, 2.8)]
+    for n, b in enumerate(badges):
+        ax, length, centre, amp, period, phase = spots[n]
+        layers.append((swinging(b, ax, length, u, centre, amp, period, phase), 0, 0, 0.0, "dyn"))
     return W, H, layers
 
 
@@ -559,7 +726,7 @@ def card_product(c, W, H, U):
 
 BUILDERS = {"tag": card_tag, "product": card_product, "pill": card_pill, "spec": card_spec, "words": card_words, "price": card_price, "text": card_text,
             "display": card_display, "badge": card_badge, "subscribe": card_subscribe, "sheet": card_sheet}
-ANIM_S = {"pop": 0.24, "wipe": 0.45, "slide": 0.32, "fade": 0.2, "none": 0.0}
+ANIM_S = {"pop": 0.24, "wipe": 0.45, "slide": 0.32, "fade": 0.2, "none": 0.0, "grow": 0.17, "dyn": 0.0}
 
 
 # ------------------------------------------------------------------ animation
@@ -581,6 +748,8 @@ def comp(canvas, img, x, y):
 
 def draw_layer(canvas, layer, t, U):
     img, x, y, t0, anim = layer[:5]
+    if anim == "dyn":                                      # layer draws itself every frame (e.g. a swinging tag)
+        return img(canvas, t)
     lt = t - t0
     if lt < 0 or (len(layer) > 5 and t >= layer[5]):
         return
@@ -601,6 +770,10 @@ def draw_layer(canvas, layer, t, U):
         comp(canvas, with_alpha(img, p), x, y + (1 - ease) * 50 * U)
     elif anim == "fade":
         comp(canvas, with_alpha(img, p), x, y)
+    elif anim == "grow":                                   # scale up from the bottom-left corner (baseline)
+        s = 0.3 + 0.7 * ease
+        w, h = max(1, int(img.width * s)), max(1, int(img.height * s))
+        comp(canvas, img.resize((w, h), Image.BILINEAR) if s < 0.995 else img, x, y + (img.height - h) * 0.78)
     else:
         comp(canvas, img, x, y)
 
@@ -615,22 +788,51 @@ def render_card(card, W, H, fps, out_dir):
     dur = max(0.2, card["end"] - card["start"])
     n = max(2, int(round(dur * fps)))
     settled = max(max(l[3] + ANIM_S[l[4]], l[5] if len(l) > 5 and l[5] < 1e8 else 0) for l in layers) + 1 / fps
-    out_s = min(0.15, dur / 4)
+    sheet = card["type"] == "sheet"
+    moving = [l for l in layers if l[4] == "dyn"]
+    still = [l for l in layers if l[4] != "dyn"]
+    out_s = 0.0 if sheet else min(0.15, dur / 4)           # sheets cut out hard, like the reference
     out_dir = Path(out_dir)
     if out_dir.exists():
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True)
+    runs, cur = [], []                                     # consecutive still layers form one cached run
+    for l in layers:
+        if l[4] == "dyn":
+            if cur:
+                runs.append(cur)
+                cur = []
+            runs.append(l)
+        else:
+            cur.append(l)
+    if cur:
+        runs.append(cur)
+    cache = {}
     held = None
     for f in range(n):
         t = f / fps
         path = out_dir / f"f_{f:04d}.png"
-        fading = t > dur - out_s
-        if t >= settled and not fading and held:
+        fading = out_s > 0 and t > dur - out_s
+        if t >= settled and not fading and held and not moving:
             shutil.copyfile(held, path)
             continue
         canvas = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
-        for layer in layers:
-            draw_layer(canvas, layer, t, U)
+        for i, run in enumerate(runs):
+            if isinstance(run, tuple):
+                draw_layer(canvas, run, t, U)
+                continue
+            if i in cache:
+                canvas.alpha_composite(cache[i])
+                continue
+            part = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
+            for layer in run:
+                draw_layer(part, layer, t, U)
+            canvas.alpha_composite(part)
+            if t >= settled:
+                cache[i] = part
+        if sheet and f < 2:                                # arrives with a vertical motion blur
+            k = (26, 7)[f]
+            canvas = canvas.resize((cw, max(1, ch // k)), Image.BOX).resize((cw, ch), Image.BILINEAR)
         if fading:
             canvas = with_alpha(canvas, max(0.0, (dur - t) / out_s))
         canvas.save(path, compress_level=1)

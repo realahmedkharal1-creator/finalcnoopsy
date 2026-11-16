@@ -382,7 +382,7 @@ def render(src, work, out, P, base):
 
 DEMO_CARDS = [
     {"type": "words", "start": 0.3, "end": 2.4, "words": [{"text": "KYA", "t": 0.0}, {"text": "AAPNE", "t": 0.35}]},
-    {"type": "price", "start": 0.6, "end": 2.6, "lines": ["₹15K", "₹60K"], "y": 0.80},
+    {"type": "price", "start": 0.6, "end": 2.6, "lines": ["Rs 15K", "Rs 60K"], "y": 0.80},
     {"type": "tag", "start": 2.8, "end": 8.6, "text": "moto edge 70 pro", "progress": True},
     {"type": "product", "start": 2.8, "end": 5.6, "brand": "motorola", "model": "edge 70 pro", "bar": "#0B3D12"},
     {"type": "pill", "start": 3.2, "end": 5.6, "text": ["*6500 mAh* Battery", "*45W* Charging"], "y": 0.40},
@@ -399,7 +399,7 @@ DEMO_CARDS = [
     {"type": "sheet", "start": 8.8, "end": 12.4, "title": "motorola edge 70 Pro", "tint": "#DDE5C9",
      "rows": ['6.8" 1.5K 144Hz Quad Curved AMOLED', "Dimensity 8500 (4nm)", "LPDDR5X RAM  |  UFS 4.1 Storage",
               "6500mAh Battery  |  90W Charger", "50MP Main + 50MP UW  |  50MP Front", "IP68 & IP69",
-              "Hello UI  |  Android 16  |  3 + 5 Years"], "price": "Offer Price - ₹36,999"},
+              "Hello UI  |  Android 16  |  3 + 5 Years"], "price": "Offer Price - Rs 36,999"},
     {"type": "subscribe", "start": 12.6, "end": 16.0, "name": "Your Channel", "tagline": "Tech & Reviews  •  Made Simple"},
     {"type": "pill", "start": 12.9, "end": 14.4, "text": "SAVE THIS?", "fill": "#FFF3A6", "y": 0.30},
     {"type": "pill", "start": 14.4, "end": 16.0, "text": "& SHARE", "fill": "#C9F2D4", "y": 0.30},

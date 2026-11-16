@@ -64,7 +64,7 @@ If the user only asks for one thing ("add a spec card at 12 s", "put a price her
 
 **Gyan (default)**
 - 0.0-1.0 s: creator already holding the product near the lens, mid-gesture.
-- A `price` card in the lower third when the hook is about money (`₹15K` then `₹60K`), or a brand
+- A `price` card in the lower third when the hook is about money (`Rs 15K` then `Rs 60K`), or a brand
   or product name as a `display` card at the top.
 - Optional `words` cards: the spoken hook, two words per screen, at 60% height, first 3 s only.
 - 1-5 s: three or four shots of 0.8-1.8 s, each with a fast push-in (1.22-1.45x within the shot).
@@ -94,7 +94,7 @@ Entries must not overlap. Alternate punch, static, creep; never two punches in a
 
 Every card: `{"type": ..., "start": seconds, "end": seconds}` plus the fields below. Optional on
 any card: `"x"` and `"y"` (centre, 0-1 fraction of the frame), `"scale"` (1.0 = default size).
-In text, `*asterisks*` mark the bold part: `"*6500 mAh* Battery"`. Use `₹`, `Rs` or `$` freely.
+In text, `*asterisks*` mark the bold part: `"*6500 mAh* Battery"`. Write prices with `Rs` (the user is in Pakistan), e.g. `Rs 36,999`; a `₹` in a sheet price is turned into `Rs`.
 
 | Type | Looks like | Fields | Default y | Use for |
 |---|---|---|---|---|
@@ -103,7 +103,7 @@ In text, `*asterisks*` mark the bold part: `"*6500 mAh* Battery"`. Use `₹`, `R
 | `spec` | mint glass card, 2-4 centred lines; with `"style": "white"` a white card, italic, left-aligned | `lines` (list, with `*bold*` parts) | 0.20 | chipset + RAM + storage together |
 | `tag` | small white name tag, top-left; `"progress": true` adds a yellow bar along the top that fills over the tag's duration | `text` | 0.066 | which product is on screen, for a whole product segment |
 | `product` | thin brand line, then the model in italic serif on a colour bar | `model`, optional `brand`, `bar` (hex), `color`, `model_color` | 0.21 | first shot of each product |
-| `sheet` | full-screen spec sheet: paper-textured tinted top with the product picture and its shadow, name chip, torn-edge white panel with an icon per row, big price pill on a dark band, optional tags hanging on strings | `title`, `rows` (up to 8; icons are picked from the words, long rows wrap at ` | ` or ` + `, or use `\n`), `price` (`"Offer Price - Rs 36,999"`), `image` (product picture; a plain white background is removed automatically), `tint` (pale hex), optional `dark` (band colour), `badges` (up to 2: text like `"SALE"` or a PNG path), `icons` (display, chip, storage, battery, camera, water, os) | full screen | product summary, 2-3 s each; one per product in a deal list. Pick `tint` as a pale version of the phone colour and `dark` as a deep version of it |
+| `sheet` | full-screen spec sheet matched to the Gyan Therapy reference: paper-textured tinted top with the product picture and its shadow, name chip, white panel whose wavy edges slide sideways (top edge right, bottom edge left), Google Sans rows with an icon each, and a price pill on a dark band. Arrives with a 2-frame vertical blur, "Offer Price -" is already there and the price digits grow in one by one in a top-to-bottom colour gradient, two tags swing on strings, hard cut out | `title`, `rows` (up to 8; icons are picked from the words, long rows wrap at ` \| ` or ` + `, or use `\n`), `price` (`"Offer Price - Rs 36,999"`; long prices shrink to fit), `image` (product picture; a plain white background is removed automatically), `tint` (pale hex), optional `dark` (band colour), `badges` (up to 2: text like `"SALE"` or a PNG path), `icons` (display, chip, storage, battery, camera, water, os) | full screen | product summary, 2-3 s each; one per product in a deal list. Pick `tint` as a pale version of the phone colour and `dark` as a deep version of it. Approved by the user as the reference look: do not restyle it |
 | `price` | huge italic gradient numbers with white outline | `lines` (1-2 strings, or `{"text","color"}` with color green, cyan, yellow, red, white, purple) | 0.68 | price ranges in the hook, discounts |
 | `words` | one glass pill per word, each pops on its own time | `words`: `[{"text":"KYA","t":0.0},{"text":"AAPNE","t":0.35}]` (`t` = seconds after card start) | 0.60 | hook only, max 2-3 words per card |
 | `display` | big display lettering with soft shadow, pops in | `text` (string or list of lines), optional `sub`, `color` (hex or gradient name), `size` (150 default) | 0.48 | product/chip names at top (`y` 0.13), Jay one-word captions, hook titles |
@@ -131,7 +131,7 @@ Scan the transcript and add cards and B-roll (files from the user's `broll/` fol
 | Product name, first mention | full-screen product shot 2-4 s + `display` card at y 0.13 |
 | Spec with a unit (mAh, MP, Hz, W, GB, nits, nm, inch) | `pill`: `"*VALUE UNIT* Descriptor"`, plus `click` |
 | Three related specs in one breath | `spec` card with three lines |
-| Price, offer, discount | `price` card (hook) or `pill` (`"*Price* - ₹64,999"`), plus `ding` |
+| Price, offer, discount | `price` card (hook) or `pill` (`"*Price* - Rs 64,999"`), plus `ding` |
 | Full product recap or a list of deals | `sheet` per product, 2-3 s each |
 | "vs", "compared to" | two B-roll clips, `left_half` + `right_half`, name `pill` on each side (`x` 0.25 / 0.75) |
 | App, website, article, setting | screenshot or screen recording, full screen, 2-5 s |
@@ -182,4 +182,4 @@ SFX entry: `{"t": 4.06, "name": "pop"}` (optional `"db"`). The script already pl
 - Cards are drawn flat: no background blur behind the glass, no 3D text orbiting a product,
   no hand-drawn callout lines to camera lenses, no handwriting-style write-on, no cursor or sparkles on the subscribe card.
 - Sheet badges are generic seals or the user's own PNGs; store and brand logos are not bundled.
-- Fonts are Poppins, Playfair Display and Lilita One (Latin only). Reference fonts and colours were matched by eye.
+- Fonts are Poppins, Google Sans, Instrument Sans, Playfair Display and Lilita One (Latin only). Reference fonts and colours were matched by eye.
