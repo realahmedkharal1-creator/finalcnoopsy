@@ -67,42 +67,64 @@ def duration(path):
 
 # ---------------------------------------------------------------- 1. cut
 def cut(raw, work, P, fmt):
+    """Remove dead air. A hand-made work/<name>/keep.json overrides the automatic cut:
+    {"segments": [[start, end], ...], "tail_pad": seconds}; segments may be in any order."""
     c = P["cut"]
     sw, sh, total = probe(raw)
     vertical = fmt == "vertical" or (fmt == "auto" and sh >= sw)
     W, H = (1080, 1920) if vertical else (1920, 1080)
-    log = run(["ffmpeg", "-hide_banner", "-nostats", "-i", raw, "-vn", "-af",
-               f"silencedetect=noise={c['silence_db']}dB:d={c['min_silence_s']}", "-f", "null", "-"], True)
-    starts = [float(x) for x in re.findall(r"silence_start: ([\d.]+)", log)]
-    ends = [float(x) for x in re.findall(r"silence_end: ([\d.]+)", log)]
-    if len(ends) < len(starts):
-        ends.append(total)
-    keep, t = [], 0.0
-    for s, e in zip(starts, ends):          # keep what lies between silences, plus padding
-        a, b = max(0.0, t - c["pad_s"]), min(total, s + c["pad_s"])
-        if b - a >= c["min_keep_s"]:
-            keep.append((a, b))
-        t = e
-    if total - t >= c["min_keep_s"]:
-        keep.append((max(0.0, t - c["pad_s"]), total))
-    if not keep:
-        keep = [(0.0, total)]
-    merged = [list(keep[0])]
-    for a, b in keep[1:]:                   # padding can make neighbours touch
-        if a <= merged[-1][1]:
-            merged[-1][1] = b
-        else:
-            merged.append([a, b])
-    sel = "+".join(f"between(t,{a:.3f},{b:.3f})" for a, b in merged)
-    graph = (f"[0:v]select='{sel}',setpts=N/{FPS}/TB,scale={W}:{H}:force_original_aspect_ratio=increase,"
-             f"crop={W}:{H},setsar=1[v];[0:a]aselect='{sel}',asetpts=N/SR/TB[a]")
-    run(["ffmpeg", "-y", "-hide_banner", "-i", raw, "-r", FPS] + ffmpeg_graph(graph, work) +
+    keep_file, tail = work / "keep.json", 0.0
+    if keep_file.exists():
+        k = json.loads(keep_file.read_text(encoding="utf-8"))
+        merged = [list(x) for x in (k["segments"] if isinstance(k, dict) else k)]
+        tail = float(k.get("tail_pad", 0)) if isinstance(k, dict) else 0.0
+    else:
+        log = run(["ffmpeg", "-hide_banner", "-nostats", "-i", raw, "-vn", "-af",
+                   f"silencedetect=noise={c['silence_db']}dB:d={c['min_silence_s']}", "-f", "null", "-"], True)
+        starts = [float(x) for x in re.findall(r"silence_start: ([\d.]+)", log)]
+        ends = [float(x) for x in re.findall(r"silence_end: ([\d.]+)", log)]
+        if len(ends) < len(starts):
+            ends.append(total)
+        keep, t = [], 0.0
+        for s_, e in zip(starts, ends):     # keep what lies between silences, plus padding
+            a, b = max(0.0, t - c["pad_s"]), min(total, s_ + c["pad_s"])
+            if b - a >= c["min_keep_s"]:
+                keep.append((a, b))
+            t = e
+        if total - t >= c["min_keep_s"]:
+            keep.append((max(0.0, t - c["pad_s"]), total))
+        if not keep:
+            keep = [(0.0, total)]
+        merged = [list(keep[0])]
+        for a, b in keep[1:]:               # padding can make neighbours touch
+            if a <= merged[-1][1]:
+                merged[-1][1] = b
+            else:
+                merged.append([a, b])
+    # the whole frame is kept (no crop): render decides how the speaker is framed
+    fit = "scale=1920:1920:force_original_aspect_ratio=decrease:force_divisible_by=2,setsar=1"
+    pad_v = f",tpad=stop_mode=clone:stop_duration={tail:.2f}" if tail else ""
+    pad_a = f",apad=pad_dur={tail:.2f}" if tail else ""
+    in_order = all(merged[i][1] <= merged[i + 1][0] for i in range(len(merged) - 1))
+    if in_order:
+        sel = "+".join(f"between(t,{a:.3f},{b:.3f})" for a, b in merged)
+        inputs = ["-i", raw]
+        graph = (f"[0:v]select='{sel}',setpts=N/{FPS}/TB,{fit}{pad_v}[v];"
+                 f"[0:a]aselect='{sel}',asetpts=N/SR/TB{pad_a}[a]")
+    else:                                   # re-ordered segments: one seeked input per segment
+        inputs = []
+        for a, b in merged:
+            inputs += ["-ss", f"{a:.3f}", "-t", f"{b - a:.3f}", "-i", raw]
+        pads = "".join(f"[{i}:v][{i}:a]" for i in range(len(merged)))
+        graph = (f"{pads}concat=n={len(merged)}:v=1:a=1[vc][ac];[vc]fps={FPS},{fit}{pad_v}[v];"
+                 f"[ac]anull{pad_a}[a]")
+    run(["ffmpeg", "-y", "-hide_banner"] + inputs + ["-r", FPS] + ffmpeg_graph(graph, work) +
         ["-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-crf", "16", "-preset", "veryfast",
          "-c:a", "aac", "-b:a", "192k", work / "cut.mp4"])
     kept = sum(b - a for a, b in merged)
-    (work / "meta.json").write_text(json.dumps({"W": W, "H": H, "segments": merged, "removed_s": round(total - kept, 2)}))
-    print(f"[cut] {total:.1f}s -> {kept:.1f}s ({len(merged)} segments, {total - kept:.1f}s dead air removed), "
-          f"{W}x{H}")
+    (work / "meta.json").write_text(json.dumps({"W": W, "H": H, "segments": merged, "tail_pad": tail,
+                                                "removed_s": round(total - kept, 2)}))
+    print(f"[cut] {total:.1f}s -> {kept:.1f}s ({len(merged)} segments, {total - kept:.1f}s removed), output {W}x{H}")
 
 
 # ---------------------------------------------------------------- 2. transcribe
@@ -300,10 +322,38 @@ def render(src, work, out, P, base):
     make_sfx(sfx_dir)
     A = P["audio"]
     inputs, fc = ["-i", src], []
+    sw, sh, _ = probe(src)
     z = zoom_expr(pl.get("zooms", []))
-    fc.append(f"[0:v]scale=w='2*trunc({W // 2}*({z}))':h='2*trunc({H // 2}*({z}))':eval=frame,"
-              f"crop={W}:{H}:(iw-{W})/2:(ih-{H})*{P['zoom']['anchor_y']},setsar=1[v0]")
+    # Where the speaker goes over time. Modes: full, bottom / top (half screen), circle (over b-roll), hidden.
+    layout = pl.get("layout") or [{"start": 0, "end": total, "mode": "full"}]
+    head = pl.get("head", {})                             # x, y = face centre in the raw frame (0-1)
+    fx, fy = head.get("x", 0.5), head.get("y", 0.3)
+
+    def when(*modes):
+        return "+".join(f"between(t,{l['start']},{l['end']})" for l in layout if l["mode"] in modes) or "0"
+    used = {l["mode"] for l in layout}
+    views = [m for m in ("full", "half", "circle") if m in used or (m == "half" and used & {"top", "bottom"})]
+    fc.append(f"color=c=black:s={W}x{H}:r={FPS}:d={total:.2f}[v0]")
+    if views:
+        fc.append(f"[0:v]split={len(views)}" + "".join(f"[h_{m}]" for m in views))
     last, n = "v0", 1
+    if "full" in views:
+        fc.append(f"[h_full]scale={W}:{H}:force_original_aspect_ratio=increase,"
+                  f"crop={W}:{H}:(iw-{W})*{fx}:(ih-{H})*{fy},"
+                  f"scale=w='2*trunc({W // 2}*({z}))':h='2*trunc({H // 2}*({z}))':eval=frame,"
+                  f"crop={W}:{H}:(iw-{W})/2:(ih-{H})*{P['zoom']['anchor_y']},setsar=1[hf]")
+        fc.append(f"[v0][hf]overlay=0:0:enable='{when('full')}'[vh1]")
+        last = "vh1"
+    if "half" in views:
+        hh = H // 2
+        both = "top" in used and "bottom" in used
+        fc.append(f"[h_half]scale={W}:{hh}:force_original_aspect_ratio=increase,"
+                  f"crop={W}:{hh}:(iw-{W})*{fx}:(ih-{hh})*{head.get('half_y', 0.12)},setsar=1"
+                  + ("[hh0];[hh0]split=2[hh_top][hh_bottom]" if both else f"[hh_{'top' if 'top' in used else 'bottom'}]"))
+        for m, y in (("top", 0), ("bottom", hh)):
+            if m in used:
+                fc.append(f"[{last}][hh_{m}]overlay=0:{y}:enable='{when(m)}'[vh_{m}]")
+                last = f"vh_{m}"
     boxes = {"full": (W, H, 0, 0), "top_half": (W, H // 2, 0, 0), "bottom_half": (W, H // 2, 0, H // 2),
              "left_half": (W // 2, H, 0, 0), "right_half": (W // 2, H, W // 2, 0)}
     for b in pl.get("broll", []):
@@ -313,15 +363,73 @@ def render(src, work, out, P, base):
             continue
         d = b["end"] - b["start"]
         still = f.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp")
-        inputs += (["-loop", "1", "-t", f"{d:.2f}"] if still else ["-t", f"{d:.2f}"]) + ["-i", f]
+        seek = ["-ss", f"{b['ss']:.2f}"] if b.get("ss") is not None and not still else []   # start inside a long file
+        inputs += (["-loop", "1", "-t", f"{d:.2f}"] if still else seek + ["-t", f"{d:.2f}"]) + ["-i", f]
         bw, bh, bx, by = boxes[b.get("layout", "full")]
         kb = b.get("zoom_to", P["broll"]["push_to"])      # slow push on every b-roll shot
-        fc.append(f"[{n}:v]fps={FPS},scale={bw}:{bh}:force_original_aspect_ratio=increase,crop={bw}:{bh},"
-                  f"scale=w='2*trunc({bw // 2}*(1+{kb - 1:.3f}*t/{d:.2f}))':h='2*trunc({bh // 2}*(1+{kb - 1:.3f}*t/{d:.2f}))':eval=frame,"
-                  f"crop={bw}:{bh},setsar=1,setpts=PTS-STARTPTS+{b['start']}/TB[b{n}]")
+        push = (f"scale=w='2*trunc({bw // 2}*(1+{kb - 1:.3f}*t/{d:.2f}))':h='2*trunc({bh // 2}*(1+{kb - 1:.3f}*t/{d:.2f}))':eval=frame,"
+                f"crop={bw}:{bh},setsar=1,setpts=PTS-STARTPTS+{b['start']}/TB[b{n}]")
+        # One clean clip per box, never a blurred copy behind it. "center" = where the product is in the source
+        # (0 left .. 1 right); it is moved to the middle of the box. "headroom" pushes the clip down to leave room
+        # for a card above the product; "h_frac" < 1 shows more of a wide clip. Any gap is filled by stretching the
+        # clip's own edge rows, so the product never appears twice.
+        bsw, bsh, _ = probe(f)
+        fh = 2 * int(bh * b.get("h_frac", 1.0) / 2)
+        if fh * bsw / bsh < bw:                           # always at least as wide as the box
+            fh = 2 * int(bw * bsh / bsw / 2 + 1)
+        if "center" in b:
+            xexpr = f"max(0,min(iw-{bw},iw*{b['center']}-{bw // 2}))"
+        else:
+            xexpr = f"(iw-{bw})*{b.get('focus', 0.5)}"
+        top_gap = 2 * (max(0, int((bh - fh) * b.get("y", 0.5)) + int(bh * b.get("headroom", 0))) // 2)
+        vis = 2 * (min(fh, bh - top_gap) // 2)            # rows of the clip that stay visible (even, for yuv420)
+        bot_gap = bh - top_gap - vis
+        ytop = 0 if (top_gap or bot_gap) else (fh - bh) // 2
+        chain = f"[{n}:v]fps={FPS},scale=-2:{fh},crop={bw}:{vis}:x='{xexpr}':y={ytop}"
+        if not top_gap and not bot_gap:
+            fc.append(f"{chain},{push}")
+        else:
+            parts = [g for g in ("t" if top_gap else "", "m", "u" if bot_gap else "") if g]
+            g = f"{chain},split={len(parts)}" + "".join(f"[e{k}{n}]" for k in parts) + ";"
+            if top_gap:
+                g += f"[et{n}]crop={bw}:6:0:0,scale={bw}:{top_gap}:flags=bilinear,gblur=sigma=14[ft{n}];"
+            if bot_gap:
+                g += f"[eu{n}]crop={bw}:6:0:{vis - 6},scale={bw}:{bot_gap}:flags=bilinear,gblur=sigma=14[fu{n}];"
+            order = "".join(f"[{'ft' if k == 't' else 'fu' if k == 'u' else 'em'}{n}]" for k in parts)
+            g += f"{order}vstack=inputs={len(parts)},{push}"
+            fc.append(g)
         fc.append(f"[{last}][b{n}]overlay={bx}:{by}:enable='between(t,{b['start']},{b['end']})':eof_action=pass[v{n}]")
         last = f"v{n}"
         n += 1
+    if "circle" in views:                                 # speaker in a circle, on top of the b-roll
+        from PIL import Image, ImageDraw, ImageFilter
+        cc = head.get("circle", {})
+        dia = 2 * int(W * cc.get("size", 0.34) / 2)
+        side = 2 * int(min(sw, sh) * cc.get("zoom", 0.62) / 2)
+        cx0 = int(min(max(sw * fx - side / 2, 0), sw - side))
+        cy0 = int(min(max(sh * fy - side * 0.45, 0), sh - side))
+        m = Image.new("L", (dia * 4, dia * 4), 0)
+        ImageDraw.Draw(m).ellipse((0, 0, dia * 4 - 1, dia * 4 - 1), fill=255)
+        m.resize((dia, dia), Image.LANCZOS).save(work / "circle_mask.png")
+        pad = 40
+        ring = Image.new("RGBA", ((dia + 2 * pad) * 2, (dia + 2 * pad) * 2), (0, 0, 0, 0))
+        shadow = Image.new("RGBA", ring.size, (0, 0, 0, 0))
+        ImageDraw.Draw(shadow).ellipse((2 * pad, 2 * pad + 16, 2 * (pad + dia), 2 * (pad + dia) + 16), fill=(0, 0, 0, 150))
+        ring = Image.alpha_composite(ring, shadow.filter(ImageFilter.GaussianBlur(22)))
+        ImageDraw.Draw(ring).ellipse((2 * pad, 2 * pad, 2 * (pad + dia), 2 * (pad + dia)), fill=(0, 0, 0, 0))
+        ImageDraw.Draw(ring).ellipse((2 * pad - 6, 2 * pad - 6, 2 * (pad + dia) + 6, 2 * (pad + dia) + 6),
+                                     outline=(255, 255, 255, 255), width=18)
+        ring.resize((dia + 2 * pad, dia + 2 * pad), Image.LANCZOS).save(work / "circle_ring.png")
+        px = int(W * cc.get("x", 0.22) - dia / 2)
+        py = int(H * cc.get("y", 0.80) - dia / 2)
+        inputs += ["-loop", "1", "-t", f"{total:.2f}", "-i", work / "circle_mask.png",
+                   "-loop", "1", "-t", f"{total:.2f}", "-i", work / "circle_ring.png"]
+        fc.append(f"[h_circle]crop={side}:{side}:{cx0}:{cy0},scale={dia}:{dia},setsar=1,format=rgba[hc0];"
+                  f"[{n}:v]format=gray,fps={FPS}[hcm];[hc0][hcm]alphamerge[hc]")
+        fc.append(f"[{last}][hc]overlay={px}:{py}:enable='{when('circle')}':eof_action=pass[vc1]")
+        fc.append(f"[vc1][{n + 1}:v]overlay={px - pad}:{py - pad}:enable='{when('circle')}':eof_action=pass[vc2]")
+        last = "vc2"
+        n += 2
     card_list = sorted(pl.get("cards", []), key=lambda c: (c["type"] != "sheet", c["start"]))
     for k, c in enumerate(card_list):                     # sheets first so other cards can sit on top
         for key in ("image", "avatar"):

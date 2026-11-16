@@ -463,9 +463,11 @@ def gfit(text, size, weight, track, max_w):
 def swinging(badge, ax, length, u, centre, amp, period, phase):
     """A badge on a string that swings like a pendulum. Returns a draw(canvas, t) function."""
     if isinstance(badge, str) and Path(badge).suffix.lower() in (".png", ".jpg", ".jpeg", ".webp") and Path(badge).exists():
-        b = load_product(badge)
+        b = Image.open(badge).convert("RGBA")
         k = 150 * u / max(b.size)
         b = b.resize((max(1, int(b.width * k)), max(1, int(b.height * k))), Image.LANCZOS)
+        if b.getchannel("A").getextrema()[0] > 250:        # a logo on a solid tile: keep it, round the corners
+            b.putalpha(rounded_mask(b.width, b.height, int(min(b.size) * 0.22)))
     else:
         b = seal(str(badge), int(125 * u))
     pad = int(26 * u)

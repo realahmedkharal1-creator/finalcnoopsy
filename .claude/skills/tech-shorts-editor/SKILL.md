@@ -177,8 +177,40 @@ SFX entry: `{"t": 4.06, "name": "pop"}` (optional `"db"`). The script already pl
 - Frames at 0.3 s, 2 s, each card type used, one B-roll, the last 2 s: text inside the frame,
   nothing over the face, no two cards overlapping, no empty boxes (missing glyphs).
 
+## 8. Landscape footage in a vertical video
+
+The user films landscape (talking head and B-roll) and publishes vertical. `cut` keeps the whole
+frame; `render` decides the framing from these `plan.json` fields.
+
+- **Hand-made cut list**: `work/<name>/keep.json` = `{"segments": [[start, end], ...], "tail_pad": 2.8}`.
+  Segments may be re-ordered (intro first, then points). `tail_pad` adds silent seconds for a closing sheet.
+- **`head`**: `{"x": 0.5, "y": 0.28}` = where the speaker's face is in the raw frame.
+- **`layout`**: list of `{"start", "end", "mode"}` covering the whole video. Modes:
+  - `full`: speaker fills the screen (hook, a punchy line). Keep it short: the crop is soft.
+  - `bottom` / `top`: speaker in one half, B-roll with `"layout": "top_half"` / `"bottom_half"` in the other.
+    The user's favourite; use it for comparisons and wide shots such as landscape gaming.
+  - `circle`: B-roll fills the screen, speaker in a circle bottom-left (`head.circle`: `size`, `x`, `y`, `zoom`).
+  - `hidden`: no speaker (full-screen sheet).
+- **B-roll entry extras**: `ss` (start inside a long source file), `center` (where the product is in
+  the source, 0 left .. 1 right; it is moved to the middle), `headroom` (0-0.15: push the clip down to
+  leave room for a card above the product), `h_frac` (below 1 shows more of a wide clip), `y`.
+
+Rules the user gave after the first edit (follow them every time):
+
+1. **One clean clip per area.** Never put a blurred or duplicate copy of the clip above, below or
+   behind it. Fill the box with the clip itself.
+2. **Product in the middle.** Measure where the product is in each B-roll shot and set `center` so
+   it sits in the middle of its box, even if it is off to one side in the source.
+3. **Cards never sit on the product.** Use `headroom` so the card is above the phone, and check a frame.
+4. **Text on the talking head stays clear of the face.** In `full` mode put word pills at y 0.77,
+   well below the chin.
+5. **Use the space.** A wide shot (phone held sideways) fills its half; no empty strips around it.
+6. Spec values on cards come from the user's spec sheet or their own words. If a spoken price is
+   unclear, leave it out and ask.
+
 ## Limits
 
+- A hero shot wider than the frame (box plus phone) may lose a little at the sides.
 - Cards are drawn flat: no background blur behind the glass, no 3D text orbiting a product,
   no hand-drawn callout lines to camera lenses, no handwriting-style write-on, no cursor or sparkles on the subscribe card.
 - Sheet badges are generic seals or the user's own PNGs; store and brand logos are not bundled.
