@@ -1,0 +1,9 @@
+Not in the voice text; confirm before recording:
+- Price: not said in the transcript (cards in the S26 FE vs S25 FE video: 8/256 about 250K, 8/512 about 320K). Add it in digits if you want it.
+- Exynos 2500, 3 nm, 3.3 GHz, Xclipse 950, 8 GB LPDDR5X, 256 GB UFS 4.0, benchmark about 2.7 million, One UI 9.0 (heard; the video title in another file says One UI 9): heard clearly.
+- Samsung claims +11 % CPU, +24 % GPU, +51 % NPU versus the last generation (heard, not used).
+- Gaming: the host says "30 to 60 fps stable"; the script says 60 fps. "My fan camera" is his name for an AI auto-tracking video feature.
+- Updates: "seven years Android and security" (heard); left out for length.
+- Camera: 50 MP main with OIS, 8K 30 fps (heard as "8K 30"), 8 MP 3x telephoto, 12 MP ultrawide (123 degrees); the 8K claim is surprising for this model: check.
+- Display: 6.7 inch dynamic AMOLED 2X (heard), battery 4900 mAh and 45 W (heard).
+Cut for length: the Galaxy AI feature list (audio eraser, photo assist, creative studio), connectivity, speakers, Google Gemini Pro trial.
