@@ -177,8 +177,49 @@ SFX entry: `{"t": 4.06, "name": "pop"}` (optional `"db"`). The script already pl
 - Frames at 0.3 s, 2 s, each card type used, one B-roll, the last 2 s: text inside the frame,
   nothing over the face, no two cards overlapping, no empty boxes (missing glyphs).
 
+## 8. Landscape footage in a vertical video
+
+The user films landscape (talking head and B-roll) and publishes vertical. `cut` keeps the whole
+frame; `render` decides the framing from these `plan.json` fields.
+
+- **Hand-made cut list**: `work/<name>/keep.json` = `{"segments": [[start, end], ...], "tail_pad": 2.8}`.
+  Segments may be re-ordered (intro first, then points). `tail_pad` adds silent seconds for a closing sheet.
+- **`head`**: `{"x": 0.5, "y": 0.28}` = where the speaker's face is in the raw frame.
+- **`layout`**: list of `{"start", "end", "mode"}` covering the whole video. Modes:
+  - `full`: speaker fills the screen (hook, a punchy line). Keep it short: the crop is soft.
+  - `bottom` / `top`: speaker in one half, B-roll with `"layout": "top_half"` / `"bottom_half"` in the other.
+    The user's favourite; use it for comparisons and wide shots such as landscape gaming.
+  - `circle`: B-roll fills the screen, speaker in a circle bottom-left (`head.circle`: `size`, `x`, `y`, `zoom`).
+  - `hidden`: no speaker (full-screen sheet).
+  - `split` (Techiebist style, see `reference/smartphone-review/notes.md`): cream squared-paper background, two rounded
+    windows (972 x 864, 54 px side margins, 102 px gap): B-roll with `"layout": "split_top"` on top, speaker below
+    (`head.split_zoom` 1.12, `head.split_y` 0). Use it for about 35-40% of a review, with a speaker-only beat of 1-2 s
+    between B-roll blocks. Text that belongs to the B-roll goes inside the top window (`glow` card at y about 0.41).
+- **`transitions`**: `[{"t": 6.0, "type": "blur"}, {"t": 1.7, "type": "flash"}]`. `flash` (warm, 0.35 s) goes between
+  the speaker and a B-roll block; `blur` (0.6 s) goes between a full-screen B-roll and a split.
+- **Circle defaults** (measured from the reference): 394 px, white 13 px ring, bottom-right at x 0.748, y 0.854
+  of the frame; `head.circle` can override `size`, `x`, `y`.
+- **`glow` card** (yellow-glow text, `*yellow*` markup, other words white): `{"type": "glow", "lines": ["*Dimensity 6300*", "8GB RAM"], "y": 0.41}`.
+- **B-roll entry extras**: `ss` (start inside a long source file), `center` (where the product is in
+  the source, 0 left .. 1 right; it is moved to the middle), `headroom` (0-0.15: push the clip down to
+  leave room for a card above the product), `h_frac` (below 1 shows more of a wide clip), `y`.
+
+Rules the user gave after the first edit (follow them every time):
+
+1. **One clean clip per area.** Never put a blurred or duplicate copy of the clip above, below or
+   behind it. Fill the box with the clip itself.
+2. **Product in the middle.** Measure where the product is in each B-roll shot and set `center` so
+   it sits in the middle of its box, even if it is off to one side in the source.
+3. **Cards never sit on the product.** Use `headroom` so the card is above the phone, and check a frame.
+4. **Text on the talking head stays clear of the face.** In `full` mode put word pills at y 0.77,
+   well below the chin.
+5. **Use the space.** A wide shot (phone held sideways) fills its half; no empty strips around it.
+6. Spec values on cards come from the user's spec sheet or their own words. If a spoken price is
+   unclear, leave it out and ask.
+
 ## Limits
 
+- A hero shot wider than the frame (box plus phone) may lose a little at the sides.
 - Cards are drawn flat: no background blur behind the glass, no 3D text orbiting a product,
   no hand-drawn callout lines to camera lenses, no handwriting-style write-on, no cursor or sparkles on the subscribe card.
 - Sheet badges are generic seals or the user's own PNGs; store and brand logos are not bundled.
