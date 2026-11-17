@@ -253,6 +253,33 @@ Check each draft with `scripts/script_check.py`. For a script from a video, tran
 `scripts/transcript.py`; the approved model script is in `reference/script-examples/`. After the user generates the voice, transcribe it, compare, and
 record any new mispronunciation in the table in `script-writing.md`.
 
+## 10. Full-edit procedure used for the Moto G47 final (approved by the user)
+
+Worked example: `reference/final-edit-example/moto-g47-build.py` (builds `keep.json` + `plan.json` from a scene table)
+and `colour-grades.txt`. Steps, in this order, each with the user's approval before the heavy work:
+
+1. **Storyboard first** (numbered thumbnails: layout, B-roll, text, timing per scene). Wait for "approved".
+2. **Voice fixes by sentence, not by re-recording everything.** If one sentence is misread (a price), the user
+   regenerates that sentence; splice it into the take at pause boundaries, match loudness, then verify by transcribing
+   the result. Keep the fixed file as the new talking-head audio.
+3. **Colour grade the speaker** (show 2-3 grades on one frame, the user picks). Grade A ("A" in `colour-grades.txt`) was
+   approved for this speaker. Pass it as `"vf"` in `keep.json`; `cut` converts the head to 30 fps first (a 25 fps file would
+   otherwise play 20 % fast).
+4. **Circle method.** Never guess the face position. Measure the head top and chin in the source, then set
+   `head.circle` = `{"side_px", "cx_px", "cy_px", "size", "x", "y"}` (exact source-pixel crop). Approved for this speaker: side 760,
+   centre (1105, 456), diameter 0.463 of the width, placed at x 0.74, y 0.85. Show a mock circle before rendering; the user judges
+   the head position; once they say "approved A", do not change it again.
+5. **Cuts:** trim the lead, remove 0.12 s from the middle of natural pauses, keep total under 60 s (target 59.7).
+   Map every scene time through the cut map (the build script's `f(t)`).
+6. **B-roll:** product-only clips, every range inside its product run (0.1 s margin), product centred (`center`), `h_frac` below 1 for
+   wide shots, `headroom` for top text. Look at frames of every shot (first and last 0.3 s too) before rendering.
+7. **Sound:** soft SFX (low-passed, -22 to -28 dB), generated music bed from `scripts/make_music.py` at -30 dB, ducked under the
+   voice, loudnorm -14 LUFS. Defaults are in the presets (`bgm_db -30`, `sfx_db`).
+8. **Verify before sending:** length under 60 s, loudness near -14 LUFS, 18+ frames including each transition, transcribe the
+   final audio and compare with the script. Then send, with an honest list of caveats.
+9. Real-world facts to tell the user afterwards: 1080p heads look soft full-screen, music and SFX are synthesised, and spec
+   items that came from the user's script rather than the spec sheet.
+
 ## Limits
 
 - A hero shot wider than the frame (box plus phone) may lose a little at the sides.
