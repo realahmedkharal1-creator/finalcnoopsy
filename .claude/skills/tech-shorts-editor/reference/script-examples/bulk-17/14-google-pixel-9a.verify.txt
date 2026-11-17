@@ -1,0 +1,8 @@
+Not in the voice text; confirm before recording:
+- It is a NON-PTA import ("non PTA, not refurbished"); the script says so. Exact price not said (title: under 90K).
+- Display: 6.3 inch P-OLED 120 Hz (cards in the video), Gorilla Glass 3, big bezels: heard.
+- Tensor G4, 3.1 GHz, Mali G715 MP7, 8 GB RAM with 128 GB storage heard. Battery size 5100 mAh and charging 23 W / 7.5 W wireless are on cards only: not in the script.
+- Camera: the host says "fifty megapixel" for the main sensor, the real Pixel 9a main sensor is 48 MP: left out of the voice. 13 MP ultrawide 120 degrees, front 13 MP with 4K 30 only.
+- 5G does not work on non-PTA Pixels in Pakistan (heard, carrier limitation).
+- Updates: he says "next 5 years"; Google promises 7 years for the 9a: check before saying a number.
+Cut for length: eSIM note, comparison with Pixel 8 and 10a, battery cycle talk, Wi-Fi 6E and Bluetooth 5.3.
