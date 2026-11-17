@@ -231,12 +231,15 @@ Mistakes found in the final Moto G47 edit (the user's screenshots; check every f
    fully inside the frame, centred; if the source shot is too tight, pick another part of the clip or another clip.
 9. **Shot without the product.** A B-roll shot where only a hand (with a ring) fills the frame and the phone is a sliver
    at the bottom is a fault. Every shot must show the phone itself, large, in the middle.
-10. **Player buttons burned into the source.** The long video has a pause icon ("II") in the top-right corner in some
-    stretches. It showed over the user's card text ("MOTOROLA MOTO G47", "3.5mm Jack"). Detect it (bright vertical
-    bars in the top-right corner), choose clip ranges without it, or crop or scale that corner out. Never ship it.
+10. **The "II" in the user's screenshots is their video player's pause button**, not part of the video (it is not in the
+    rendered frames). Do not try to remove it. Check the file itself, not the screenshots, for burned-in graphics.
 11. **Another person in the b-roll or in a transition.** A blurred frame of the other video's host (man in glasses,
     black shirt) appeared full screen next to the circle. The ranges must be checked frame by frame, including the
-    first and last 0.3 s of every clip and the blur-transition frames, because a clip that crosses a cut shows the host.
+    first and last 0.3 s of every clip and the blur-transition frames, because a clip that crosses a cut shows the host. Cause in the Moto edit: a clip range ran past the end of a product run
+    (run end 297.05, clip end 297.3). Keep every clip range inside its run, with 0.1 s margin at both ends.
+13. **Wide shots (two phones side by side, phone plus box) do not fit a 1080 px crop.** Use `h_frac` below 1 to show more of
+    the width, or centre on the one phone the sentence is about (the port side for the headphone jack). A phone must never touch
+    or cross the frame edge; if the phone is small in the shot, choose another shot rather than cropping the product.
 12. **Check transition frames too**, not only mid-scene frames: sample at each transition time, minus 0.2 s and plus 0.2 s.
 
 ## 9. Voice-over script
