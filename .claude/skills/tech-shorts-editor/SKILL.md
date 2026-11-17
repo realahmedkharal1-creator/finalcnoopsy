@@ -1,6 +1,6 @@
 ---
 name: tech-shorts-editor
-description: Edit a raw talking-head tech video into a finished short (9:16) or long (16:9) video in the Gyan Therapy style (default) or DasIstJay style - dead-air removal, word-level transcription, zooms, B-roll, and animated motion-graphic cards (glass spec pills, spec cards, spec sheets with price, price text, hook word pills, numbered badges, big titles, subscribe card), SFX and ducked music. Use when the user asks to edit, cut, caption, add cards/graphics to, or "make a short/reel" from a video file.
+description: Edit a raw talking-head tech video into a finished short (9:16) or long (16:9) video in the Gyan Therapy style (default) or DasIstJay style - dead-air removal, word-level transcription, zooms, B-roll, and animated motion-graphic cards (glass spec pills, spec cards, spec sheets with price, price text, hook word pills, numbered badges, big titles, subscribe card), SFX and ducked music. Use when the user asks to edit, cut, caption, add cards/graphics to, or "make a short/reel" from a video file. Also writes the voice-over script (Roman Urdu, under 60 s, written so ElevenLabs reads it correctly) from a review link or a video transcript: see script-writing.md.
 ---
 
 # Tech Shorts Editor
@@ -216,6 +216,24 @@ Rules the user gave after the first edit (follow them every time):
 5. **Use the space.** A wide shot (phone held sideways) fills its half; no empty strips around it.
 6. Spec values on cards come from the user's spec sheet or their own words. If a spoken price is
    unclear, leave it out and ask.
+7. **B-roll is product clips only.** When B-roll comes out of a long review video, drop every shot that
+   shows the other video's host talking, any other person (camera-sample photos with people, the host
+   holding the phone), and any other channel's logo or intro. Keep clips of the phone itself. Clips with
+   burned-in text or graphics are used only when that text does not clash with the user's own cards.
+   Cut the host out by comparing frames with a known host frame, merge neighbouring B-roll shots into
+   numbered clips, show the user a numbered thumbnail sheet with times, and use only the clips the user
+   keeps; they name the numbers to drop. The clip numbers belong to that one video and session.
+
+## 9. Voice-over script
+
+When the user asks for a script (from a blog link or a transcript), read `script-writing.md` first and follow it.
+The short version: Roman Urdu, to-the-point, **voice under 50 s (hard limit 58 s), about 190 spoken words**
+(rate 4.0 words per second); every number, unit and abbreviation written out as words (decimals are always
+"point", never digits); no Hindi words; complete natural sentences, never fragments (cut facts, not grammar); one honest verdict;
+unconfirmed facts listed outside the voice text.
+Check each draft with `scripts/script_check.py`. For a script from a video, transcribe it first with
+`scripts/transcript.py`; the approved model script is in `reference/script-examples/`. After the user generates the voice, transcribe it, compare, and
+record any new mispronunciation in the table in `script-writing.md`.
 
 ## Limits
 
