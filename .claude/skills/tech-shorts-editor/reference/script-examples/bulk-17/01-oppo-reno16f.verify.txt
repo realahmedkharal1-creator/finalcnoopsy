@@ -1,0 +1,7 @@
+Not in the voice text; confirm before recording:
+- Price: the video never says it. Add after the first sentence: "jis ki price <digits> rupay hai." (digits, with commas, like 76,499)
+- Display size 6.57 inch and "full H D plus": heard twice, the transcript also says 1.5K is "better"; the 7000 mAh and 80 W figures come from one mention.
+- Dimensity 7300 and PUBG 60 to 90 fps: speech-to-text, check on the spec sheet.
+- IP69 rating (host says IP69; the plastic-frame comparison is his opinion).
+- Telephoto 3.5x and 50 MP front camera are in the video but cut for length.
+Cut for length: speaker rating, offline network link, connectivity, resale talk, front camera.

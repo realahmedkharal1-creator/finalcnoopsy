@@ -1,0 +1,9 @@
+Not in the voice text; confirm before recording:
+- Price: heard "starting price 2,10,000" for the 8 GB / 256 GB variant (8/512 is the other). Check, it was said in the unboxing.
+- Display 6.59 inch, 1.5K, 144 Hz, 92 % screen-to-body: heard clearly. Peak brightness figure garbled (5000 nits?), PWM 4320 Hz: left out.
+- Snapdragon 7 Gen 4, 2.8 GHz, Adreno 722, LPDDR5X + UFS 4.1: heard clearly. 90 fps gaming: "gaming used to be limited to 60 fps, now 90".
+- Battery "7200 mAh" (700 mAh more than before), 90 W wired, no wireless: heard in the last minute.
+- Cameras: 50 MP main, 50 MP telephoto (3x?, zoom value garbled), 8 MP ultrawide, 50 MP front, 4K 60 fps front and back. No portrait video.
+- Updates: four years OS and six years security (heard). Origin OS 7, Android 17 mentioned.
+- This is an unboxing and first impression, so the verdict line is only "not a bad device, but portrait video was missing".
+Cut for length: box contents (earbuds, watch, case), colours, NFC and IR blaster, AI features, vapor chamber size.

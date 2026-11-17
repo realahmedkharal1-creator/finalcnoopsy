@@ -1,0 +1,7 @@
+Not in the voice text; confirm before recording:
+- Price: the video says "under 90 thousand, official PTA, box pack" (exact price not heard). Add the exact digits if wanted.
+- Battery: speech-to-text says the battery is the same size as an older G model; the on-screen card in the video shows 5200. Charging watt not heard clearly (30 W or 33 W?), so it is left out.
+- Dimensity 6400, 8 GB / 256 GB, LPDDR4X, UFS 2.2: heard, but check the spec sheet. Weight 184 g, 7.3 mm, 6.78 inch, 1.5K, 120 Hz, Gorilla Glass 7i heard clearly.
+- Display peak brightness (a card shows 5000 nits) and 90 % screen-to-body: left out.
+- Front camera: heard as 32 MP, 1080p 30 fps; left out.
+Cut for length: Dolby Atmos speakers, 5G bands, software update promise (three Android, four security), AI features.
