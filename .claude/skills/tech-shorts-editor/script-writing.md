@@ -44,8 +44,31 @@ your text, so the text must be written for **that voice to read correctly**, not
 - Spelling: hai, hain, kya, nahi, aap, mein, kyunke, bohat, ye, wo, iss, uss, thay, zyada, acha, lekin, phir, zaroor.
 - Gender: phone, camera, chipset, design, software are masculine; display, battery, price, charging, storage,
   RAM are feminine. Mixed lists: split them ("design acha hai, battery achi hai").
-- Short sentences, each closed with a verb ("hai", "hain", "hota hai"); each must fit in one breath (under about 25 words).
+- **Complete, flowing sentences, never fragments** (see "Sentence style" below). Each sentence has its own
+  subject and closes with a verb ("hai", "hain", "hota hai"); up to about 45 words, joined with "jo", "jabke",
+  "halaanke", "lekin".
 - Tech words stay in English.
+
+## Sentence style (rule from the user, after my first script was rejected)
+
+The user's own script (written in Gemini, saved in `reference/script-examples/moto-g47-gemini-user-script.txt`)
+is the model: natural spoken sentences that start properly and finish properly. My first rewrite squeezed the
+facts into broken fragments to save time, and the user called it bad. **To save time, cut facts, never grammar.**
+
+| Rejected (fragments) | Right (complete sentence) |
+|---|---|
+| "main Ahmed Hassan" | "main hoon Ahmed Hassan" |
+| "aaj baat Moto G47 ki" | "aaj hum baat karne wale hain Pakistan mein launch hone wale Motorola Moto G forty-seven ki" |
+| "Display six point six seven inch ki hai, seven twenty p aur one twenty hertz." (list) | "Front par six point six seven inch ki seven twenty p, one twenty hertz display hai, jo Gorilla Glass seven I ke saath aati hai, halaanke iss price mein ten eighty p panel hota to behtar tha." |
+| "Dimensity six three zero zero, eight gigabyte RAM ... hai." (bare list) | "Andar Dimensity six three zero zero chipset, eight gigabyte RAM aur one twenty-eight gigabyte storage hai, aur ... Hello U I smooth gaming aur daily performance deta hai." |
+
+- Opening formula: "Assalam-o-Alaikum dosto, main hoon Ahmed Hassan, aur aaj hum baat karne wale hain <Pakistan mein launch hone
+  wale> <product> ki, jis ki retail price <price> rupay hai, lekin <sale> mein discount mil jayega."
+- Connect facts with "jo ... ke saath aati hai", "jabke", "halaanke", "lekin"; start sections with "Design ki baat
+  karein to", "Front par", "Andar", "Camera mein".
+- When asked for variations, give three that differ in structure but all follow this style: (1) the user's own order
+  trimmed to length, (2) a question hook plus an early verdict, (3) a comparison angle using the user's own words about
+  competitors. Show spoken-word count and estimated seconds for each.
 
 ## Writing for the voice (ElevenLabs rules)
 
@@ -74,9 +97,11 @@ to the voice, and the user's first take proves it. No digits, no `.`, `,` or `-`
 | 11.11 sale | eleven eleven sale |
 | Rs 76,499 | chhiyattar hazaar chaar sau ninyanve rupay |
 
-- Decimals are always **"point"**. Never let the voice choose: it said the Hindi word "dashmlav" (3.5, 6.67, 2.2).
+- Decimals are always **"point"** by default. Never let the voice choose: it said the Hindi word "dashmlav" (3.5, 6.67, 2.2).
+  If the user prefers the Urdu word "ashariya", write that instead.
 - Model names with a letter after a number ("7i") are spelled with the English letter name ("seven I").
 - Prices and money in Roman Urdu words; spec numbers in English words (that is how Pakistani reviewers say them).
+  The voice also read a price written in digits ("76,000") correctly, so either is fine for the price only.
 - On-screen text and cards keep digits and "Rs": only the voice text is spelled out.
 
 **Pauses and emphasis (depends on the model).** The file name of the user's take (`..._ivc_s50_sim75_v4.mp3`)

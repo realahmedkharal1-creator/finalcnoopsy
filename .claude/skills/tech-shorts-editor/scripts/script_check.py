@@ -58,8 +58,8 @@ def main():
                 warns.append(f"line {n}: tag [{tag}] is not spoken but works only on Eleven v3/v4 audio tags")
         for sent in re.split(r"(?<=[.!?:])\s+", line):
             k = len(spoken_tokens(sent))
-            if k > 26:
-                warns.append(f"line {n}: a sentence of {k} words is too long for one breath: split it")
+            if k > 46:
+                warns.append(f"line {n}: a sentence of {k} words is longer than about 45 words: split it with a full stop")
     words = len(spoken_tokens(text))
     secs = words / a.rate
     lo, hi = words / (a.rate * 1.1), words / (a.rate * 0.9)
