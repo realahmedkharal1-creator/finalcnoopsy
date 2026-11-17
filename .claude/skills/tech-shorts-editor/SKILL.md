@@ -224,16 +224,61 @@ Rules the user gave after the first edit (follow them every time):
    numbered clips, show the user a numbered thumbnail sheet with times, and use only the clips the user
    keeps; they name the numbers to drop. The clip numbers belong to that one video and session.
 
+Mistakes found in the final Moto G47 edit (the user's screenshots; check every frame for them before sending):
+
+8. **Product cut off or off-centre.** A frame where the phone or the box is clipped at the left or right edge
+   (opening shot of the box and phone, the "3.5mm jack" shot, the sideways phone in hand) is a fault. The product must be
+   fully inside the frame, centred; if the source shot is too tight, pick another part of the clip or another clip.
+9. **Shot without the product.** A B-roll shot where only a hand (with a ring) fills the frame and the phone is a sliver
+   at the bottom is a fault. Every shot must show the phone itself, large, in the middle.
+10. **The "II" in the user's screenshots is their video player's pause button**, not part of the video (it is not in the
+    rendered frames). Do not try to remove it. Check the file itself, not the screenshots, for burned-in graphics.
+11. **Another person in the b-roll or in a transition.** A blurred frame of the other video's host (man in glasses,
+    black shirt) appeared full screen next to the circle. The ranges must be checked frame by frame, including the
+    first and last 0.3 s of every clip and the blur-transition frames, because a clip that crosses a cut shows the host. Cause in the Moto edit: a clip range ran past the end of a product run
+    (run end 297.05, clip end 297.3). Keep every clip range inside its run, with 0.1 s margin at both ends.
+13. **Wide shots (two phones side by side, phone plus box) do not fit a 1080 px crop.** Use `h_frac` below 1 to show more of
+    the width, or centre on the one phone the sentence is about (the port side for the headphone jack). A phone must never touch
+    or cross the frame edge; if the phone is small in the shot, choose another shot rather than cropping the product.
+12. **Check transition frames too**, not only mid-scene frames: sample at each transition time, minus 0.2 s and plus 0.2 s.
+
 ## 9. Voice-over script
 
 When the user asks for a script (from a blog link or a transcript), read `script-writing.md` first and follow it.
-The short version: Roman Urdu, to-the-point, **voice under 50 s (hard limit 58 s), about 190 spoken words**
-(rate 4.0 words per second); every number, unit and abbreviation written out as words (decimals are always
-"point", never digits); no Hindi words; complete natural sentences, never fragments (cut facts, not grammar); one honest verdict;
+The short version: Roman Urdu, to-the-point, **about 1,100 characters (spaces included), which is a voice just under 60 s**
+(1,122 characters measured 59.4 s; about 195 spoken words); every number, unit and abbreviation written out as words (decimals are always
+"point"), except the price, which is written in digits; no Hindi words; complete natural sentences, never fragments (cut facts, not grammar); one honest verdict;
 unconfirmed facts listed outside the voice text.
 Check each draft with `scripts/script_check.py`. For a script from a video, transcribe it first with
 `scripts/transcript.py`; the approved model script is in `reference/script-examples/`. After the user generates the voice, transcribe it, compare, and
 record any new mispronunciation in the table in `script-writing.md`.
+
+## 10. Full-edit procedure used for the Moto G47 final (approved by the user)
+
+Worked example: `reference/final-edit-example/moto-g47-build.py` (builds `keep.json` + `plan.json` from a scene table)
+and `colour-grades.txt`. Steps, in this order, each with the user's approval before the heavy work:
+
+1. **Storyboard first** (numbered thumbnails: layout, B-roll, text, timing per scene). Wait for "approved".
+2. **Voice fixes by sentence, not by re-recording everything.** If one sentence is misread (a price), the user
+   regenerates that sentence; splice it into the take at pause boundaries, match loudness, then verify by transcribing
+   the result. Keep the fixed file as the new talking-head audio.
+3. **Colour grade the speaker** (show 2-3 grades on one frame, the user picks). Grade A ("A" in `colour-grades.txt`) was
+   approved for this speaker. Pass it as `"vf"` in `keep.json`; `cut` converts the head to 30 fps first (a 25 fps file would
+   otherwise play 20 % fast).
+4. **Circle method.** Never guess the face position. Measure the head top and chin in the source, then set
+   `head.circle` = `{"side_px", "cx_px", "cy_px", "size", "x", "y"}` (exact source-pixel crop). Approved for this speaker: side 760,
+   centre (1105, 456), diameter 0.463 of the width, placed at x 0.74, y 0.85. Show a mock circle before rendering; the user judges
+   the head position; once they say "approved A", do not change it again.
+5. **Cuts:** trim the lead, remove 0.12 s from the middle of natural pauses, keep total under 60 s (target 59.7).
+   Map every scene time through the cut map (the build script's `f(t)`).
+6. **B-roll:** product-only clips, every range inside its product run (0.1 s margin), product centred (`center`), `h_frac` below 1 for
+   wide shots, `headroom` for top text. Look at frames of every shot (first and last 0.3 s too) before rendering.
+7. **Sound:** soft SFX (low-passed, -22 to -28 dB), generated music bed from `scripts/make_music.py` at -30 dB, ducked under the
+   voice, loudnorm -14 LUFS. Defaults are in the presets (`bgm_db -30`, `sfx_db`).
+8. **Verify before sending:** length under 60 s, loudness near -14 LUFS, 18+ frames including each transition, transcribe the
+   final audio and compare with the script. Then send, with an honest list of caveats.
+9. Real-world facts to tell the user afterwards: 1080p heads look soft full-screen, music and SFX are synthesised, and spec
+   items that came from the user's script rather than the spec sheet.
 
 ## Limits
 

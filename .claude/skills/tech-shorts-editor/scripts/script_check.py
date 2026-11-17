@@ -8,8 +8,10 @@ It counts the spoken words, estimates the voice length, and flags things the voi
 digits and decimals, symbols, unit abbreviations, capital-letter acronyms, Hindi words, non-Latin script,
 square-bracket tags and sentences that are too long for one breath.
 
-Rate: 4.0 spoken words per second, measured on the user's own ElevenLabs voice (Ahmed Hassan clone,
-324 spoken words in 81.0 s). Re-measure with a new take: words spoken / seconds of audio.
+Calibration (the user's ElevenLabs voice, Eleven v4, stability Creative, similarity Low): a 1,122-character,
+197-word script gave 59.4 s of speech, so 18.9 characters per second and 3.3 spoken words per second.
+The user's rule: keep scripts near 1,100 characters (spaces included) so the voice stays under one minute.
+Re-measure with a new take: characters / seconds of speech.
 Exit code 1 if there is an error or the script is longer than --max seconds.
 """
 import argparse, re, sys
@@ -28,15 +30,18 @@ def spoken_tokens(text):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("file")
-    ap.add_argument("--rate", type=float, default=4.0, help="spoken words per second (default 4.0)")
-    ap.add_argument("--target", type=float, default=50.0, help="seconds the voice should stay under (default 50)")
-    ap.add_argument("--max", type=float, default=58.0, help="hard limit in seconds (default 58)")
+    ap.add_argument("--rate", type=float, default=3.3, help="spoken words per second (default 3.3)")
+    ap.add_argument("--cps", type=float, default=18.9, help="characters per second (default 18.9)")
+    ap.add_argument("--chars", type=int, default=1100, help="character limit (default 1100)")
+    ap.add_argument("--target", type=float, default=58.0, help="seconds the voice should stay under (default 58)")
+    ap.add_argument("--max", type=float, default=59.5, help="hard limit in seconds (default 59.5)")
     a = ap.parse_args()
     text = open(a.file, encoding="utf-8").read()
     errors, warns = [], []
     lines = [l for l in text.split("\n") if l.strip()]
     for n, line in enumerate(lines, 1):
         line = re.sub(r"\b11[ .]11\b", "eleven eleven", line)      # approved by the user: "11 11 sale" is read correctly
+        line = re.sub(r"\b\d{1,3}(?:,\d{3})+(?= rupay)", "price", line)   # prices are written in digits: "chhiyattar" was read as 66
         for m in re.finditer(r"\d[\d.,]*\w*", line):
             errors.append(f"line {n}: digits '{m.group(0)}': write the number as words (e.g. 3.5 -> three point five)")
         for m in re.finditer(r"[%₹$&+/=@#*<>]", line):
@@ -62,13 +67,20 @@ def main():
             if k > 46:
                 warns.append(f"line {n}: a sentence of {k} words is longer than about 45 words: split it with a full stop")
     words = len(spoken_tokens(text))
-    secs = words / a.rate
-    lo, hi = words / (a.rate * 1.1), words / (a.rate * 0.9)
-    print(f"spoken words: {words}   estimated voice: {secs:.1f} s (range {lo:.0f}-{hi:.0f} s at rate {a.rate} words/s)")
-    print(f"target under {a.target:.0f} s, hard limit {a.max:.0f} s")
-    if hi > a.max:
-        errors.append(f"too long: the slow end of the range is {hi:.0f} s, limit {a.max:.0f} s: cut about "
-                      f"{int((hi - a.max) * a.rate)} words")
+    chars = len(" ".join(lines))
+    secs = chars / a.cps
+    lo, hi = secs * 0.96, secs * 1.04
+    print(f"characters: {chars} (limit about {a.chars})   spoken words: {words}")
+    print(f"estimated voice: {secs:.1f} s (range {lo:.0f}-{hi:.0f} s at {a.cps} characters/s; words say {words / a.rate:.0f} s)")
+    if chars > a.chars + 40:
+        errors.append(f"over the character limit: {chars} > {a.chars}: cut about {chars - a.chars} characters")
+    elif chars > a.chars:
+        warns.append(f"{chars - a.chars} characters over {a.chars}")
+    print(f"target under {a.target:.0f} s, hard limit {a.max:.1f} s")
+    if secs > a.max:
+        errors.append(f"too long: about {secs:.0f} s, limit {a.max:.1f} s: cut about {int((secs - a.max) * a.cps)} characters")
+    elif hi > a.max:
+        warns.append(f"the slow end of the range ({hi:.0f} s) is over the {a.max:.1f} s limit")
     elif secs > a.target:
         warns.append(f"over the {a.target:.0f} s target by about {secs - a.target:.0f} s")
     for e in errors:

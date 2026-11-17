@@ -73,11 +73,12 @@ def cut(raw, work, P, fmt):
     sw, sh, total = probe(raw)
     vertical = fmt == "vertical" or (fmt == "auto" and sh >= sw)
     W, H = (1080, 1920) if vertical else (1920, 1080)
-    keep_file, tail = work / "keep.json", 0.0
+    keep_file, tail, vf_extra = work / "keep.json", 0.0, ""
     if keep_file.exists():
         k = json.loads(keep_file.read_text(encoding="utf-8"))
         merged = [list(x) for x in (k["segments"] if isinstance(k, dict) else k)]
         tail = float(k.get("tail_pad", 0)) if isinstance(k, dict) else 0.0
+        vf_extra = ("," + k["vf"]) if isinstance(k, dict) and k.get("vf") else ""     # e.g. the colour grade
     else:
         log = run(["ffmpeg", "-hide_banner", "-nostats", "-i", raw, "-vn", "-af",
                    f"silencedetect=noise={c['silence_db']}dB:d={c['min_silence_s']}", "-f", "null", "-"], True)
@@ -109,14 +110,14 @@ def cut(raw, work, P, fmt):
     if in_order:
         sel = "+".join(f"between(t,{a:.3f},{b:.3f})" for a, b in merged)
         inputs = ["-i", raw]
-        graph = (f"[0:v]select='{sel}',setpts=N/{FPS}/TB,{fit}{pad_v}[v];"
+        graph = (f"[0:v]fps={FPS},select='{sel}',setpts=N/{FPS}/TB,{fit}{vf_extra}{pad_v}[v];"
                  f"[0:a]aselect='{sel}',asetpts=N/SR/TB{pad_a}[a]")
     else:                                   # re-ordered segments: one seeked input per segment
         inputs = []
         for a, b in merged:
             inputs += ["-ss", f"{a:.3f}", "-t", f"{b - a:.3f}", "-i", raw]
         pads = "".join(f"[{i}:v][{i}:a]" for i in range(len(merged)))
-        graph = (f"{pads}concat=n={len(merged)}:v=1:a=1[vc][ac];[vc]fps={FPS},{fit}{pad_v}[v];"
+        graph = (f"{pads}concat=n={len(merged)}:v=1:a=1[vc][ac];[vc]fps={FPS},{fit}{vf_extra}{pad_v}[v];"
                  f"[ac]anull{pad_a}[a]")
     run(["ffmpeg", "-y", "-hide_banner"] + inputs + ["-r", FPS] + ffmpeg_graph(graph, work) +
         ["-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-crf", "16", "-preset", "veryfast",
@@ -292,12 +293,12 @@ def zoom_expr(zooms):
 
 def make_sfx(d):
     d.mkdir(exist_ok=True)
-    recipes = {
-        "whoosh": "anoisesrc=d=0.38:c=pink:a=0.9,highpass=f=400,lowpass=f=5000,afade=t=in:d=0.22:curve=qsin,afade=t=out:st=0.24:d=0.14",
-        "pop": "sine=f=520:d=0.09,asetrate=44100*1.5,aresample=44100,afade=t=out:st=0.01:d=0.08",
-        "click": "anoisesrc=d=0.03:c=white:a=0.8,highpass=f=2500,afade=t=out:d=0.03",
-        "ding": "sine=f=1568:d=0.7,afade=t=out:st=0.02:d=0.68:curve=exp",
-        "riser": "anoisesrc=d=1.0:c=pink:a=0.8,highpass=f=800,afade=t=in:d=0.95:curve=exp,afade=t=out:st=0.96:d=0.04",
+    recipes = {                                           # soft, low-passed sounds (no harsh noise bursts)
+        "whoosh": "anoisesrc=d=0.6:c=pink:a=0.8,highpass=f=250,lowpass=f=2600,afade=t=in:d=0.3:curve=qsin,afade=t=out:st=0.3:d=0.3:curve=qsin",
+        "pop": "sine=f=480:d=0.12,lowpass=f=1800,afade=t=in:d=0.01,afade=t=out:st=0.02:d=0.1:curve=exp",
+        "click": "sine=f=1400:d=0.07,lowpass=f=3200,afade=t=in:d=0.005,afade=t=out:st=0.01:d=0.06:curve=exp",
+        "ding": "aevalsrc='0.6*sin(2*PI*1319*t)+0.3*sin(2*PI*1976*t)':d=1.0:s=48000,lowpass=f=4200,afade=t=in:d=0.01,afade=t=out:st=0.02:d=0.98:curve=exp",
+        "riser": "anoisesrc=d=1.2:c=pink:a=0.8,highpass=f=500,lowpass=f=3000,afade=t=in:d=1.1:curve=exp,afade=t=out:st=1.12:d=0.08",
     }
     for name, graph in recipes.items():
         if not (d / f"{name}.wav").exists():      # drop your own .wav here to override
@@ -363,7 +364,7 @@ def render(src, work, out, P, base):
     total = duration(src)
     sfx_dir = SKILL / "sfx"
     make_sfx(sfx_dir)
-    A = P["audio"]
+    A = {**P["audio"], **pl.get("audio", {})}              # a plan can set its own bgm_db, sfx_db ...
     inputs, fc = ["-i", src], []
     sw, sh, _ = probe(src)
     z = zoom_expr(pl.get("zooms", []))
@@ -371,6 +372,7 @@ def render(src, work, out, P, base):
     layout = pl.get("layout") or [{"start": 0, "end": total, "mode": "full"}]
     head = pl.get("head", {})                             # x, y = face centre in the raw frame (0-1)
     fx, fy = head.get("x", 0.5), head.get("y", 0.3)
+    full_x, split_x = head.get("full_x", fx), head.get("split_x", fx)      # where the face sits when the speaker is cropped
 
     def when(*modes):
         return "+".join(f"between(t,{l['start']},{l['end']})" for l in layout if l["mode"] in modes) or "0"
@@ -390,7 +392,7 @@ def render(src, work, out, P, base):
     last = "v0"
     if "full" in views:
         fc.append(f"[h_full]scale={W}:{H}:force_original_aspect_ratio=increase,"
-                  f"crop={W}:{H}:(iw-{W})*{fx}:(ih-{H})*{fy},"
+                  f"crop={W}:{H}:(iw-{W})*{full_x}:(ih-{H})*{fy},"
                   f"scale=w='2*trunc({W // 2}*({z}))':h='2*trunc({H // 2}*({z}))':eval=frame,"
                   f"crop={W}:{H}:(iw-{W})/2:(ih-{H})*{P['zoom']['anchor_y']},setsar=1[hf]")
         fc.append(f"[v0][hf]overlay=0:0:enable='{when('full')}'[vh1]")
@@ -409,7 +411,7 @@ def render(src, work, out, P, base):
         zf = head.get("split_zoom", 1.12)
         hz = 2 * int(win_h * zf / 2)
         inputs += ["-loop", "1", "-t", f"{total:.2f}", "-framerate", FPS, "-i", work / "window_mask.png"]
-        fc.append(f"[h_split]scale=-2:{hz},crop={win_w}:{win_h}:x='(iw-{win_w})*{fx}':y='(ih-{win_h})*{head.get('split_y', 0.0)}',"
+        fc.append(f"[h_split]scale=-2:{hz},crop={win_w}:{win_h}:x='(iw-{win_w})*{split_x}':y='(ih-{win_h})*{head.get('split_y', 0.0)}',"
                   f"setsar=1,format=rgba[hs0];[{n}:v]format=gray,fps={FPS}[hsm];[hs0][hsm]alphamerge[hs]")
         fc.append(f"[{last}][hs]overlay={win_x}:{win_by}:enable='{when('split')}':eof_action=pass[vs1]")
         last = "vs1"
@@ -475,9 +477,14 @@ def render(src, work, out, P, base):
         from PIL import Image, ImageDraw, ImageFilter
         cc = head.get("circle", {})
         dia = 2 * int(W * cc.get("size", 0.365) / 2)
-        side = 2 * int(min(sw, sh) * cc.get("zoom", 0.62) / 2)
-        cx0 = int(min(max(sw * fx - side / 2, 0), sw - side))
-        cy0 = int(min(max(sh * fy - side * 0.45, 0), sh - side))
+        if "side_px" in cc:                               # exact crop in source pixels: centre of the head and side
+            side = 2 * int(cc["side_px"] / 2)
+            cx0 = int(min(max(cc["cx_px"] - side / 2, 0), sw - side))
+            cy0 = int(min(max(cc["cy_px"] - side / 2, 0), sh - side))
+        else:
+            side = 2 * int(min(sw, sh) * cc.get("zoom", 0.62) / 2)
+            cx0 = int(min(max(sw * fx - side / 2, 0), sw - side))
+            cy0 = int(min(max(sh * fy - side * 0.45, 0), sh - side))
         m = Image.new("L", (dia * 4, dia * 4), 0)
         ImageDraw.Draw(m).ellipse((0, 0, dia * 4 - 1, dia * 4 - 1), fill=255)
         m.resize((dia, dia), Image.LANCZOS).save(work / "circle_mask.png")

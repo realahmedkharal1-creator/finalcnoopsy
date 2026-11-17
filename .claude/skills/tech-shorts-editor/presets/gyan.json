@@ -10,6 +10,6 @@
  "labels": {"style": "pill", "y": 0.16, "hold_s": 3.5},
  "broll": {"push_to": 1.04},
  "cta": {"style": "subscribe", "lead_s": 3.5, "y": 0.72},
- "audio": {"lufs": -14, "true_peak": -1.0, "bgm_db": -22, "duck_ratio": 6, "sfx_offset_s": -0.03,
-           "sfx_db": {"whoosh": -14, "pop": -16, "click": -16, "ding": -12, "riser": -14}, "bgm": "bgm.mp3"}
+ "audio": {"lufs": -14, "true_peak": -1.0, "bgm_db": -30, "duck_ratio": 6, "sfx_offset_s": -0.03,
+           "sfx_db": {"whoosh": -24, "pop": -26, "click": -28, "ding": -22, "riser": -24}, "bgm": "bgm.mp3"}
 }
