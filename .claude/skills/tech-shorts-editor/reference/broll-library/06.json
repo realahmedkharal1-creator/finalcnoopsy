@@ -1,0 +1,554 @@
+{
+"video": "06",
+"title": "Best Box Pack Phone Under 100K ! TECNO Pova Curve 2 vs POCO M8 Comparison🔥Best Performance & Camera",
+"phone": "TECNO Pova Curve 2 vs POCO M8 (comparison)",
+"burned_in_text_note": "clips with text=true have the creator's own graphics (spec text, battery numbers) burned in",
+"not_used": "host, camera samples with people, screens showing people (80, 81), man holding phones (83), intro",
+"clips": [
+{
+"shot": 6,
+"start": 10.77,
+"end": 12.47,
+"len": 1.7,
+"text": true,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 12,
+"start": 36.27,
+"end": 38.23,
+"len": 1.96,
+"text": false,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 14,
+"start": 42.4,
+"end": 49.35,
+"len": 6.95,
+"text": false,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 15,
+"start": 49.77,
+"end": 53.6,
+"len": 3.83,
+"text": false,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 24,
+"start": 88.15,
+"end": 90.23,
+"len": 2.08,
+"text": false,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 29,
+"start": 112.03,
+"end": 116.1,
+"len": 4.07,
+"text": true,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 30,
+"start": 116.4,
+"end": 121.97,
+"len": 5.57,
+"text": true,
+"phone": "TECNO Pova Curve 2",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 34,
+"start": 136.9,
+"end": 142.6,
+"len": 5.7,
+"text": true,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 61,
+"start": 250.03,
+"end": 255.6,
+"len": 5.57,
+"text": true,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 63,
+"start": 256.9,
+"end": 259.35,
+"len": 2.45,
+"text": true,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 66,
+"start": 266.65,
+"end": 272.85,
+"len": 6.2,
+"text": true,
+"phone": "TECNO Pova Curve 2",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 67,
+"start": 273.15,
+"end": 274.47,
+"len": 1.32,
+"text": true,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 68,
+"start": 274.77,
+"end": 281.85,
+"len": 7.08,
+"text": true,
+"phone": "TECNO Pova Curve 2",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 108,
+"start": 508.27,
+"end": 511.6,
+"len": 3.33,
+"text": true,
+"phone": "TECNO Pova Curve 2",
+"look_at": []
+},
+{
+"shot": 4,
+"start": 8.03,
+"end": 9.47,
+"len": 1.44,
+"text": false,
+"phone": "POCO M8",
+"look_at": []
+},
+{
+"shot": 17,
+"start": 54.9,
+"end": 56.73,
+"len": 1.83,
+"text": false,
+"phone": "POCO M8",
+"look_at": []
+},
+{
+"shot": 18,
+"start": 57.03,
+"end": 60.6,
+"len": 3.57,
+"text": false,
+"phone": "POCO M8",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 19,
+"start": 60.9,
+"end": 65.23,
+"len": 4.33,
+"text": false,
+"phone": "POCO M8",
+"look_at": []
+},
+{
+"shot": 25,
+"start": 90.53,
+"end": 92.97,
+"len": 2.44,
+"text": false,
+"phone": "POCO M8",
+"look_at": []
+},
+{
+"shot": 31,
+"start": 122.27,
+"end": 126.73,
+"len": 4.46,
+"text": true,
+"phone": "POCO M8",
+"look_at": []
+},
+{
+"shot": 52,
+"start": 206.53,
+"end": 214.23,
+"len": 7.7,
+"text": true,
+"phone": "POCO M8",
+"look_at": []
+},
+{
+"shot": 54,
+"start": 231.4,
+"end": 236.23,
+"len": 4.83,
+"text": true,
+"phone": "POCO M8",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 58,
+"start": 245.15,
+"end": 246.73,
+"len": 1.58,
+"text": true,
+"phone": "POCO M8",
+"look_at": []
+},
+{
+"shot": 59,
+"start": 247.03,
+"end": 248.97,
+"len": 1.94,
+"text": true,
+"phone": "POCO M8",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 64,
+"start": 259.65,
+"end": 262.47,
+"len": 2.82,
+"text": true,
+"phone": "POCO M8",
+"look_at": []
+},
+{
+"shot": 109,
+"start": 511.9,
+"end": 514.97,
+"len": 3.07,
+"text": true,
+"phone": "POCO M8",
+"look_at": []
+},
+{
+"shot": 110,
+"start": 515.27,
+"end": 518.35,
+"len": 3.08,
+"text": false,
+"phone": "POCO M8",
+"look_at": []
+},
+{
+"shot": 2,
+"start": 0.9,
+"end": 5.23,
+"len": 4.33,
+"text": false,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 8,
+"start": 14.65,
+"end": 17.73,
+"len": 3.08,
+"text": false,
+"phone": "both phones",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 13,
+"start": 38.53,
+"end": 42.1,
+"len": 3.57,
+"text": false,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 21,
+"start": 66.9,
+"end": 71.73,
+"len": 4.83,
+"text": false,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 23,
+"start": 80.77,
+"end": 87.85,
+"len": 7.08,
+"text": false,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 26,
+"start": 93.27,
+"end": 100.85,
+"len": 7.58,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 27,
+"start": 101.15,
+"end": 108.6,
+"len": 7.45,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 32,
+"start": 127.03,
+"end": 132.1,
+"len": 5.07,
+"text": true,
+"phone": "both phones",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 33,
+"start": 132.4,
+"end": 136.6,
+"len": 4.2,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 35,
+"start": 142.9,
+"end": 145.6,
+"len": 2.7,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 37,
+"start": 148.53,
+"end": 152.97,
+"len": 4.44,
+"text": true,
+"phone": "both phones",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 39,
+"start": 156.4,
+"end": 159.23,
+"len": 2.83,
+"text": true,
+"phone": "both phones",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 40,
+"start": 159.53,
+"end": 163.85,
+"len": 4.32,
+"text": true,
+"phone": "both phones",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 41,
+"start": 164.15,
+"end": 165.35,
+"len": 1.2,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 42,
+"start": 165.65,
+"end": 170.1,
+"len": 4.45,
+"text": true,
+"phone": "both phones",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 43,
+"start": 170.4,
+"end": 171.6,
+"len": 1.2,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 44,
+"start": 171.9,
+"end": 173.85,
+"len": 1.95,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 46,
+"start": 178.9,
+"end": 182.47,
+"len": 3.57,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 47,
+"start": 182.77,
+"end": 186.97,
+"len": 4.2,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 48,
+"start": 187.27,
+"end": 188.6,
+"len": 1.33,
+"text": false,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 49,
+"start": 188.9,
+"end": 193.35,
+"len": 4.45,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 55,
+"start": 236.53,
+"end": 238.97,
+"len": 2.44,
+"text": false,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 56,
+"start": 239.27,
+"end": 242.35,
+"len": 3.08,
+"text": false,
+"phone": "both phones",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 70,
+"start": 285.03,
+"end": 290.85,
+"len": 5.82,
+"text": false,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 72,
+"start": 302.9,
+"end": 312.97,
+"len": 10.07,
+"text": false,
+"phone": "both phones",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 74,
+"start": 314.53,
+"end": 320.97,
+"len": 6.44,
+"text": true,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 76,
+"start": 322.03,
+"end": 325.6,
+"len": 3.57,
+"text": false,
+"phone": "both phones",
+"look_at": []
+},
+{
+"shot": 78,
+"start": 326.53,
+"end": 332.85,
+"len": 6.32,
+"text": false,
+"phone": "both phones",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 79,
+"start": 333.15,
+"end": 336.85,
+"len": 3.7,
+"text": false,
+"phone": "both phones",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 106,
+"start": 492.9,
+"end": 505.47,
+"len": 12.57,
+"text": true,
+"phone": "both phones",
+"look_at": []
+}
+]
+}

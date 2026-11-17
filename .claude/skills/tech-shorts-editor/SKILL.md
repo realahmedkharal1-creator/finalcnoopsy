@@ -280,6 +280,26 @@ and `colour-grades.txt`. Steps, in this order, each with the user's approval bef
 9. Real-world facts to tell the user afterwards: 1080p heads look soft full-screen, music and SFX are synthesised, and spec
    items that came from the user's script rather than the spec sheet.
 
+## 11. B-roll library from many long videos (bulk method)
+
+Used for the 17-video Drive folder (one video there was the Moto G47 footage already used: skip a file whose duration equals
+an earlier one). Library files: `reference/broll-library/NN.json` (time ranges in the source video, no media in the repo).
+
+1. Download each video (`gdown`, one at a time; `gdown --folder` lists the files, the folder download itself is slow).
+2. `scripts/broll_scan.py video.mp4 scan/NN`: finds shots, guesses which picture is the host (the picture that fills most of the
+   video; it prints the guess) and writes contact sheets with one tile per shot (`#number start-end hostscore`). Host shots (score above
+   0.8) are left out of the sheets; check them once with `--only-host` if the guess looks wrong.
+3. LOOK at every sheet and write the numbers of the shots that show only the phone, large, with no person, face or other brand. Reject:
+   host in a corner window, camera-sample photos with people, screens showing a face, other phones, spec posters and graphics that
+   are not the product, another creator's credit captions ("Credits: ..."), intro and logo animations, CGI animations of parts.
+   Mark shots with burned-in text (spec numbers, battery number) so they are only used where the user's own card does not clash.
+   Comparison videos: label each shot by phone (one phone, or both together); a "both phones" shot is only used for comparison scripts.
+4. `scripts/broll_catalogue.py scan/NN "<numbers>" --video video.mp4 --text "<numbers>"`: trims 0.15 s off both ends, drops clips
+   shorter than 0.8 s, flags hidden cuts and host look-alikes and writes `check_strips.jpg`. LOOK at the strips of every flagged
+   clip (five frames each) before the clip is used. In the 17-video run the only flags were fast hand motion and zoom animations; no host.
+5. Cost: scanning a 15-minute video takes about 3 minutes on 4 cores; run two at a time.
+6. Clips are used in the edit with `file` + `ss` (start in the source) + `center` (measure it) exactly as in section 8.
+
 ## Limits
 
 - A hero shot wider than the frame (box plus phone) may lose a little at the sides.

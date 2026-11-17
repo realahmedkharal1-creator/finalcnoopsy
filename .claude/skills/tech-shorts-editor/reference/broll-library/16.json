@@ -1,0 +1,453 @@
+{
+"video": "16",
+"title": "Samsung S26FE vs S25 FE ： 4 things Changed 🔥",
+"phone": "Samsung Galaxy S26 FE vs S25 FE",
+"burned_in_text_note": "clips with text=true have the creator's own graphics (spec text, battery numbers) burned in",
+"not_used": "intro, internals picture (45), chip graphic (54), all camera-sample comparisons with people/flowers/cats (61-108), person on screen (109, 110)",
+"clips": [
+{
+"shot": 2,
+"start": 1.77,
+"end": 5.47,
+"len": 3.7,
+"text": true,
+"phone": "S26 FE only",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 8,
+"start": 44.77,
+"end": 45.85,
+"len": 1.08,
+"text": true,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 9,
+"start": 46.15,
+"end": 48.1,
+"len": 1.95,
+"text": true,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 15,
+"start": 60.65,
+"end": 62.35,
+"len": 1.7,
+"text": false,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 23,
+"start": 82.03,
+"end": 82.97,
+"len": 0.94,
+"text": false,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 25,
+"start": 86.4,
+"end": 88.97,
+"len": 2.57,
+"text": false,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 29,
+"start": 124.15,
+"end": 126.85,
+"len": 2.7,
+"text": false,
+"phone": "S26 FE only",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 32,
+"start": 134.4,
+"end": 137.97,
+"len": 3.57,
+"text": true,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 38,
+"start": 165.65,
+"end": 167.85,
+"len": 2.2,
+"text": true,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 50,
+"start": 211.4,
+"end": 212.73,
+"len": 1.33,
+"text": true,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 51,
+"start": 213.03,
+"end": 219.23,
+"len": 6.2,
+"text": true,
+"phone": "S26 FE only",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 52,
+"start": 219.53,
+"end": 220.97,
+"len": 1.44,
+"text": true,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 53,
+"start": 221.27,
+"end": 223.35,
+"len": 2.08,
+"text": false,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 58,
+"start": 268.77,
+"end": 270.35,
+"len": 1.58,
+"text": true,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 117,
+"start": 519.65,
+"end": 528.97,
+"len": 9.32,
+"text": true,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 119,
+"start": 533.27,
+"end": 535.97,
+"len": 2.7,
+"text": true,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 121,
+"start": 539.9,
+"end": 541.35,
+"len": 1.45,
+"text": true,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 122,
+"start": 541.65,
+"end": 544.85,
+"len": 3.2,
+"text": false,
+"phone": "S26 FE only",
+"look_at": []
+},
+{
+"shot": 3,
+"start": 5.77,
+"end": 8.35,
+"len": 2.58,
+"text": true,
+"phone": "S25 FE only",
+"look_at": []
+},
+{
+"shot": 13,
+"start": 54.77,
+"end": 57.97,
+"len": 3.2,
+"text": true,
+"phone": "S25 FE only",
+"look_at": []
+},
+{
+"shot": 22,
+"start": 78.53,
+"end": 81.73,
+"len": 3.2,
+"text": true,
+"phone": "S25 FE only",
+"look_at": []
+},
+{
+"shot": 24,
+"start": 83.27,
+"end": 86.1,
+"len": 2.83,
+"text": true,
+"phone": "S25 FE only",
+"look_at": []
+},
+{
+"shot": 48,
+"start": 207.9,
+"end": 209.1,
+"len": 1.2,
+"text": true,
+"phone": "S25 FE only",
+"look_at": []
+},
+{
+"shot": 49,
+"start": 209.4,
+"end": 211.1,
+"len": 1.7,
+"text": true,
+"phone": "S25 FE only",
+"look_at": []
+},
+{
+"shot": 59,
+"start": 270.65,
+"end": 272.23,
+"len": 1.58,
+"text": true,
+"phone": "S25 FE only",
+"look_at": []
+},
+{
+"shot": 113,
+"start": 488.27,
+"end": 491.97,
+"len": 3.7,
+"text": true,
+"phone": "S25 FE only",
+"look_at": []
+},
+{
+"shot": 120,
+"start": 536.27,
+"end": 539.6,
+"len": 3.33,
+"text": true,
+"phone": "S25 FE only",
+"look_at": []
+},
+{
+"shot": 4,
+"start": 8.65,
+"end": 9.85,
+"len": 1.2,
+"text": false,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 10,
+"start": 48.4,
+"end": 50.23,
+"len": 1.83,
+"text": false,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 11,
+"start": 50.53,
+"end": 51.85,
+"len": 1.32,
+"text": false,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 12,
+"start": 52.15,
+"end": 54.47,
+"len": 2.32,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 14,
+"start": 58.27,
+"end": 60.35,
+"len": 2.08,
+"text": false,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 16,
+"start": 62.65,
+"end": 66.23,
+"len": 3.58,
+"text": false,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 18,
+"start": 68.77,
+"end": 71.1,
+"len": 2.33,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 19,
+"start": 71.4,
+"end": 72.97,
+"len": 1.57,
+"text": false,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 27,
+"start": 109.27,
+"end": 116.23,
+"len": 6.96,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 28,
+"start": 116.53,
+"end": 123.85,
+"len": 7.32,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 30,
+"start": 127.15,
+"end": 130.6,
+"len": 3.45,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 34,
+"start": 146.77,
+"end": 150.73,
+"len": 3.96,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 37,
+"start": 163.4,
+"end": 165.35,
+"len": 1.95,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 39,
+"start": 168.15,
+"end": 173.73,
+"len": 5.58,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 41,
+"start": 179.03,
+"end": 183.97,
+"len": 4.94,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 43,
+"start": 186.53,
+"end": 188.73,
+"len": 2.2,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 46,
+"start": 195.53,
+"end": 198.23,
+"len": 2.7,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 56,
+"start": 255.15,
+"end": 266.85,
+"len": 11.7,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 115,
+"start": 503.77,
+"end": 508.6,
+"len": 4.83,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 124,
+"start": 550.03,
+"end": 561.23,
+"len": 11.2,
+"text": true,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+},
+{
+"shot": 126,
+"start": 564.03,
+"end": 579.97,
+"len": 15.94,
+"text": false,
+"phone": "S26 FE + S25 FE together",
+"look_at": []
+}
+]
+}
