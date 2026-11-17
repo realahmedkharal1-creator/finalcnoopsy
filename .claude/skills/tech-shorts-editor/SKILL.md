@@ -231,7 +231,8 @@ The short version: Roman Urdu, to-the-point, **voice under 50 s (hard limit 58 s
 (rate 4.0 words per second); every number, unit and abbreviation written out as words (decimals are always
 "point", never digits); no Hindi words; complete natural sentences, never fragments (cut facts, not grammar); one honest verdict;
 unconfirmed facts listed outside the voice text.
-Check each draft with `scripts/script_check.py`. After the user generates the voice, transcribe it, compare, and
+Check each draft with `scripts/script_check.py`. For a script from a video, transcribe it first with
+`scripts/transcript.py`; the approved model script is in `reference/script-examples/`. After the user generates the voice, transcribe it, compare, and
 record any new mispronunciation in the table in `script-writing.md`.
 
 ## Limits

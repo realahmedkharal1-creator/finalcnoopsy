@@ -74,7 +74,7 @@ facts into broken fragments to save time, and the user called it bad. **To save 
 
 Source: the ElevenLabs text-to-speech best-practices page (elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices).
 
-**Spell everything out.** The docs say to expand numbers, symbols, units and abbreviations before sending text
+**Spell everything out** (two exceptions the user approved: "11 11 sale" and "IP sixty four"). The docs say to expand numbers, symbols, units and abbreviations before sending text
 to the voice, and the user's first take proves it. No digits, no `.`, `,` or `-` inside numbers, no `%`, `$`, `/`.
 
 | Written | Say it like this in the script |
@@ -89,12 +89,12 @@ to the voice, and the user's first take proves it. No digits, no `.`, `,` or `-`
 | 20W | twenty watt |
 | 108MP | one hundred eight megapixel |
 | Gorilla Glass 7i | Gorilla Glass seven I |
-| IP64 | I P six four |
+| IP64 | IP sixty four (the user's choice; the voice reads "IP" as letters) |
 | NFC, UI | N F C, U I (spaced letters) |
 | Moto G47 | Moto G forty-seven |
 | Dimensity 6300 | Dimensity six three zero zero |
 | Android 16 | Android sixteen |
-| 11.11 sale | eleven eleven sale |
+| 11.11 sale | 11 11 sale (the user's choice: digits are fine here, the voice reads it correctly) |
 | Rs 76,499 | chhiyattar hazaar chaar sau ninyanve rupay |
 
 - Decimals are always **"point"** by default. Never let the voice choose: it said the Hindi word "dashmlav" (3.5, 6.67, 2.2).
@@ -115,6 +115,13 @@ suggests Eleven v4; confirm with the user.
 transcription in forward slashes inside double quotes, used only for that word and tested (results vary by voice);
 on Multilingual v2 a pronunciation dictionary alias (case sensitive, first match wins). Regenerate and pick the best take.
 ElevenLabs also has a speed setting, 0.7 to 1.2, to trim length.
+
+## The approved script
+
+`reference/script-examples/moto-g47-approved-v1.txt` is the version the user picked (variation 1) and approved
+with two wording changes (11 11, IP sixty four). Use it as the model for length, order and sentence style.
+From a video: get the transcript first with `scripts/transcript.py video.mp4 --lang ur`, take the facts
+and the angle from it, then write the script fresh.
 
 ## What went wrong in the first take (the user's ElevenLabs voice, 81 s)
 

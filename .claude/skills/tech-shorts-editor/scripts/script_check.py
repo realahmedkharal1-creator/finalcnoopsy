@@ -17,7 +17,7 @@ import argparse, re, sys
 HINDI = {"dashmlav", "dashamlav", "dashmlaw", "dashmlaw", "dashamlaw"}
 UNITS = {"mah", "gb", "tb", "mb", "hz", "khz", "ghz", "mm", "cm", "kg", "mp", "fps", "w", "ms", "nm", "inch"}
 UNITS.discard("inch")                                    # "inch" is a normal spoken word
-ACRONYM_OK = {"RAM", "AMOLED", "PUBG", "HDR", "OLED", "LTPO", "PTA"}   # words the voice reads fine as words
+ACRONYM_OK = {"RAM", "AMOLED", "PUBG", "HDR", "OLED", "LTPO", "PTA", "IP"}   # words the voice reads fine as words
 
 
 def spoken_tokens(text):
@@ -36,6 +36,7 @@ def main():
     errors, warns = [], []
     lines = [l for l in text.split("\n") if l.strip()]
     for n, line in enumerate(lines, 1):
+        line = re.sub(r"\b11[ .]11\b", "eleven eleven", line)      # approved by the user: "11 11 sale" is read correctly
         for m in re.finditer(r"\d[\d.,]*\w*", line):
             errors.append(f"line {n}: digits '{m.group(0)}': write the number as words (e.g. 3.5 -> three point five)")
         for m in re.finditer(r"[%₹$&+/=@#*<>]", line):
