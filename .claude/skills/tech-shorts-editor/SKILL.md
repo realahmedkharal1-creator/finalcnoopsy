@@ -227,9 +227,9 @@ Rules the user gave after the first edit (follow them every time):
 ## 9. Voice-over script
 
 When the user asks for a script (from a blog link or a transcript), read `script-writing.md` first and follow it.
-The short version: Roman Urdu, to-the-point, **voice under 50 s (hard limit 58 s), about 190 spoken words**
-(rate 4.0 words per second); every number, unit and abbreviation written out as words (decimals are always
-"point", never digits); no Hindi words; complete natural sentences, never fragments (cut facts, not grammar); one honest verdict;
+The short version: Roman Urdu, to-the-point, **about 1,100 characters (spaces included), which is a voice just under 60 s**
+(1,122 characters measured 59.4 s; about 195 spoken words); every number, unit and abbreviation written out as words (decimals are always
+"point"), except the price, which is written in digits; no Hindi words; complete natural sentences, never fragments (cut facts, not grammar); one honest verdict;
 unconfirmed facts listed outside the voice text.
 Check each draft with `scripts/script_check.py`. For a script from a video, transcribe it first with
 `scripts/transcript.py`; the approved model script is in `reference/script-examples/`. After the user generates the voice, transcribe it, compare, and

@@ -18,18 +18,19 @@ your text, so the text must be written for **that voice to read correctly**, not
   follow its workflow and its tone question; this file's length and voice rules still apply on top.
   The default tone is **to-the-point**: facts, one honest verdict, no jokes.
 
-## Length (the video stays under 60 s)
+## Length (the voice stays under one minute)
 
-- **Voice target: about 50 s or less. Hard limit: 58 s.**
-- Speaking rate of the user's ElevenLabs voice: **4.0 spoken words per second** (measured: 324 words in 81 s).
-  So 50 s is about **200 spoken words**; stay at 190 to be safe. The estimate is good to about plus or minus 10%.
-- Count words **after** numbers are spelled out ("6.67" is four spoken words, not one). Digits make a script
-  look shorter than it sounds: the first take had 220 tokens but about 325 spoken words.
-- Fits too long: first cut details nobody decides on (box contents, extra ports, secondary specs), never the
-  price, display, chip, camera, battery, verdict. Last resort: speed 1.1 in ElevenLabs.
+- **Keep the script near 1,100 characters, spaces included** (the user's rule; ElevenLabs shows the same count).
+  Measured on the user's take: **1,122 characters = 59.4 s of speech** (Eleven v4, stability Creative, similarity Low),
+  about **18.9 characters or 3.3 spoken words per second**, so about 195 spoken words.
+  The talking-head file runs a second longer than the speech (silence before and after).
+- Count after numbers are spelled out ("6.67" is four spoken words). The first take estimate of 4.0 words per second was
+  wrong for the later settings: the script I called "47 s" really ran 59 s. Use the numbers above.
+- If it runs long, cut details nobody decides on (box contents, extra ports, secondary specs), never the price, display,
+  chip, camera, battery or verdict. Last resort: speed 1.1 in ElevenLabs.
 - Check every draft: `py .claude/skills/tech-shorts-editor/scripts/script_check.py script.txt`.
 
-## Structure of a 45-50 s phone review (to-the-point)
+## Structure of a 55-59 s phone review (to-the-point)
 
 1. Greeting and product name in the first 5 s (search picks up the spoken name).
 2. Price in Rs, in words, and any sale or discount.
@@ -74,7 +75,7 @@ facts into broken fragments to save time, and the user called it bad. **To save 
 
 Source: the ElevenLabs text-to-speech best-practices page (elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices).
 
-**Spell everything out** (two exceptions the user approved: "11 11 sale" and "IP sixty four"). The docs say to expand numbers, symbols, units and abbreviations before sending text
+**Spell everything out** (exceptions: "11 11 sale", "IP sixty four" and prices in digits). The docs say to expand numbers, symbols, units and abbreviations before sending text
 to the voice, and the user's first take proves it. No digits, no `.`, `,` or `-` inside numbers, no `%`, `$`, `/`.
 
 | Written | Say it like this in the script |
@@ -95,13 +96,13 @@ to the voice, and the user's first take proves it. No digits, no `.`, `,` or `-`
 | Dimensity 6300 | Dimensity six three zero zero |
 | Android 16 | Android sixteen |
 | 11.11 sale | 11 11 sale (the user's choice: digits are fine here, the voice reads it correctly) |
-| Rs 76,499 | chhiyattar hazaar chaar sau ninyanve rupay |
+| Rs 76,499 | 76,499 rupay (digits: spelled out as "chhiyattar hazaar ..." the voice said 66,499) |
 
 - Decimals are always **"point"** by default. Never let the voice choose: it said the Hindi word "dashmlav" (3.5, 6.67, 2.2).
   If the user prefers the Urdu word "ashariya", write that instead.
 - Model names with a letter after a number ("7i") are spelled with the English letter name ("seven I").
-- Prices and money in Roman Urdu words; spec numbers in English words (that is how Pakistani reviewers say them).
-  The voice also read a price written in digits ("76,000") correctly, so either is fine for the price only.
+- Spec numbers in English words (that is how Pakistani reviewers say them).
+  **Write prices in digits** ("76,499 rupay"): the voice read digits correctly twice, but read "chhiyattar" (76) as 66, so the video said the wrong price.
 - On-screen text and cards keep digits and "Rs": only the voice text is spelled out.
 
 **Pauses and emphasis (depends on the model).** The file name of the user's take (`..._ivc_s50_sim75_v4.mp3`)
