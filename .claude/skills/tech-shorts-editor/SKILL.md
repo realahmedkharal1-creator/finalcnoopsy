@@ -216,6 +216,13 @@ Rules the user gave after the first edit (follow them every time):
 5. **Use the space.** A wide shot (phone held sideways) fills its half; no empty strips around it.
 6. Spec values on cards come from the user's spec sheet or their own words. If a spoken price is
    unclear, leave it out and ask.
+7. **B-roll is product clips only.** When B-roll comes out of a long review video, drop every shot that
+   shows the other video's host talking, any other person (camera-sample photos with people, the host
+   holding the phone), and any other channel's logo or intro. Keep clips of the phone itself. Clips with
+   burned-in text or graphics are used only when that text does not clash with the user's own cards.
+   Cut the host out by comparing frames with a known host frame, merge neighbouring B-roll shots into
+   numbered clips, show the user a numbered thumbnail sheet with times, and use only the clips the user
+   keeps; they name the numbers to drop. The clip numbers belong to that one video and session.
 
 ## Limits
 
