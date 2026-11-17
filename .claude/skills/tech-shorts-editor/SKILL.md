@@ -191,6 +191,15 @@ frame; `render` decides the framing from these `plan.json` fields.
     The user's favourite; use it for comparisons and wide shots such as landscape gaming.
   - `circle`: B-roll fills the screen, speaker in a circle bottom-left (`head.circle`: `size`, `x`, `y`, `zoom`).
   - `hidden`: no speaker (full-screen sheet).
+  - `split` (Techiebist style, see `reference/smartphone-review/notes.md`): cream squared-paper background, two rounded
+    windows (972 x 864, 54 px side margins, 102 px gap): B-roll with `"layout": "split_top"` on top, speaker below
+    (`head.split_zoom` 1.12, `head.split_y` 0). Use it for about 35-40% of a review, with a speaker-only beat of 1-2 s
+    between B-roll blocks. Text that belongs to the B-roll goes inside the top window (`glow` card at y about 0.41).
+- **`transitions`**: `[{"t": 6.0, "type": "blur"}, {"t": 1.7, "type": "flash"}]`. `flash` (warm, 0.35 s) goes between
+  the speaker and a B-roll block; `blur` (0.6 s) goes between a full-screen B-roll and a split.
+- **Circle defaults** (measured from the reference): 394 px, white 13 px ring, bottom-right at x 0.748, y 0.854
+  of the frame; `head.circle` can override `size`, `x`, `y`.
+- **`glow` card** (yellow-glow text, `*yellow*` markup, other words white): `{"type": "glow", "lines": ["*Dimensity 6300*", "8GB RAM"], "y": 0.41}`.
 - **B-roll entry extras**: `ss` (start inside a long source file), `center` (where the product is in
   the source, 0 left .. 1 right; it is moved to the middle), `headroom` (0-0.15: push the clip down to
   leave room for a card above the product), `h_frac` (below 1 shows more of a wide clip), `y`.

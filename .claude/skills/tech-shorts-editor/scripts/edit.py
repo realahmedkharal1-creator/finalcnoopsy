@@ -309,6 +309,49 @@ def resolve(path, base):
     return p if p.is_absolute() else base / p
 
 
+def make_split_assets(work, W, H):
+    """Cream squared-paper background with two soft window shadows, and the rounded window mask (measured from
+    the Techiebist split-screen reference: windows 972 x 864, 54 px side margins, 102 px gap, radius 50)."""
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFilter
+    u = min(W / 1080, H / 1920)
+    ww, wh, x0, ty, by, rad = int(972 * u), int(864 * u), int(54 * u), int(39 * u), int(1005 * u), int(50 * u)
+    rnd = np.random.default_rng(7)
+    paper = np.empty((H, W, 3), np.float32)
+    paper[:] = (233, 224, 199)
+    noise = np.kron(rnd.normal(0, 3.0, (H // 2 + 1, W // 2 + 1)), np.ones((2, 2)))[:H, :W]
+    paper += noise[..., None]
+    step = max(8, int(26 * u))
+    paper[::step, :, :] -= 7
+    paper[:, ::step, :] -= 7
+    img = Image.fromarray(np.clip(paper, 0, 255).astype(np.uint8)).convert("RGBA")
+    shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(shadow)
+    for y in (ty, by):
+        d.rounded_rectangle((x0, y + int(8 * u), x0 + ww, y + wh + int(8 * u)), radius=rad, fill=(70, 45, 10, 80))
+    Image.alpha_composite(img, shadow.filter(ImageFilter.GaussianBlur(14 * u))).convert("RGB").save(work / "paper_split.png")
+    m = Image.new("L", (ww * 4, wh * 4), 0)
+    ImageDraw.Draw(m).rounded_rectangle((0, 0, ww * 4 - 1, wh * 4 - 1), radius=rad * 4, fill=255)
+    m.resize((ww, wh), Image.LANCZOS).save(work / "window_mask.png")
+    return ww, wh, x0, ty, by
+
+
+def transition_filters(tr):
+    """Blur transitions (old layout blurs for 0.3 s, new one clears over 0.3 s) and warm flashes."""
+    out = []
+    blur = [t["t"] for t in tr if t.get("type") == "blur"]
+    flash = [t["t"] for t in tr if t.get("type") == "flash"]
+    for t0 in blur:
+        for a, b, sg in ((-0.3, -0.2, 6), (-0.2, -0.1, 14), (-0.1, 0.0, 26), (0.0, 0.1, 26), (0.1, 0.2, 14), (0.2, 0.3, 6)):
+            out.append(f"gblur=sigma={sg}:enable='between(t,{t0 + a:.3f},{t0 + b:.3f})'")
+    if flash:
+        w = f"max(0,1-abs(t-{flash[0]})/0.22)"
+        for t0 in flash[1:]:
+            w = f"max({w},max(0,1-abs(t-{t0})/0.22))"
+        out.append(f"eq=brightness='0.5*({w})':contrast='1-0.3*({w})':saturation='1+0.25*({w})':gamma_b='1-0.2*({w})':eval=frame")
+    return out
+
+
 def render(src, work, out, P, base):
     try:
         import cards as card_lib
@@ -332,11 +375,19 @@ def render(src, work, out, P, base):
     def when(*modes):
         return "+".join(f"between(t,{l['start']},{l['end']})" for l in layout if l["mode"] in modes) or "0"
     used = {l["mode"] for l in layout}
-    views = [m for m in ("full", "half", "circle") if m in used or (m == "half" and used & {"top", "bottom"})]
-    fc.append(f"color=c=black:s={W}x{H}:r={FPS}:d={total:.2f}[v0]")
+    views = [m for m in ("full", "half", "circle", "split") if m in used or (m == "half" and used & {"top", "bottom"})]
+    uses_split = "split" in used or any(b.get("layout") == "split_top" for b in pl.get("broll", []))
+    if uses_split:                                        # cream paper background, rounded windows
+        win_w, win_h, win_x, win_ty, win_by = make_split_assets(work, W, H)
+        inputs += ["-loop", "1", "-t", f"{total:.2f}", "-framerate", FPS, "-i", work / "paper_split.png"]
+        fc.append(f"[1:v]fps={FPS},format=yuv420p,setsar=1[v0]")
+        n = 2
+    else:
+        fc.append(f"color=c=black:s={W}x{H}:r={FPS}:d={total:.2f}[v0]")
+        n = 1
     if views:
         fc.append(f"[0:v]split={len(views)}" + "".join(f"[h_{m}]" for m in views))
-    last, n = "v0", 1
+    last = "v0"
     if "full" in views:
         fc.append(f"[h_full]scale={W}:{H}:force_original_aspect_ratio=increase,"
                   f"crop={W}:{H}:(iw-{W})*{fx}:(ih-{H})*{fy},"
@@ -354,8 +405,19 @@ def render(src, work, out, P, base):
             if m in used:
                 fc.append(f"[{last}][hh_{m}]overlay=0:{y}:enable='{when(m)}'[vh_{m}]")
                 last = f"vh_{m}"
+    if "split" in views:                                  # speaker in the bottom rounded window
+        zf = head.get("split_zoom", 1.12)
+        hz = 2 * int(win_h * zf / 2)
+        inputs += ["-loop", "1", "-t", f"{total:.2f}", "-framerate", FPS, "-i", work / "window_mask.png"]
+        fc.append(f"[h_split]scale=-2:{hz},crop={win_w}:{win_h}:x='(iw-{win_w})*{fx}':y='(ih-{win_h})*{head.get('split_y', 0.0)}',"
+                  f"setsar=1,format=rgba[hs0];[{n}:v]format=gray,fps={FPS}[hsm];[hs0][hsm]alphamerge[hs]")
+        fc.append(f"[{last}][hs]overlay={win_x}:{win_by}:enable='{when('split')}':eof_action=pass[vs1]")
+        last = "vs1"
+        n += 1
     boxes = {"full": (W, H, 0, 0), "top_half": (W, H // 2, 0, 0), "bottom_half": (W, H // 2, 0, H // 2),
              "left_half": (W // 2, H, 0, 0), "right_half": (W // 2, H, W // 2, 0)}
+    if uses_split:
+        boxes["split_top"] = (win_w, win_h, win_x, win_ty)
     for b in pl.get("broll", []):
         f = resolve(b["file"], base)
         if not f.exists():
@@ -367,8 +429,16 @@ def render(src, work, out, P, base):
         inputs += (["-loop", "1", "-t", f"{d:.2f}"] if still else seek + ["-t", f"{d:.2f}"]) + ["-i", f]
         bw, bh, bx, by = boxes[b.get("layout", "full")]
         kb = b.get("zoom_to", P["broll"]["push_to"])      # slow push on every b-roll shot
-        push = (f"scale=w='2*trunc({bw // 2}*(1+{kb - 1:.3f}*t/{d:.2f}))':h='2*trunc({bh // 2}*(1+{kb - 1:.3f}*t/{d:.2f}))':eval=frame,"
-                f"crop={bw}:{bh},setsar=1,setpts=PTS-STARTPTS+{b['start']}/TB[b{n}]")
+        core = (f"scale=w='2*trunc({bw // 2}*(1+{kb - 1:.3f}*t/{d:.2f}))':h='2*trunc({bh // 2}*(1+{kb - 1:.3f}*t/{d:.2f}))':eval=frame,"
+                f"crop={bw}:{bh},setsar=1")
+        shift = f"setpts=PTS-STARTPTS+{b['start']}/TB[b{n}]"
+        rounded = b.get("layout") == "split_top"
+        if rounded:                                       # rounded corners: merge a mask before the time shift
+            inputs += ["-loop", "1", "-t", f"{d:.2f}", "-framerate", FPS, "-i", work / "window_mask.png"]
+            push = (f"{core},format=rgba[bq{n}];[{n + 1}:v]format=gray,fps={FPS}[bm{n}];"
+                    f"[bq{n}][bm{n}]alphamerge,{shift}")
+        else:
+            push = f"{core},{shift}"
         # One clean clip per box, never a blurred copy behind it. "center" = where the product is in the source
         # (0 left .. 1 right); it is moved to the middle of the box. "headroom" pushes the clip down to leave room
         # for a card above the product; "h_frac" < 1 shows more of a wide clip. Any gap is filled by stretching the
@@ -400,28 +470,28 @@ def render(src, work, out, P, base):
             fc.append(g)
         fc.append(f"[{last}][b{n}]overlay={bx}:{by}:enable='between(t,{b['start']},{b['end']})':eof_action=pass[v{n}]")
         last = f"v{n}"
-        n += 1
+        n += 2 if rounded else 1
     if "circle" in views:                                 # speaker in a circle, on top of the b-roll
         from PIL import Image, ImageDraw, ImageFilter
         cc = head.get("circle", {})
-        dia = 2 * int(W * cc.get("size", 0.34) / 2)
+        dia = 2 * int(W * cc.get("size", 0.365) / 2)
         side = 2 * int(min(sw, sh) * cc.get("zoom", 0.62) / 2)
         cx0 = int(min(max(sw * fx - side / 2, 0), sw - side))
         cy0 = int(min(max(sh * fy - side * 0.45, 0), sh - side))
         m = Image.new("L", (dia * 4, dia * 4), 0)
         ImageDraw.Draw(m).ellipse((0, 0, dia * 4 - 1, dia * 4 - 1), fill=255)
         m.resize((dia, dia), Image.LANCZOS).save(work / "circle_mask.png")
-        pad = 40
+        pad = 56
         ring = Image.new("RGBA", ((dia + 2 * pad) * 2, (dia + 2 * pad) * 2), (0, 0, 0, 0))
         shadow = Image.new("RGBA", ring.size, (0, 0, 0, 0))
         ImageDraw.Draw(shadow).ellipse((2 * pad, 2 * pad + 16, 2 * (pad + dia), 2 * (pad + dia) + 16), fill=(0, 0, 0, 150))
         ring = Image.alpha_composite(ring, shadow.filter(ImageFilter.GaussianBlur(22)))
         ImageDraw.Draw(ring).ellipse((2 * pad, 2 * pad, 2 * (pad + dia), 2 * (pad + dia)), fill=(0, 0, 0, 0))
-        ImageDraw.Draw(ring).ellipse((2 * pad - 6, 2 * pad - 6, 2 * (pad + dia) + 6, 2 * (pad + dia) + 6),
-                                     outline=(255, 255, 255, 255), width=18)
+        ImageDraw.Draw(ring).ellipse((2 * pad - 26, 2 * pad - 26, 2 * (pad + dia) + 26, 2 * (pad + dia) + 26),
+                                     outline=(255, 255, 255, 255), width=26)       # 13 px white ring
         ring.resize((dia + 2 * pad, dia + 2 * pad), Image.LANCZOS).save(work / "circle_ring.png")
-        px = int(W * cc.get("x", 0.22) - dia / 2)
-        py = int(H * cc.get("y", 0.80) - dia / 2)
+        px = int(W * cc.get("x", 0.748) - dia / 2)          # bottom-right, as in the reference
+        py = int(H * cc.get("y", 0.854) - dia / 2)
         inputs += ["-loop", "1", "-t", f"{total:.2f}", "-i", work / "circle_mask.png",
                    "-loop", "1", "-t", f"{total:.2f}", "-i", work / "circle_ring.png"]
         fc.append(f"[h_circle]crop={side}:{side}:{cx0}:{cy0},scale={dia}:{dia},setsar=1,format=rgba[hc0];"
@@ -430,6 +500,10 @@ def render(src, work, out, P, base):
         fc.append(f"[vc1][{n + 1}:v]overlay={px - pad}:{py - pad}:enable='{when('circle')}':eof_action=pass[vc2]")
         last = "vc2"
         n += 2
+    tf = transition_filters(pl.get("transitions", []))
+    if tf:
+        fc.append(f"[{last}]" + ",".join(tf) + f"[vtr]")
+        last = "vtr"
     card_list = sorted(pl.get("cards", []), key=lambda c: (c["type"] != "sheet", c["start"]))
     for k, c in enumerate(card_list):                     # sheets first so other cards can sit on top
         for key in ("image", "avatar"):

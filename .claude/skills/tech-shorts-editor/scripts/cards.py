@@ -17,7 +17,7 @@ FONT_FILES = {"regular": "Poppins-Regular.ttf", "medium": "Poppins-Medium.ttf", 
               "bold": "Poppins-Bold.ttf", "italic": "Poppins-ExtraBoldItalic.ttf", "display": "LilitaOne-Regular.ttf",
               "light": "Poppins-Light.ttf", "ital": "Poppins-Italic.ttf", "bolditalic": "Poppins-BoldItalic.ttf",
               "serif": "PlayfairDisplay-Italic.ttf"}
-DEFAULT_Y = {"pill": 0.16, "spec": 0.20, "words": 0.60, "price": 0.68, "text": 0.14, "display": 0.48,
+DEFAULT_Y = {"glow": 0.40, "pill": 0.16, "spec": 0.20, "words": 0.60, "price": 0.68, "text": 0.14, "display": 0.48,
              "badge": 0.07, "subscribe": 0.72, "sheet": 0.50, "tag": 0.066, "product": 0.21}
 GRADIENTS = {"green": ("#FFFFFF", "#6CF58A"), "cyan": ("#FFFFFF", "#8FE6FF"), "yellow": ("#FFFFFF", "#FFD84A"),
              "red": ("#FFFFFF", "#FF8A80"), "white": ("#FFFFFF", "#DDE6F2"), "purple": ("#FFFFFF", "#C4A6FF")}
@@ -699,6 +699,36 @@ def card_sheet(c, W, H, U):
     return W, H, layers
 
 
+def glow_line(text, size):
+    """One line of reference-style text: *yellow* parts glow, the rest is white; soft shadow under everything."""
+    t = rich(text, size, "#FFFFFF", bold="bold", light="bold", light_alpha=255, bold_color="#FFF200")
+    pad = int(size * 0.55)
+    canvas = Image.new("RGBA", (t.width + 2 * pad, t.height + 2 * pad), (0, 0, 0, 0))
+    canvas.alpha_composite(t, (pad, pad))
+    arr = np.array(canvas)
+    yellow = (arr[..., 2] < 140) & (arr[..., 3] > 40)
+    gm = Image.fromarray((yellow * arr[..., 3]).astype(np.uint8)).filter(ImageFilter.GaussianBlur(size * 0.20))
+    ga = np.clip(np.array(gm).astype(float) * 0.9, 0, 120).astype(np.uint8)         # soft halo, never a solid fill
+    glow = Image.new("RGBA", canvas.size, (255, 236, 40, 0))
+    glow.putalpha(Image.fromarray(ga))
+    sh = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    sh.paste((0, 0, 0, 200), (0, int(size * 0.045)), canvas.getchannel("A"))        # dark edge keeps the letters readable
+    out = Image.alpha_composite(glow, sh.filter(ImageFilter.GaussianBlur(size * 0.045)))
+    out.alpha_composite(canvas)
+    return out
+
+
+def card_glow(c, W, H, U):
+    """Yellow-glow value with white descriptor (Techiebist style). lines: list of strings, *yellow* markup."""
+    lines = c["lines"] if isinstance(c.get("lines"), list) else [c["text"]]
+    size = c.get("size", 84) * U
+    items = []
+    for n, l in enumerate(lines):
+        s = fit_size(l.replace("*", ""), size * (1.0 if n == 0 else 0.82), "bold", W * 0.86)
+        items.append((glow_line(l, s), n * 0.12, "pop"))
+    return stack(items, int(-size * 0.55), c.get("align", "center"))
+
+
 def card_tag(c, W, H, U):
     """Small white name tag for the top-left corner (pair it with "progress": true for the yellow bar)."""
     t = rich(c["text"], c.get("size", 40) * U, "#111111", bold="bolditalic")
@@ -726,7 +756,7 @@ def card_product(c, W, H, U):
     return w, by + model.height, layers
 
 
-BUILDERS = {"tag": card_tag, "product": card_product, "pill": card_pill, "spec": card_spec, "words": card_words, "price": card_price, "text": card_text,
+BUILDERS = {"glow": card_glow, "tag": card_tag, "product": card_product, "pill": card_pill, "spec": card_spec, "words": card_words, "price": card_price, "text": card_text,
             "display": card_display, "badge": card_badge, "subscribe": card_subscribe, "sheet": card_sheet}
 ANIM_S = {"pop": 0.24, "wipe": 0.45, "slide": 0.32, "fade": 0.2, "none": 0.0, "grow": 0.17, "dyn": 0.0}
 
