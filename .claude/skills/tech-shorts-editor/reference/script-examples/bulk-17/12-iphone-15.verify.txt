@@ -1,0 +1,9 @@
+Not in the voice text; confirm before recording:
+- Price: the title says "around 150K, official PTA" and a card shows "150K" with iPhone 13 Pro (a different phone). The talk also lists 8 GB-class options "128 GB ... around"; check the real iPhone 15 price.
+- The video says the display is 60 Hz (the host calls it a compromise); 6.1 inch, ceramic shield, 86 % screen-to-body? (a number was heard), Dynamic Island.
+- A16 Bionic with 5-core GPU (heard "A16" in a benchmark screenshot), 128 GB base storage (a card shows it), 48 MP main + 12 MP ultrawide, 4K 60 fps (heard), front camera 12 MP (a card shows it).
+- Charging: 27 W wired and 15 W wireless are shown on cards later in the video, not said clearly: not used.
+- Updates: "iOS 27 now, so until 29 or 30". Left out ("kai saal tak").
+- Heat warning: the host says this chip throttles outdoors in long sessions; the script says only "sixty F P S gaming smooth".
+- The video recommends buying only an official PTA unit from a trusted seller (a shop number is read out: not used).
+Cut for length: iCloud storage story, comparison with Android compact phones (Vivo X300 FE etc.), how to check battery health, resale talk.

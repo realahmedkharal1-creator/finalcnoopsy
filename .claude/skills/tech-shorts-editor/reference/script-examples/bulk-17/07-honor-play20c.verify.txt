@@ -1,0 +1,7 @@
+Not in the voice text; confirm before recording:
+- Price: the transcript says "3500 rupay" which is surely 35,000 (budget segment, a 4 GB / 128 GB vivo is 50 to 55 thousand in the same talk). Confirm and add: "jis ki price <digits> rupay hai".
+- Rear display 2.01 inch, 6.78 inch HD+ TFT, 90 Hz, 4 GB RAM (64 GB or 128 GB storage unclear), Unisoc chipset (model garbled, 1.8 GHz), Android Go edition, 6000 mAh, 15 W: heard.
+- No NFC, mono speaker, 3.5 mm jack, 4G VoLTE, side fingerprint, USB 2.0: heard.
+- The video also runs a giveaway for the phone (the Pakistan Influencer Awards vote): not part of the script.
+- Honest verdict from the video: "not for gaming, enough for a beginner or a student".
+Cut for length: updates (no security patches promised), virtual RAM, charging time of about 3 hours, battery 2-day claim.

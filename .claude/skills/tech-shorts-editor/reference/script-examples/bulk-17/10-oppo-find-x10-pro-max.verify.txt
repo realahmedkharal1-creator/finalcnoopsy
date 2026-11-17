@@ -1,0 +1,10 @@
+Not in the voice text; confirm before recording:
+- Price: not said in the unboxing. Add the Pakistan price in digits when you know it.
+- The unit in the video is a global unit with Hasselblad branding; Pakistan retail box may differ.
+- Display 6.78 inch, 1.5K LTPO, 144 Hz, HDR10+ and Dolby Vision, 3600 to 4000 nits outdoors (heard): the script says "dhoop mein bhi saaf" instead of a nits number.
+- Chip: heard "Dimensity 9600 Pro, 2 nm, 4.55 GHz", LPDDR5X 9600 Mbps, UFS 4.1: confirm. Benchmark "above 4 million" (AnTuTu) heard.
+- Weight 233 g without a cover, thickness 8.4 mm (heard). IP68 and IP69 (heard).
+- Camera: three 200 MP sensors (a card says 600 MP total), 3.2 MP colour sensor, 8K 30 fps, open gate and Hasselblad palettes. Telephoto kit zoom heard as "3.2x" (the lens itself) with 60 to 200 mm with the kit.
+- Software: Color OS 17 on Android 17, five OS updates and six years security (heard).
+- Battery and charging (8000 mAh? 80 W wired, 50 W wireless) are shown on cards later in the video but not said clearly in the first 10 minutes: not used.
+Cut for length: accessories kit unboxing, haptic motor, AI features, vapor chamber, camera video modes.

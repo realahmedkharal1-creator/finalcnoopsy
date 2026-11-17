@@ -1,0 +1,7 @@
+Not in the voice text; confirm before recording:
+- Prices: heard "Neo 5 Pro: retail 120,000 for 12 GB / 256 GB" and "Neo 5 Max: 100,000 for 8 GB / 256 GB with the accessories". The Max being cheaper than the Pro is surprising: check the order.
+- Neo 5 Max: 1.5K display, 120 Hz, 86 % screen-to-body (a size of "7.5 inch" was heard but is probably wrong: left out), Dimensity 7100 (hardware named "7100", 2.4 GHz, Mali-G610 MC2), LPDDR5X, UFS 2.2, Android 16, 2 years Android and 5 years security (heard), 7100 mAh with 45 W, 30,000 mm2 vapor chamber.
+- Neo 5 Pro: 6.8 inch AMOLED full HD+ 120 Hz, 8.5 mm, 191 g, IP64, LPDDR4X + UFS 2.2, 20,000 mm2 vapor chamber, 16 MP front and 50 MP rear (4K 30 fps), 2.7 GHz Mali G57 chip (name garbled).
+- Camera: only the Pro figures were heard; the Max has "16 MP front and 50 MP rear" in the same breath: both left out.
+- Both phones run 60 fps in games; 90 fps promised later by update.
+Cut for length: haptics, NFC, 5G bands, colours, box accessories (Max: cooler, trigger cable).
