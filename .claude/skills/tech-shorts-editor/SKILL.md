@@ -224,6 +224,21 @@ Rules the user gave after the first edit (follow them every time):
    numbered clips, show the user a numbered thumbnail sheet with times, and use only the clips the user
    keeps; they name the numbers to drop. The clip numbers belong to that one video and session.
 
+Mistakes found in the final Moto G47 edit (the user's screenshots; check every frame for them before sending):
+
+8. **Product cut off or off-centre.** A frame where the phone or the box is clipped at the left or right edge
+   (opening shot of the box and phone, the "3.5mm jack" shot, the sideways phone in hand) is a fault. The product must be
+   fully inside the frame, centred; if the source shot is too tight, pick another part of the clip or another clip.
+9. **Shot without the product.** A B-roll shot where only a hand (with a ring) fills the frame and the phone is a sliver
+   at the bottom is a fault. Every shot must show the phone itself, large, in the middle.
+10. **Player buttons burned into the source.** The long video has a pause icon ("II") in the top-right corner in some
+    stretches. It showed over the user's card text ("MOTOROLA MOTO G47", "3.5mm Jack"). Detect it (bright vertical
+    bars in the top-right corner), choose clip ranges without it, or crop or scale that corner out. Never ship it.
+11. **Another person in the b-roll or in a transition.** A blurred frame of the other video's host (man in glasses,
+    black shirt) appeared full screen next to the circle. The ranges must be checked frame by frame, including the
+    first and last 0.3 s of every clip and the blur-transition frames, because a clip that crosses a cut shows the host.
+12. **Check transition frames too**, not only mid-scene frames: sample at each transition time, minus 0.2 s and plus 0.2 s.
+
 ## 9. Voice-over script
 
 When the user asks for a script (from a blog link or a transcript), read `script-writing.md` first and follow it.
