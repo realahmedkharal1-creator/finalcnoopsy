@@ -11,6 +11,6 @@
  "broll": {"push_to": 1.06},
  "cta": {"style": "pills", "lead_s": 3.0, "y": 0.77,
          "pills": [{"text": "SAVE THIS?", "fill": "#FFF3A6"}, {"text": "& SHARE", "fill": "#C9F2D4"}]},
- "audio": {"lufs": -14, "true_peak": -1.0, "bgm_db": -20, "duck_ratio": 6, "sfx_offset_s": -0.03,
-           "sfx_db": {"whoosh": -12, "pop": -14, "click": -16, "ding": -12, "riser": -14}, "bgm": "bgm.mp3"}
+ "audio": {"lufs": -14, "true_peak": -1.0, "bgm_db": -30, "duck_ratio": 6, "sfx_offset_s": -0.03,
+           "sfx_db": {"whoosh": -24, "pop": -26, "click": -28, "ding": -22, "riser": -24}, "bgm": "bgm.mp3"}
 }
