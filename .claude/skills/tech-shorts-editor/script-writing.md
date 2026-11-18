@@ -18,6 +18,17 @@ your text, so the text must be written for **that voice to read correctly**, not
   follow its workflow and its tone question; this file's length and voice rules still apply on top.
   The default tone is **to-the-point**: facts, one honest verdict, no jokes.
 
+## How the user delivers the material (bulk scripts)
+
+For each video the user sends, together: the **transcript** (text), the **YouTube title** (it identifies the source video 01-18 in the Drive folder,
+which is already downloaded) and, separately, a **price and spec screenshot**, badge/logo images and any icons or emoji.
+- Price and specs come from the screenshot and the user's words, never from speech-to-text (my Whisper transcripts garbled prices, watt and
+  RAM figures). Mention in `.verify.txt` only what the screenshot does not settle.
+- Opening line is short (see "Opening line must be short" below). Everything else in the writing style stays as approved.
+- Output per video: `reference/script-examples/<name>.txt` (voice text) + `.verify.txt`; run `scripts/script_check.py` on each.
+- The 17 first-draft scripts in `reference/script-examples/bulk-17/` came from my own noisy transcripts: use them only as a length and structure
+  model, and rewrite from the user's transcripts when they arrive.
+
 ## Length (the voice stays under one minute)
 
 - **Keep the script near 1,100 characters, spaces included** (the user's rule; ElevenLabs shows the same count).
