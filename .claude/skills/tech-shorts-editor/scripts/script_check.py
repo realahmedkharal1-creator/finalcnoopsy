@@ -46,6 +46,8 @@ def main():
         line = re.sub(r"\b\d+(?: (?:hazaar|lakh|crore))*(?: \d+)?(?= (?:hazaar|lakh|crore|rupay)\b)", "price", line)   # new style: 99 hazaar 999 rupay
         if "," in orig:
             errors.append(f"line {n}: comma: ElevenLabs adds a pause for it: no commas at all, use a full stop or a joining word")
+        for bad in re.findall(r"\b(?:bara|bare|bade)\b", orig, re.I):
+            errors.append(f"line {n}: write 'bada' or 'baday' instead of '{bad}' (the voice read 'bade' as twelve)")
         if "lagbhag" in orig.lower():
             errors.append(f"line {n}: write 'almost' instead of 'lagbhag'")
         for m in re.finditer(r"\d[\d.,]*\w*", line):

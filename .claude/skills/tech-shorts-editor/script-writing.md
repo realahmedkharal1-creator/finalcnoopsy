@@ -85,6 +85,9 @@ facts into broken fragments to save time, and the user called it bad. **To save 
 - **No commas anywhere in the voice text (rule from the user):** ElevenLabs turns a comma into extra space and the voice stops for a moment.
   Use no commas at all: not in sentences, not in numbers, not in lists. Where a comma would have been, either join with a word ("aur", "jabke", "lekin", "jo") or
   end the sentence with a full stop and start a new short one. Check with `scripts/script_check.py`, which flags every comma.
+- **Spelling of "bada" and "bade" (rule from the user):** ElevenLabs read "bade" as "twelve" once (the Pixel 9a bezels sentence). Always write
+  **"bada"** for bada (big, masculine singular) and **"baday"** for bade (big, plural or oblique: "baday bezels", "baday size ka"). Never "bara", "bare" or "bade".
+  (Feminine "badi" stays as it is.) Same idea for any word the voice misreads: the user sends the spelling that worked.
 - **Launch status (rule from the user):** if the source video says the phone is not yet launched or not yet on sale in Pakistan, the script says so in the
   opening, with the date the host gave (for example "abhi Pakistan mein launch nahi hua, December ke end ya January mein aayega"), and the price is
   written as the expected one ("price lagbhag X rupay hogi"). Read the video for the launch date and status every time; the user's price list does not say it.
