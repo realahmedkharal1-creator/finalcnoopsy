@@ -1,3 +1,5 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
 Not in the voice text; confirm before recording:
 - THE TRANSCRIPT CALLS BOTH PHONES "POCO" most of the time (speech-to-text confusion). The split in the script comes from the facts that only fit one phone: Snapdragon 6 Gen 3 + LPDDR4X + 5520 mAh (a card in the video shows 5520) = POCO M8; Dimensity 7100 + LPDDR5X + 8000 mAh + 3D curved display = Tecno Pova Curve 2. Check on the spec sheet.
 - Weights: one phone 176 g, the other 200 g (the lighter one is the POCO M8 in the script). Thickness 7.42 and 7.35 mm: left out.

@@ -1,3 +1,5 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
 Not in the voice text; confirm before recording:
 - Price: the title says "around 150K, official PTA" and a card shows "150K" with iPhone 13 Pro (a different phone). The talk also lists 8 GB-class options "128 GB ... around"; check the real iPhone 15 price.
 - The video says the display is 60 Hz (the host calls it a compromise); 6.1 inch, ceramic shield, 86 % screen-to-body? (a number was heard), Dynamic Island.

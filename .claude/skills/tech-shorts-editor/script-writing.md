@@ -74,6 +74,9 @@ facts into broken fragments to save time, and the user called it bad. **To save 
 | "Display six point six seven inch ki hai, seven twenty p aur one twenty hertz." (list) | "Front par six point six seven inch ki seven twenty p, one twenty hertz display hai, jo Gorilla Glass seven I ke saath aati hai, halaanke iss price mein ten eighty p panel hota to behtar tha." |
 | "Dimensity six three zero zero, eight gigabyte RAM ... hai." (bare list) | "Andar Dimensity six three zero zero chipset, eight gigabyte RAM aur one twenty-eight gigabyte storage hai, aur ... Hello U I smooth gaming aur daily performance deta hai." |
 
+- **Prices always carry "lagbhag" (rule from the user):** prices change, so every price in the voice text is written like
+  "lagbhag 40,000 rupay" (digits with commas, then "rupay"; "lagbhag" is read as a word by the voice). Ranges: "lagbhag 150,000 rupay se 160,000 rupay".
+  For "under X" write "lagbhag 90,000 rupay se kam". The price itself comes from the user's list (current market price), not from the source video.
 - **Opening line must be short (rule from the user):** the viewer decides in the first seconds. Do NOT say "main hoon Ahmed Hassan" and do not
   start with a long introduction. Use: "Assalam-o-Alaikum dosto, aaj hum baat karne wale hain <product> ki, jis ki price <price> rupay hai, lekin <sale/hook>."
   or a one-line hook before the greeting. The name is not needed in the voice. The moto-g47-approved-v1.txt example keeps the old long opening on purpose

@@ -1,3 +1,5 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
 Not in the voice text; confirm before recording:
 - Price: not said in the unboxing. Add the Pakistan price in digits when you know it.
 - The unit in the video is a global unit with Hasselblad branding; Pakistan retail box may differ.

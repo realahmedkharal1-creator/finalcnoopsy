@@ -1,3 +1,5 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
 Not in the voice text; confirm before recording:
 - Price: heard "starting price 2,10,000" for the 8 GB / 256 GB variant (8/512 is the other). Check, it was said in the unboxing.
 - Display 6.59 inch, 1.5K, 144 Hz, 92 % screen-to-body: heard clearly. Peak brightness figure garbled (5000 nits?), PWM 4320 Hz: left out.

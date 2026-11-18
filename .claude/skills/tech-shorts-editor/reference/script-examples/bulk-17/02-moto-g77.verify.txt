@@ -1,3 +1,5 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
 Not in the voice text; confirm before recording:
 - Price: the video says "under 90 thousand, official PTA, box pack" (exact price not heard). Add the exact digits if wanted.
 - Battery: speech-to-text says the battery is the same size as an older G model; the on-screen card in the video shows 5200. Charging watt not heard clearly (30 W or 33 W?), so it is left out.

@@ -1,3 +1,5 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
 Not in the voice text; confirm before recording:
 - It is a NON-PTA import ("non PTA, not refurbished"); the script says so. Exact price not said (title: under 90K).
 - Display: 6.3 inch P-OLED 120 Hz (cards in the video), Gorilla Glass 3, big bezels: heard.

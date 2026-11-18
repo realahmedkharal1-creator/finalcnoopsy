@@ -1,3 +1,5 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
 Not in the voice text; confirm before recording:
 - The first minute and the design section of the transcript are unreadable; "four changes" in the opening sentence comes from the video title. Design change not heard: left out.
 - Display: same 6.7 inch and 120 Hz (heard), panel type S25 FE LTPO vs S26 FE LTPS (heard, the host says this).

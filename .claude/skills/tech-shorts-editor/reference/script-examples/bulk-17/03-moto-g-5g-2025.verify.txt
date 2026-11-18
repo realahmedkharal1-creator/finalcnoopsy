@@ -1,3 +1,5 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
 Not in the voice text; confirm before recording:
 - Price: "under forty thousand"; the shop he recommends sold it at about 37,000 (heard). The script says only "under forty thousand". Use the real price you want to show.
 - Weight 193 g and 8.2 mm, IP64, 3.5 mm jack, 6.7 inch 720p IPS, Dimensity 6300, LPDDR4X + UFS 2.2: heard clearly. Refresh rate (120 Hz) and Gorilla Glass level: the transcript says "Gorilla" but not the number; check.

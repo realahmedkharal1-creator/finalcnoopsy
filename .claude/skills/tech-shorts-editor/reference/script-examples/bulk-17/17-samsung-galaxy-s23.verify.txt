@@ -1,3 +1,5 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
 Not in the voice text; confirm before recording:
 - Price: "under one lakh, official PTA" (title and first sentence). Exact price not heard.
 - Design and display (compact, 6.1 inch, 1080p, 120 Hz, dynamic AMOLED 2X, 1750 nits peak heard as "seventeen hundred", Dolby Atmos stereo) heard clearly; "flat display" he says.

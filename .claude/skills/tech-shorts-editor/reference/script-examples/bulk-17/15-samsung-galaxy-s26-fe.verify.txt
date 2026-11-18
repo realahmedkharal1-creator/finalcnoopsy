@@ -1,3 +1,5 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
 Not in the voice text; confirm before recording:
 - Price: not said in the transcript (cards in the S26 FE vs S25 FE video: 8/256 about 250K, 8/512 about 320K). Add it in digits if you want it.
 - Exynos 2500, 3 nm, 3.3 GHz, Xclipse 950, 8 GB LPDDR5X, 256 GB UFS 4.0, benchmark about 2.7 million, One UI 9.0 (heard; the video title in another file says One UI 9): heard clearly.
