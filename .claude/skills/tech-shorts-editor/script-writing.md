@@ -74,9 +74,17 @@ facts into broken fragments to save time, and the user called it bad. **To save 
 | "Display six point six seven inch ki hai, seven twenty p aur one twenty hertz." (list) | "Front par six point six seven inch ki seven twenty p, one twenty hertz display hai, jo Gorilla Glass seven I ke saath aati hai, halaanke iss price mein ten eighty p panel hota to behtar tha." |
 | "Dimensity six three zero zero, eight gigabyte RAM ... hai." (bare list) | "Andar Dimensity six three zero zero chipset, eight gigabyte RAM aur one twenty-eight gigabyte storage hai, aur ... Hello U I smooth gaming aur daily performance deta hai." |
 
-- **Prices always carry "lagbhag" (rule from the user):** prices change, so every price in the voice text is written like
-  "lagbhag 40,000 rupay" (digits with commas, then "rupay"; "lagbhag" is read as a word by the voice). Ranges: "lagbhag 150,000 rupay se 160,000 rupay".
-  For "under X" write "lagbhag 90,000 rupay se kam". The price itself comes from the user's list (current market price), not from the source video.
+- **Prices: "almost", spoken-style digits, name every device (rules from the user, replace the older "lagbhag" rule):**
+  - Every price carries **"almost"** (prices change). Never "lagbhag": in Pakistan "lagbhag" sounds like a different, formal word and the user dislikes it.
+  - Write the price the way it is spoken, digits and words mixed, **no commas inside numbers**: "almost 99 hazaar 999 rupay", "almost 1 lakh 30 hazaar rupay",
+    "almost 1 lakh 90 hazaar rupay", "almost 40 hazaar rupay". Not "99,999" and not "1,30,000".
+  - For "under X" write "almost 90 hazaar rupay se kam". Ranges: "almost 1 lakh 50 hazaar rupay se 1 lakh 60 hazaar rupay".
+  - **When a script covers several phones, do not read the prices as one list** ("jin ki prices 99, 1 lakh 30 aur 1 lakh 90 hain" is confusing).
+    Name each phone with its own price: "M8 ki price almost 99 hazaar 999 rupay hai. M8 Pro ki price almost 1 lakh 30 hazaar rupay hai." Same for every comparison.
+  - The price comes from the user's list (current market price), not from the source video.
+- **No commas anywhere in the voice text (rule from the user):** ElevenLabs turns a comma into extra space and the voice stops for a moment.
+  Use no commas at all: not in sentences, not in numbers, not in lists. Where a comma would have been, either join with a word ("aur", "jabke", "lekin", "jo") or
+  end the sentence with a full stop and start a new short one. Check with `scripts/script_check.py`, which flags every comma.
 - **Launch status (rule from the user):** if the source video says the phone is not yet launched or not yet on sale in Pakistan, the script says so in the
   opening, with the date the host gave (for example "abhi Pakistan mein launch nahi hua, December ke end ya January mein aayega"), and the price is
   written as the expected one ("price lagbhag X rupay hogi"). Read the video for the launch date and status every time; the user's price list does not say it.
@@ -115,7 +123,7 @@ to the voice, and the user's first take proves it. No digits, no `.`, `,` or `-`
 | Dimensity 6300 | Dimensity six three zero zero |
 | Android 16 | Android sixteen |
 | 11.11 sale | 11 11 sale (the user's choice: digits are fine here, the voice reads it correctly) |
-| Rs 76,499 | 76,499 rupay (digits: spelled out as "chhiyattar hazaar ..." the voice said 66,499) |
+| Rs 76,499 | almost 76 hazaar 499 rupay (digits and the words hazaar / lakh, no comma; spelled out as "chhiyattar hazaar ..." the voice said 66,499) |
 
 - Decimals are always **"point"** by default. Never let the voice choose: it said the Hindi word "dashmlav" (3.5, 6.67, 2.2).
   If the user prefers the Urdu word "ashariya", write that instead.
