@@ -1,0 +1,9 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
+Not in the voice text; confirm before recording:
+- Prices: the speech-to-text of the first minute is garbled (it says "12/512 ... one lakh ninety thousand" for the X8 Pro). The three prices in the script come from the price cards in the video (M8 99,999 for 8/256, M8 Pro 139,999 for 8/256, X8 Pro 189,999 for 12/512). Check each. "Discount in the market" is mentioned.
+- M8: Snapdragon 6 Gen 3, 6.77 inch, 176 g, 7.35 mm, IP66, 5520 mAh (a card), 45 W charger in the box. M8 Pro: 6.83 inch (heard "6.8"), quad curved 1.5K 120 Hz, 92 % screen-to-body, PWM 3840 Hz, Snapdragon 7s Gen 4, 2.7 GHz, 6500 mAh, 100 W "hyper charging", 27 W reverse (heard, "6500" garbled as "sixty-five hundred").
+- X8 Pro: Dimensity 8500 Ultra (heard on a card), 8.38 mm, 201 g, IP68, 12 GB / 512 GB "best value under 200K in 2026" (heard clearly).
+- All three: HyperOS 3 and Android 16 after an update, 4 years OS (1 already received) and 5 to 6 years security (heard for M8 and M8 Pro).
+- Cameras and front cameras (M8 Pro 50 MP main, 32 MP front) cut for length.
+Cut for length: box contents, colours, IR blaster, NFC, offline call (1.5 km), 5G bands.

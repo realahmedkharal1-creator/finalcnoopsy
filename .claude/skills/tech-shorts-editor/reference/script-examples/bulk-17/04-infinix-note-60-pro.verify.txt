@@ -1,0 +1,8 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
+Not in the voice text; confirm before recording:
+- Price: "launched at one lakh in March, now 130,000" (speech-to-text said "one lakh thirty thousand"; he also says it sells for less with a discount). Check today's price.
+- Chipset, RAM and storage were not heard clearly (a comparison poster in another video says Dimensity 7400); wired charging watt (90 W?) and wireless watt (30 W?) were also unclear, so no watt figures are in the script.
+- 144 Hz is "for specific apps" only (most apps 60 or 120 Hz). Display 1.5K heard clearly.
+- Software promise: three Android updates and five years security (heard), left out for length.
+Cut for length: IR blaster, NFC, AI features, offline walkie-talkie calls, resale value talk, 5G speed.

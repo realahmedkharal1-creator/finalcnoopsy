@@ -1,0 +1,11 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
+Not in the voice text; confirm before recording:
+- The first minute and the design section of the transcript are unreadable; "four changes" in the opening sentence comes from the video title. Design change not heard: left out.
+- Display: same 6.7 inch and 120 Hz (heard), panel type S25 FE LTPO vs S26 FE LTPS (heard, the host says this).
+- Telephoto: S26 FE up to 5x optical-quality zoom in portrait vs 3x on the S25 FE (heard); the script only says "zyada".
+- USB 2.0 on S26 FE (heard; the S25 FE shows USB 3.2 on a card). Battery 4900 mAh, 45 W, 15 W wireless both phones (heard).
+- Performance: "upgrade seen", chipset names not clear (a card shows Exynos 2500 for S26 FE).
+- Battery drain on the S26 FE is a bit higher in his test (needs an update): left out.
+- Price: not in the transcript (cards: S26 FE 8/256 about 250K, S25 FE 8/256 about 255K to 320K for 512 GB): not used.
+Cut for length: connectivity, speakers, display brightness test, front camera notes.

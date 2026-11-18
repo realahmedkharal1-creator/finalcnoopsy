@@ -18,6 +18,17 @@ your text, so the text must be written for **that voice to read correctly**, not
   follow its workflow and its tone question; this file's length and voice rules still apply on top.
   The default tone is **to-the-point**: facts, one honest verdict, no jokes.
 
+## How the user delivers the material (bulk scripts)
+
+For each video the user sends, together: the **transcript** (text), the **YouTube title** (it identifies the source video 01-18 in the Drive folder,
+which is already downloaded) and, separately, a **price and spec screenshot**, badge/logo images and any icons or emoji.
+- Price and specs come from the screenshot and the user's words, never from speech-to-text (my Whisper transcripts garbled prices, watt and
+  RAM figures). Mention in `.verify.txt` only what the screenshot does not settle.
+- Opening line is short (see "Opening line must be short" below). Everything else in the writing style stays as approved.
+- Output per video: `reference/script-examples/<name>.txt` (voice text) + `.verify.txt`; run `scripts/script_check.py` on each.
+- The 17 first-draft scripts in `reference/script-examples/bulk-17/` came from my own noisy transcripts: use them only as a length and structure
+  model, and rewrite from the user's transcripts when they arrive.
+
 ## Length (the voice stays under one minute)
 
 - **Keep the script near 1,100 characters, spaces included** (the user's rule; ElevenLabs shows the same count).
@@ -63,8 +74,16 @@ facts into broken fragments to save time, and the user called it bad. **To save 
 | "Display six point six seven inch ki hai, seven twenty p aur one twenty hertz." (list) | "Front par six point six seven inch ki seven twenty p, one twenty hertz display hai, jo Gorilla Glass seven I ke saath aati hai, halaanke iss price mein ten eighty p panel hota to behtar tha." |
 | "Dimensity six three zero zero, eight gigabyte RAM ... hai." (bare list) | "Andar Dimensity six three zero zero chipset, eight gigabyte RAM aur one twenty-eight gigabyte storage hai, aur ... Hello U I smooth gaming aur daily performance deta hai." |
 
-- Opening formula: "Assalam-o-Alaikum dosto, main hoon Ahmed Hassan, aur aaj hum baat karne wale hain <Pakistan mein launch hone
-  wale> <product> ki, jis ki retail price <price> rupay hai, lekin <sale> mein discount mil jayega."
+- **Prices always carry "lagbhag" (rule from the user):** prices change, so every price in the voice text is written like
+  "lagbhag 40,000 rupay" (digits with commas, then "rupay"; "lagbhag" is read as a word by the voice). Ranges: "lagbhag 150,000 rupay se 160,000 rupay".
+  For "under X" write "lagbhag 90,000 rupay se kam". The price itself comes from the user's list (current market price), not from the source video.
+- **Launch status (rule from the user):** if the source video says the phone is not yet launched or not yet on sale in Pakistan, the script says so in the
+  opening, with the date the host gave (for example "abhi Pakistan mein launch nahi hua, December ke end ya January mein aayega"), and the price is
+  written as the expected one ("price lagbhag X rupay hogi"). Read the video for the launch date and status every time; the user's price list does not say it.
+- **Opening line must be short (rule from the user):** the viewer decides in the first seconds. Do NOT say "main hoon Ahmed Hassan" and do not
+  start with a long introduction. Use: "Assalam-o-Alaikum dosto, aaj hum baat karne wale hain <product> ki, jis ki price <price> rupay hai, lekin <sale/hook>."
+  or a one-line hook before the greeting. The name is not needed in the voice. The moto-g47-approved-v1.txt example keeps the old long opening on purpose
+  (it was approved before this rule); every new script uses the short one.
 - Connect facts with "jo ... ke saath aati hai", "jabke", "halaanke", "lekin"; start sections with "Design ki baat
   karein to", "Front par", "Andar", "Camera mein".
 - When asked for variations, give three that differ in structure but all follow this style: (1) the user's own order

@@ -1,0 +1,10 @@
+NOTE (latest): prices in the script now come from the user's own list and are written with 'lagbhag'. Any older price line below is out of date.
+
+Not in the voice text; confirm before recording:
+- Price: "under forty thousand"; the shop he recommends sold it at about 37,000 (heard). The script says only "under forty thousand". Use the real price you want to show.
+- Weight 193 g and 8.2 mm, IP64, 3.5 mm jack, 6.7 inch 720p IPS, Dimensity 6300, LPDDR4X + UFS 2.2: heard clearly. Refresh rate (120 Hz) and Gorilla Glass level: the transcript says "Gorilla" but not the number; check.
+- RAM and storage: heard "4 GB, 64 or 128 GB" and "8 GB" mentions, not clear. Left out.
+- Battery 5000 mAh and 30 W charging: "five thousand" heard, wattage garbled (20 W or 30 W?). CONFIRM before recording.
+- Main camera megapixels not heard clearly. Only the 16 MP front camera is mentioned.
+- 5G speed on a Multan test 240 to 270 Mbps (not used; 5G packages are very expensive in Pakistan, the host's warning).
+Cut for length: haptics, no always-on display, buying advice (do not buy the damaged-glass imports, only buy the official PTA phone), speaker quality.
