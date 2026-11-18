@@ -1,0 +1,9 @@
+Check before recording:
+- PRICE: not in your list. The only price in the transcript is garbled: Chinese ROM 16 GB / 512 GB, non PTA, "3 lakh 30 hazaar to 3 lakh 50 hazaar" (heard as "30000 se 3,50"). Please give the price you want. PTA tax is not updated yet (the host estimates 1 to 1.5 lakh extra, so 4.5 to 5 lakh with PTA). Global launch is not out yet.
+- Chip name was garbled ("8 Elite Extreme Gen 6", 2 nm, 5.01 GHz): the script says only "Snapdragon eight Elite Extreme".
+- IP rating: the host says "IP69K": the script says IP sixty nine.
+- Display: 1.5K+ LTPO OLED, 120 Hz, 10,000 nits is a local peak (the host says the whole screen does not reach it), 95 % screen-to-body, PWM 4320 Hz, memory display (learns the user's brightness).
+- Camera: 200 MP OmniVision main, 200 MP Samsung periscope telephoto, 50 MP ultrawide, front 55 MP (4K 30 only). Arri tuning, Log video. The host ranks it 5th for flagship cameras and top two for the telephoto; the Find X10 Pro Max is better for photos.
+- Battery 8800 mAh silicon carbon, 100 W wired, 80 W wireless, 27 W reverse (heard). Android 17, Magic OS 11, 7 years updates, 24 five G bands, USB 3.2, Wi-Fi 7, NFC.
+- Chinese ROM: Google Play services must be installed by hand.
+Cut for length: design details (moon camera pattern, buttons), AI features, memory display, speakers, haptics.
