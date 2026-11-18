@@ -63,8 +63,10 @@ facts into broken fragments to save time, and the user called it bad. **To save 
 | "Display six point six seven inch ki hai, seven twenty p aur one twenty hertz." (list) | "Front par six point six seven inch ki seven twenty p, one twenty hertz display hai, jo Gorilla Glass seven I ke saath aati hai, halaanke iss price mein ten eighty p panel hota to behtar tha." |
 | "Dimensity six three zero zero, eight gigabyte RAM ... hai." (bare list) | "Andar Dimensity six three zero zero chipset, eight gigabyte RAM aur one twenty-eight gigabyte storage hai, aur ... Hello U I smooth gaming aur daily performance deta hai." |
 
-- Opening formula: "Assalam-o-Alaikum dosto, main hoon Ahmed Hassan, aur aaj hum baat karne wale hain <Pakistan mein launch hone
-  wale> <product> ki, jis ki retail price <price> rupay hai, lekin <sale> mein discount mil jayega."
+- **Opening line must be short (rule from the user):** the viewer decides in the first seconds. Do NOT say "main hoon Ahmed Hassan" and do not
+  start with a long introduction. Use: "Assalam-o-Alaikum dosto, aaj hum baat karne wale hain <product> ki, jis ki price <price> rupay hai, lekin <sale/hook>."
+  or a one-line hook before the greeting. The name is not needed in the voice. The moto-g47-approved-v1.txt example keeps the old long opening on purpose
+  (it was approved before this rule); every new script uses the short one.
 - Connect facts with "jo ... ke saath aati hai", "jabke", "halaanke", "lekin"; start sections with "Design ki baat
   karein to", "Front par", "Andar", "Camera mein".
 - When asked for variations, give three that differ in structure but all follow this style: (1) the user's own order
