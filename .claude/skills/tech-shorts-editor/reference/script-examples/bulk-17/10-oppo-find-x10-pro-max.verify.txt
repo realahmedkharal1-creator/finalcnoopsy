@@ -10,3 +10,5 @@ Not in the voice text; confirm before recording:
 - Software: Color OS 17 on Android 17, five OS updates and six years security (heard).
 - Battery and charging (8000 mAh? 80 W wired, 50 W wireless) are shown on cards later in the video but not said clearly in the first 10 minutes: not used.
 Cut for length: accessories kit unboxing, haptic motor, AI features, vapor chamber, camera video modes.
+
+- Launch status: the host says it is NOT yet on sale in Pakistan; expected December end or January, limited quantity, official warranty. The script says so. Update it if the phone has launched by the time you record.
