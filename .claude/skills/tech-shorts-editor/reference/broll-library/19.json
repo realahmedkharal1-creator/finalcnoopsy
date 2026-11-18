@@ -1,0 +1,259 @@
+{
+"video": "19",
+"title": "Honor Magic 9 Pro Max (B-roll file for the Honor Magic 9 Pro Max script)",
+"phone": "Honor Magic 9 Pro Max",
+"burned_in_text_note": "none of the kept clips has burned-in text; source is 3840x1920 (2:1), crop to 9:16 with `center`",
+"not_used": "host in a window (shot 6), web pages and spec pages, Chinese promo graphics, another phone side by side (19), settings screens, shop page, intro/outro graphics",
+"clips": [
+{
+"shot": 2,
+"start": 11.27,
+"end": 21.47,
+"len": 10.2,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 4,
+"start": 30.03,
+"end": 36.47,
+"len": 6.44,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 5,
+"start": 36.77,
+"end": 39.73,
+"len": 2.96,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 7,
+"start": 44.77,
+"end": 47.6,
+"len": 2.83,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 8,
+"start": 47.9,
+"end": 51.35,
+"len": 3.45,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 10,
+"start": 54.15,
+"end": 61.85,
+"len": 7.7,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 11,
+"start": 62.15,
+"end": 66.47,
+"len": 4.32,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 13,
+"start": 67.77,
+"end": 72.97,
+"len": 5.2,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 15,
+"start": 79.15,
+"end": 84.23,
+"len": 5.08,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 16,
+"start": 84.53,
+"end": 87.47,
+"len": 2.94,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 21,
+"start": 105.27,
+"end": 108.35,
+"len": 3.08,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 23,
+"start": 110.15,
+"end": 113.6,
+"len": 3.45,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 24,
+"start": 113.9,
+"end": 124.23,
+"len": 10.33,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 26,
+"start": 136.77,
+"end": 140.73,
+"len": 3.96,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 27,
+"start": 141.03,
+"end": 151.73,
+"len": 10.7,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 28,
+"start": 152.03,
+"end": 157.97,
+"len": 5.94,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 30,
+"start": 161.4,
+"end": 170.97,
+"len": 9.57,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 32,
+"start": 177.77,
+"end": 185.23,
+"len": 7.46,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 35,
+"start": 195.03,
+"end": 201.35,
+"len": 6.32,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 41,
+"start": 246.03,
+"end": 249.73,
+"len": 3.7,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 44,
+"start": 257.4,
+"end": 262.47,
+"len": 5.07,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 47,
+"start": 268.9,
+"end": 272.1,
+"len": 3.2,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 55,
+"start": 310.77,
+"end": 321.35,
+"len": 10.58,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 57,
+"start": 323.65,
+"end": 329.73,
+"len": 6.08,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+},
+{
+"shot": 58,
+"start": 330.03,
+"end": 338.85,
+"len": 8.82,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": [
+"cut"
+]
+},
+{
+"shot": 61,
+"start": 351.27,
+"end": 364.23,
+"len": 12.96,
+"text": false,
+"phone": "Honor Magic 9 Pro Max",
+"look_at": []
+}
+]
+}
