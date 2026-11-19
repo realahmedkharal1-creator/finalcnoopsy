@@ -431,7 +431,8 @@ def render(src, work, out, P, base):
         d = b["end"] - b["start"]
         still = f.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp")
         seek = ["-ss", f"{b['ss']:.2f}"] if b.get("ss") is not None and not still else []   # start inside a long file
-        inputs += (["-loop", "1", "-t", f"{d:.2f}"] if still else seek + ["-t", f"{d:.2f}"]) + ["-i", f]
+        hold = float(b.get("hold", 0))                    # freeze the last frame this long (bridges a gap between clips)
+        inputs += (["-loop", "1", "-t", f"{d:.2f}"] if still else seek + ["-t", f"{d - hold:.2f}"]) + ["-i", f]
         bw, bh, bx, by = boxes[b.get("layout", "full")]
         kb = b.get("zoom_to", P["broll"]["push_to"])      # slow push on every b-roll shot
         core = (f"scale=w='2*trunc({bw // 2}*(1+{kb - 1:.3f}*t/{d:.2f}))':h='2*trunc({bh // 2}*(1+{kb - 1:.3f}*t/{d:.2f}))':eval=frame,"
@@ -460,7 +461,8 @@ def render(src, work, out, P, base):
         vis = 2 * (min(fh, bh - top_gap) // 2)            # rows of the clip that stay visible (even, for yuv420)
         bot_gap = bh - top_gap - vis
         ytop = 0 if (top_gap or bot_gap) else (fh - bh) // 2
-        chain = f"[{n}:v]fps={FPS},scale=-2:{fh},crop={bw}:{vis}:x='{xexpr}':y={ytop}"
+        pad = f",tpad=stop_mode=clone:stop_duration={hold:.2f}" if hold > 0.01 else ""
+        chain = f"[{n}:v]fps={FPS}{pad},scale=-2:{fh},crop={bw}:{vis}:x='{xexpr}':y={ytop}"
         if not top_gap and not bot_gap:
             fc.append(f"{chain},{push}")
         else:
