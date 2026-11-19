@@ -17,3 +17,10 @@ Open questions: voices say "lagbhag" (old script) - ask whether to regenerate wi
 
 Delivery note: 720p copies were sent in chat; the user could not download large files. Use 1080p crf 23 with faststart (about 12-15 MB) via SendUserFile; Gmail connector calls are capped at about 3 MB of files, so email is not an option.
 Honor, G77, G5G are approved. New split-screen card rules are in SKILL.md (apply from the next video).
+
+## Status (latest)
+- Approved and downloaded by the user: Honor Magic 9 Pro Max, Moto G77, Moto G 5G 2025 (full quality copies are in deliverables/ on this branch; ask the user before deleting them from the repo).
+- Next video: Infinix Note 60 Pro (A-roll: Infinix_Note_60_Pro_7.mp4 in the user's Drive folder; B-roll library: reference/broll-library/04.json; script: reference/script-examples/bulk-17/04-infinix-note-60-pro.txt). Ask for a clean phone photo (back+front, white background) for the end sheet; start without it using a placeholder if the user says so.
+- Delivering files: the chat preview/download of big files fails for this user. What works: push the full-quality file to deliverables/ on claude/busy-gates-9cw2ne (only when the user asks) and give github.com .../raw/<branch>/deliverables/<file> links. SendUserFile of ~16-19 MB files and the artifact page did not solve downloads.
+- Open questions: user's real brand colour (mint was my choice from the reference style, not their branding); old voices say "lagbhag" (regenerate with "almost"?).
+- Do not re-edit approved videos for later rules.
