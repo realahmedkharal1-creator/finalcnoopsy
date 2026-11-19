@@ -18,10 +18,10 @@ B=[br("20",3.4,6.5,1.0),
  br("23",18.9,22.0,81.0,"split_top"),
  br("54",22.0,26.0,231.6),
  br("61",26.0,29.0,250.2),br("66",29.0,32.7,267.0,"split_top"),
- br("108",33.0,36.8,508.4),
- br("109",36.9,40.2,512.0),br("110",40.2,43.7,515.4),
- br("40",43.8,48.4,159.7,"split_top")]
-L=[(T0,3.4,"full"),(3.4,12.8,"circle"),(12.8,22.0,"split"),(22.0,29.0,"circle"),(29.0,32.7,"split"),(32.7,43.7,"circle"),(43.7,48.4,"split"),(48.4,56.6,"full"),(56.6,T1+4,"hidden")]
+ br("108",33.0,36.2,508.4),
+ br("109",36.2,39.17,511.95),br("110",39.17,42.07,515.35),br("61",42.07,43.62,253.9),
+ br("40",43.8,48.0,159.6,"split_top")]
+L=[(T0,3.4,"full"),(3.4,12.8,"circle"),(12.8,22.0,"split"),(22.0,29.0,"circle"),(29.0,32.7,"split"),(32.7,43.7,"circle"),(43.7,48.0,"split"),(48.0,56.6,"full"),(56.6,T1+4,"hidden")]
 L=[L[0]]+[(max(L[i][0],L[i-1][1]),L[i][1],L[i][2]) for i in range(1,len(L))]
 layout=[{"start":f(a),"end":f(b),"mode":m} for a,b,m in L]
 PILL={"top":"#D9CCFF","bottom":"#9B86E8","color":"#FFFFFF"}
@@ -39,7 +39,7 @@ cards=[sc(0.95,3.3,["*POVA CURVE 2 vs POCO M8*"],0.77,46),
  sc(33.2,36.7,["*Pova Curve 2*","*8000mAh* Battery"],0.07,56),
  sc(37.1,40.1,["*Poco M8*","*5520mAh* Battery"],0.07,56),
  sc(40.4,43.5,["*Both* 45W Charging"],0.07,56),
- sc(44.0,48.3,["*Poco M8* Wins","Camera + Display + Battery"],0.50,46),
+ sc(44.0,47.9,["*Poco M8* Wins","Camera + Display + Battery"],0.50,46),
  sc(48.7,51.5,["*Camera:* 5/10 Both"],0.79,60),
  sc(51.9,56.4,["*Konsa Phone Pasand Aaya?*","Comment Karna"],0.79,56),
  {"type":"sheet","start":f(56.6),"end":f(56.6)+1.9,"title":"tecno pova curve 2","image":"assets/pova_product.png","tint":"#E4DCF5","dark":"#3C2E6B","badges":["assets/priceoye.png"],
