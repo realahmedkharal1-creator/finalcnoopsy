@@ -43,10 +43,10 @@ cards=[sc(0.98,3.3,["*NUBIA NEO 5 MAX vs PRO*"],0.77,48),
  sc(39.3,42.3,["*Neo 5 Max*","*7100mAh* Battery"],0.07,54),sc(42.5,44.2,["*45W* Charging"],0.07,56),
  sc(44.8,47.4,["*Neo 5 Pro*","*6000mAh* Battery"],0.07,54),sc(47.6,49.6,["*80W* Charging"],0.07,56),
  sc(49.9,54.7,["*Konsa Phone Pasand Aaya?*","Comment Karna"],0.79,56),
- {"type":"sheet","start":f(54.9),"end":f(54.9)+1.9,"title":"nubia neo 5 max","image":"assets/max_product.png","tint":"#F3D5D0","dark":"#4A1A1A","badges":["assets/priceoye.png"],
+ {"type":"sheet","start":f(54.9),"end":f(54.9)+1.9,"title":"nubia neo 5 max","image":"assets/max_product.png","tint":"#F3D5D0","dark":"#4A1A1A","badges":["assets/priceoye.png","assets/nubia_badge.png"],
   "rows":['7.5" 1.5K 120Hz',"Dimensity 7100","8GB RAM","7100mAh Battery","45W Charging","Shoulder Triggers | IP64","Cooler In The Box"],
   "icons":["display","chip","storage","battery","battery","dot","dot"],"price":"Almost Rs 95,000"},
- {"type":"sheet","start":f(54.9)+1.9,"end":END+3.4,"title":"nubia neo 5 pro","image":"assets/pro_product.png","tint":"#F3D5D0","dark":"#4A1A1A","badges":["assets/priceoye.png"],
+ {"type":"sheet","start":f(54.9)+1.9,"end":END+3.4,"title":"nubia neo 5 pro","image":"assets/pro_product.png","tint":"#F3D5D0","dark":"#4A1A1A","badges":["assets/priceoye.png","assets/nubia_badge.png"],
   "rows":['6.8" Full HD+ AMOLED',"12GB RAM","6000mAh Battery","80W Charging","Shoulder Triggers | IP64","60FPS Gaming"],
   "icons":["display","storage","battery","battery","dot","dot"],"price":"Almost Rs 113,000"}]
 tfl=(3.4,11.6,16.0,24.4,29.5,36.3,38.9); tbl=(54.9,)
