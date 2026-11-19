@@ -77,6 +77,11 @@ def rounded_mask(w, h, r):
     return m.resize((w, h), Image.LANCZOS)
 
 
+def hex_rgba(h, a=255):
+    h = h.lstrip("#")
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)) + (a,)
+
+
 def panel(w, h, r, top, bottom, alpha=215, border=(255, 255, 255, 215), bw=3, shadow=90, margin=28):
     """Glass panel with vertical gradient, light border and soft drop shadow. Returns image with `margin` px around."""
     w, h, r = int(w), int(h), int(min(r, h / 2))
@@ -201,7 +206,9 @@ def card_spec(c, W, H, U):
     if white:
         p = panel(tw + 2 * px, th + 2 * py, 34 * U, "#FFFFFF", "#FFFFFF", alpha=255, bw=0, shadow=60)
     else:
-        p = panel(tw + 2 * px, th + 2 * py, 26 * U, c.get("top", "#E6FDEE"), c.get("bottom", "#A6EBBF"), alpha=238)
+        bd = c.get("border")                          # optional outline colour, e.g. "#000000" (reference look)
+        p = panel(tw + 2 * px, th + 2 * py, 26 * U, c.get("top", "#E6FDEE"), c.get("bottom", "#A6EBBF"),
+                  alpha=255 if bd else 238, **({"border": hex_rgba(bd), "bw": 4} if bd else {}))
     ox, oy = (p.width - tw) // 2, (p.height - th) // 2
     return p.width, p.height, [(p, 0, 0, 0.0, "pop")] + [(i, x + ox, y + oy, t, a) for i, x, y, t, a in tl]
 
