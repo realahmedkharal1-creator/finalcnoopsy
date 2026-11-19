@@ -314,3 +314,6 @@ an earlier one). Library files: `reference/broll-library/NN.json` (time ranges i
 - Hook card on a single line when asked ("MOTO G77 REVIEW"); one mint spec-card style, same font/position within a video.
 - Motorola videos: end sheet carries both the PriceOye and Motorola badges (`moto_logo.png`).
 - Send the user a 720p compressed copy (~7-9 MB).
+- Cards on full-face frames always go below the chin (y about .75-.79); never over the chin/face.
+- Circle crop: measure the face centre per video (it shifts between recordings) and set `circle.cx_px/cy_px` so the face sits in the middle of the circle.
+- End-sheet product image: use the user's white-background photo (back+front) for that phone.
