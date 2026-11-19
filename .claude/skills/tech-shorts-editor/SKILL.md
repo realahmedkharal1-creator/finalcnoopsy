@@ -307,3 +307,10 @@ an earlier one). Library files: `reference/broll-library/NN.json` (time ranges i
   no hand-drawn callout lines to camera lenses, no handwriting-style write-on, no cursor or sparkles on the subscribe card.
 - Sheet badges are generic seals or the user's own PNGs; store and brand logos are not bundled.
 - Fonts are Poppins, Google Sans, Instrument Sans, Playfair Display and Lilita One (Latin only). Reference fonts and colours were matched by eye.
+
+## Rules added from the Moto G77 edit
+- Any landscape smartphone/device B-roll clip goes in split-screen (`split_top`), never full-screen.
+- Always verify the product is centred in every B-roll shot with a grid overlay and set `center` per shot.
+- Hook card on a single line when asked ("MOTO G77 REVIEW"); one mint spec-card style, same font/position within a video.
+- Motorola videos: end sheet carries both the PriceOye and Motorola badges (`moto_logo.png`).
+- Send the user a 720p compressed copy (~7-9 MB).
