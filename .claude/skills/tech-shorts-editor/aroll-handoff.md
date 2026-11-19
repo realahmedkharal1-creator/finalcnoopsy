@@ -1,7 +1,7 @@
 # A-roll batch edit: handoff notes
 
 Goal: edit the 17 A-roll videos one at a time, user approves each, then the next.
-Done: Honor Magic 9 Pro Max (approved), Moto G77 (approved), Moto G 5G 2025 (v4 sent, awaiting approval).
+Done: Honor Magic 9 Pro Max (approved), Moto G77 (approved), Moto G 5G 2025 (approved).
 Next: Infinix Note 60 Pro, then Vivo V80, Pova vs POCO M8, Honor Play 20C, Nubia Neo 5, Find X10 Pro Max, gaming phones, iPhone 15, POCO trio, Pixel 9a (splice voice patch), S26 FE, S26 FE vs S25 FE, Origin OS 7. Reno 16F A-roll is missing.
 
 Per-video recipe (scratchpad job folder per phone, copy build.py from an approved one):
