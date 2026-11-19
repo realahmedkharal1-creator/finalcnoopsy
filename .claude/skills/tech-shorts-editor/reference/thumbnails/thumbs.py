@@ -53,7 +53,7 @@ T={"inf":("hand_full.png",950,190,1.55,["7 Months","Later!"]),
 "poco":("hand_poco.png",1011,255,1.6,["3 Poco","Phones!"]),
 "pixel":("hand_pixel.png",945,135,1.4,["Pixel 9a","Review!"]),
 "s26":("hand_s26.png",930,165,1.45,["Galaxy S26","FE Review!"]),
-"s26v":("hand_s26v.png",1080,300,1.2,["S26 FE vs","S25 FE!"]),
+"s26v":("hand_s26v.png",960,110,1.5,["S26 FE vs","S25 FE!"]),
 "origin":("hand_origin.png",990,105,1.42,["Origin OS 7","Review!"])}
 if __name__=="__main__":
     import sys
