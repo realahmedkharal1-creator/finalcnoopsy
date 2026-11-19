@@ -413,7 +413,8 @@ def render(src, work, out, P, base):
         zf = head.get("split_zoom", 1.12)
         hz = 2 * int(win_h * zf / 2)
         inputs += ["-loop", "1", "-t", f"{total:.2f}", "-framerate", FPS, "-i", work / "window_mask.png"]
-        fc.append(f"[h_split]scale=-2:{hz},crop={win_w}:{win_h}:x='(iw-{win_w})*{split_x}':y='(ih-{win_h})*{head.get('split_y', 0.0)}',"
+        scl = f"scale=w={2 * int(win_w * zf / 2)}:h=-2" if sw < sh else f"scale=-2:{hz}"     # vertical source: fit the width
+        fc.append(f"[h_split]{scl},crop={win_w}:{win_h}:x='(iw-{win_w})*{split_x}':y='(ih-{win_h})*{head.get('split_y', 0.0)}',"
                   f"setsar=1,format=rgba[hs0];[{n}:v]format=gray,fps={FPS}[hsm];[hs0][hsm]alphamerge[hs]")
         fc.append(f"[{last}][hs]overlay={win_x}:{win_by}:enable='{when('split')}':eof_action=pass[vs1]")
         last = "vs1"
