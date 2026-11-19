@@ -39,9 +39,12 @@ cards=[sc(0.95,3.3,["*S26 FE vs S25 FE*"],0.77,52),
  sc(45.5,47.9,["*S25 FE User?*","No Upgrade Needed"],0.07,50),
  sc(48.2,52.0,["*Samsung A Series?*","S26 FE Good Upgrade"],0.50,44),
  sc(52.6,59.3,["*Phone Kaisa Laga?*","Comment Karna"],0.79,62),
- {"type":"sheet","start":f(59.5),"end":END+3.4,"title":"samsung galaxy s26 fe","image":"assets/s26_product.png","tint":"#D8F0E8","dark":"#134A3C","badges":["assets/priceoye.png"],
-  "rows":['6.7" LTPS AMOLED 120Hz',"Exynos 2500 + Vapor Chamber","4K 60FPS Video","4900mAh Battery","45W Charging","USB 2.0","S25 FE: Almost Rs 190,000"],
-  "icons":["display","chip","camera","battery","battery","dot","dot"],"price":"Almost Rs 228,500"}]
+ {"type":"sheet","start":f(59.5),"end":f(59.5)+1.9,"title":"samsung galaxy s26 fe","image":"assets/s26_product.png","tint":"#D8F0E8","dark":"#134A3C","badges":["assets/priceoye.png","assets/samsung_badge.png"],
+  "rows":['6.7" LTPS AMOLED 120Hz',"Exynos 2500 + Vapor Chamber","4K 60FPS Video","4900mAh Battery","45W Charging","USB 2.0"],
+  "icons":["display","chip","camera","battery","battery","dot"],"price":"Almost Rs 228,500"},
+ {"type":"sheet","start":f(59.5)+1.9,"end":END+3.4,"title":"samsung galaxy s25 fe","image":"assets/s25_product.png","tint":"#DCE2F5","dark":"#1D2650","badges":["assets/priceoye.png","assets/samsung_badge.png"],
+  "rows":['6.7" LTPO AMOLED 120Hz',"Exynos 2400","4900mAh Battery","45W Charging","USB 3.2"],
+  "icons":["display","chip","battery","battery","dot"],"price":"Almost Rs 190,000"}]
 tr=[{"t":f(t),"type":"flash"} for t in (3.4,23.4,39.5)]+[{"t":f(t),"type":"blur"} for t in (17.0,36.0,48.0,59.5)]
 sfx=[{"t":f(t),"name":"whoosh"} for t in (3.4,17.0,23.4,36.0,39.5,48.0,59.5)]+[{"t":f(10.3),"name":"ding"},{"t":f(59.7),"name":"ding"}]
 for c in cards:

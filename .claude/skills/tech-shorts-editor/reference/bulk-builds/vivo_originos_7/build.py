@@ -9,8 +9,10 @@ segs.append([a,T1]); json.dump({"segments":segs,"tail_pad":0.5},open("work/origi
 END=f(T1)
 def br(a,b,ss,lay="full",c=0.5): return {"start":f(a),"end":f(b),"file":"long.mp4","ss":ss,"layout":lay,"center":c}
 B=[br(3.4,5.3,9.5),br(5.3,7.4,11.8),br(7.4,8.6,14.4),br(8.9,11.0,75.6),br(11.0,12.2,98.6),br(12.5,15.5,89.0),
- br(15.8,17.9,171.3),br(18.3,20.0,174.3),br(20.0,22.4,196.2),br(22.6,24.8,225.6),br(25.3,28.0,257.6),
+ br(15.8,17.9,80.0),br(18.3,20.0,293.8),br(20.0,22.4,286.0),br(22.6,24.8,288.6),br(25.3,28.0,291.0),
  br(28.3,30.5,263.7),br(30.5,32.3,283.1),br(32.8,35.0,321.2),br(35.0,36.4,331.7)]
+CEN=[.48,.43,.66,.50,.50,.50,.50,.50,.52,.52,.53,.52,.50,.50,.50]
+for b,c in zip(B,CEN): b['center']=c
 L=[(T0,3.4,"full"),(3.4,36.5,"circle"),(36.5,T1+1,"full")]
 layout=[{"start":f(a),"end":f(b),"mode":m} for a,b,m in L]
 PILL={"top":"#E4DAFF","bottom":"#9C86F0","color":"#1E1250"}
