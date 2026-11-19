@@ -39,7 +39,10 @@ def make(frame,cx,ptop,out,lines,target=570,size_override=None):
     im=scaled(frame,cx,ptop,target)
     a=cut(im).resize(im.size);alpha=np.array(a).astype(np.float32)/255.
     alpha=np.clip((alpha-0.08)/0.84,0,1);alpha=np.array(Image.fromarray((alpha*255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))).astype(np.float32)/255.
-    fg=grade(im,lum=float((np.array(im.convert("L")).astype(np.float32)*alpha).sum()/max(alpha.sum(),1)))
+    lum=float((np.array(im.convert("L")).astype(np.float32)*alpha).sum()/max(alpha.sum(),1))
+    g=min(1.7,max(0.85,128/max(lum,1)))                 # bring the phone to a bright, natural level
+    arr=np.array(ImageEnhance.Color(im).enhance(0.95)).astype(np.float32)*g
+    arr=np.clip((arr-128)*1.08+128+6,0,255);fg=Image.fromarray(arr.astype(np.uint8))
     off=H-im.height
     comp=BG.copy().convert("RGBA")
     lay=Image.new("RGBA",(W,H),(0,0,0,0));fa=Image.fromarray((alpha*255).astype(np.uint8))
@@ -47,7 +50,7 @@ def make(frame,cx,ptop,out,lines,target=570,size_override=None):
     sh=Image.new("RGBA",(W,H),(0,0,0,0));shm=Image.new("L",(W,H),0);shm.paste(fa.point(lambda v:v*150//255),(0,off+26))
     sh.putalpha(shm.filter(ImageFilter.GaussianBlur(34)));comp.alpha_composite(sh);comp.alpha_composite(lay)
     yy,xx=np.mgrid[0:H,0:W].astype(np.float32);v=np.sqrt(((xx-W/2)/(W*0.75))**2+((yy-H*0.55)/(H*0.7))**2)
-    ca=np.array(comp.convert("RGB")).astype(np.float32)*(1-0.38*np.clip(v,0,1.2)[...,None]**2)
+    ca=np.array(comp.convert("RGB")).astype(np.float32)*(1-0.30*np.clip(v,0,1.2)[...,None]**2)
     comp=Image.fromarray(np.clip(ca,0,255).astype(np.uint8)).convert("RGBA")
     dd=ImageDraw.Draw(comp);size=210
     while max(dd.textlength(t,font=T.pf(size)) for t in lines)>960 and size>120: size-=6
