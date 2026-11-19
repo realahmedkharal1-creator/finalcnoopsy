@@ -31,3 +31,9 @@ Honor, G77, G5G are approved. New split-screen card rules are in SKILL.md (apply
 - Face centring: measure per video with a grid overlay (face centre in source px), then full_x = (cx*1.778 - 540)/(3413 - 1080) for 1920x1080 sources, split_x = (cx*0.896 - 486)/(1721 - 972), circle cx_px/cy_px = face centre. Check frames with a red centre line. Infinix: cx 1115, cy 455 -> full_x 0.618, split_x 0.685.
 - The user sends the end-sheet phone photo and the brand badge as files (images/ folder); use them as assets. A black circle badge is my placeholder: replace it.
 - Job folder lives in the scratchpad: aroll/inf (build.py, centres.json, sb.py makes the storyboard).
+
+## Delivery rule (user, every video)
+- When a video is approved, push its 1080p copy to deliverables/ on claude/busy-gates-9cw2ne and give the user the downloadable raw link right away, for every video from now on:
+  https://github.com/realahmedkharal1-creator/finalcnoopsy/raw/claude/busy-gates-9cw2ne/deliverables/<file>.mp4
+- When approving the Vivo V80 video, give BOTH links (Infinix Note 60 Pro: infinix_note_60_pro_1080p.mp4, Vivo V80).
+- Never show another channel's name in B-roll (e.g. "MASTECH" on boxes); check every clip's frames for it.
