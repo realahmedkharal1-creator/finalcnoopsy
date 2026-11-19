@@ -310,7 +310,7 @@ def resolve(path, base):
     return p if p.is_absolute() else base / p
 
 
-def make_split_assets(work, W, H):
+def make_split_assets(work, W, H, bg=None):
     """Cream squared-paper background with two soft window shadows, and the rounded window mask (measured from
     the Techiebist split-screen reference: windows 972 x 864, 54 px side margins, 102 px gap, radius 50)."""
     import numpy as np
@@ -319,17 +319,19 @@ def make_split_assets(work, W, H):
     ww, wh, x0, ty, by, rad = int(972 * u), int(864 * u), int(54 * u), int(39 * u), int(1005 * u), int(50 * u)
     rnd = np.random.default_rng(7)
     paper = np.empty((H, W, 3), np.float32)
-    paper[:] = (233, 224, 199)
+    dark = bg is not None
+    paper[:] = tuple(bg) if dark else (233, 224, 199)
     noise = np.kron(rnd.normal(0, 3.0, (H // 2 + 1, W // 2 + 1)), np.ones((2, 2)))[:H, :W]
     paper += noise[..., None]
     step = max(8, int(26 * u))
-    paper[::step, :, :] -= 7
-    paper[:, ::step, :] -= 7
+    g = 9 if dark else -7                             # grid lines: lighter on a dark background
+    paper[::step, :, :] += g
+    paper[:, ::step, :] += g
     img = Image.fromarray(np.clip(paper, 0, 255).astype(np.uint8)).convert("RGBA")
     shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(shadow)
     for y in (ty, by):
-        d.rounded_rectangle((x0, y + int(8 * u), x0 + ww, y + wh + int(8 * u)), radius=rad, fill=(70, 45, 10, 80))
+        d.rounded_rectangle((x0, y + int(8 * u), x0 + ww, y + wh + int(8 * u)), radius=rad, fill=(0, 0, 0, 160) if dark else (70, 45, 10, 80))
     Image.alpha_composite(img, shadow.filter(ImageFilter.GaussianBlur(14 * u))).convert("RGB").save(work / "paper_split.png")
     m = Image.new("L", (ww * 4, wh * 4), 0)
     ImageDraw.Draw(m).rounded_rectangle((0, 0, ww * 4 - 1, wh * 4 - 1), radius=rad * 4, fill=255)
@@ -380,7 +382,7 @@ def render(src, work, out, P, base):
     views = [m for m in ("full", "half", "circle", "split") if m in used or (m == "half" and used & {"top", "bottom"})]
     uses_split = "split" in used or any(b.get("layout") == "split_top" for b in pl.get("broll", []))
     if uses_split:                                        # cream paper background, rounded windows
-        win_w, win_h, win_x, win_ty, win_by = make_split_assets(work, W, H)
+        win_w, win_h, win_x, win_ty, win_by = make_split_assets(work, W, H, pl.get("split_bg"))
         inputs += ["-loop", "1", "-t", f"{total:.2f}", "-framerate", FPS, "-i", work / "paper_split.png"]
         fc.append(f"[1:v]fps={FPS},format=yuv420p,setsar=1[v0]")
         n = 2
