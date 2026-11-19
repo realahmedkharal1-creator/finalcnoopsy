@@ -317,3 +317,7 @@ an earlier one). Library files: `reference/broll-library/NN.json` (time ranges i
 - Cards on full-face frames always go below the chin (y about .75-.79); never over the chin/face.
 - Circle crop: measure the face centre per video (it shifts between recordings) and set `circle.cx_px/cy_px` so the face sits in the middle of the circle.
 - End-sheet product image: use the user's white-background photo (back+front) for that phone.
+- Landscape device clip in full-screen shows the phone cut in half (seen in Honor "Snapdragon 8 Elite Extreme" gaming shot). Landscape device clips ALWAYS go in split-screen (`split_top`), no exceptions.
+- Short one-line cards in split-screen (e.g. "Display 10/10") go in the gap between the B-roll window and the talking-head window (y about .50), not on top of the B-roll window.
+- Multi-line cards: if the text also fits well in 2 lines, use 2 lines instead of 3; keep 3 lines only when the 2-line version looks worse.
+- Approved videos (Honor, Moto G77, Moto G 5G 2025) are not re-edited for these notes; they apply from the next video on.

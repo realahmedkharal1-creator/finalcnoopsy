@@ -14,3 +14,6 @@ Per-video recipe (scratchpad job folder per phone, copy build.py from an approve
 6. End sheet: PriceOye badge (+ Motorola badge for Motorola), user-supplied white-background phone photo, "Almost Rs" price. tail_pad 1.4 s.
 7. cut + render with edit.py --format vertical, check loudness -14 LUFS, send a 720p copy (~7 MB).
 Open questions: voices say "lagbhag" (old script) - ask whether to regenerate with "almost".
+
+Delivery note: 720p copies were sent in chat; the user could not download large files. Use 1080p crf 23 with faststart (about 12-15 MB) via SendUserFile; Gmail connector calls are capped at about 3 MB of files, so email is not an option.
+Honor, G77, G5G are approved. New split-screen card rules are in SKILL.md (apply from the next video).
