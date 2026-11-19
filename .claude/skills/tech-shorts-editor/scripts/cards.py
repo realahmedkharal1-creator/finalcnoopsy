@@ -17,7 +17,7 @@ FONT_FILES = {"regular": "Poppins-Regular.ttf", "medium": "Poppins-Medium.ttf", 
               "bold": "Poppins-Bold.ttf", "italic": "Poppins-ExtraBoldItalic.ttf", "display": "LilitaOne-Regular.ttf",
               "light": "Poppins-Light.ttf", "ital": "Poppins-Italic.ttf", "bolditalic": "Poppins-BoldItalic.ttf",
               "serif": "PlayfairDisplay-Italic.ttf"}
-DEFAULT_Y = {"glow": 0.40, "pill": 0.16, "spec": 0.20, "words": 0.60, "price": 0.68, "text": 0.14, "display": 0.48,
+DEFAULT_Y = {"leader": 0.30, "glow": 0.40, "pill": 0.16, "spec": 0.20, "words": 0.60, "price": 0.68, "text": 0.14, "display": 0.48,
              "badge": 0.07, "subscribe": 0.72, "sheet": 0.50, "tag": 0.066, "product": 0.21}
 GRADIENTS = {"green": ("#FFFFFF", "#6CF58A"), "cyan": ("#FFFFFF", "#8FE6FF"), "yellow": ("#FFFFFF", "#FFD84A"),
              "red": ("#FFFFFF", "#FF8A80"), "white": ("#FFFFFF", "#DDE6F2"), "purple": ("#FFFFFF", "#C4A6FF")}
@@ -756,9 +756,30 @@ def card_product(c, W, H, U):
     return w, by + model.height, layers
 
 
+def card_leader(c, W, H, U):
+    """Thin white line with a ring at one end, from a lens up or down to a label card.
+    length = fraction of the frame height; dot = "top" or "bottom" (where the ring sits)."""
+    length = int(c.get("length", 0.15) * H)
+    pad = int(24 * U)
+    w, h = int(60 * U), length + 2 * pad
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    cx = w // 2
+    r = int(13 * U)
+    ytop = pad if c.get("dot", "top") == "top" else pad + length
+    d.line((cx, pad, cx, pad + length), fill=(255, 255, 255, 235), width=max(2, int(5 * U)))
+    d.ellipse((cx - r, ytop - r, cx + r, ytop + r), outline=(255, 255, 255, 255), width=max(2, int(5 * U)),
+              fill=(166, 235, 191, 120))
+    glow = img.filter(ImageFilter.GaussianBlur(5 * U))
+    out = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    out.alpha_composite(glow)
+    out.alpha_composite(img)
+    return w, h, [(out, 0, 0, c.get("delay", 0.0), "vwipe")]
+
+
 BUILDERS = {"glow": card_glow, "tag": card_tag, "product": card_product, "pill": card_pill, "spec": card_spec, "words": card_words, "price": card_price, "text": card_text,
-            "display": card_display, "badge": card_badge, "subscribe": card_subscribe, "sheet": card_sheet}
-ANIM_S = {"pop": 0.24, "wipe": 0.45, "slide": 0.32, "fade": 0.2, "none": 0.0, "grow": 0.17, "dyn": 0.0}
+            "display": card_display, "badge": card_badge, "subscribe": card_subscribe, "sheet": card_sheet, "leader": card_leader}
+ANIM_S = {"pop": 0.24, "wipe": 0.45, "slide": 0.32, "fade": 0.2, "none": 0.0, "grow": 0.17, "vwipe": 0.4, "dyn": 0.0}
 
 
 # ------------------------------------------------------------------ animation
@@ -798,6 +819,9 @@ def draw_layer(canvas, layer, t, U):
     elif anim == "wipe":
         w = max(1, int(img.width * ease))
         comp(canvas, with_alpha(img.crop((0, 0, w, img.height)), min(1.0, lt / 0.12)), x, y)
+    elif anim == "vwipe":                                  # a line that draws itself downwards
+        h = max(1, int(img.height * ease))
+        comp(canvas, with_alpha(img.crop((0, 0, img.width, h)), min(1.0, lt / 0.12)), x, y)
     elif anim == "slide":
         comp(canvas, with_alpha(img, p), x, y + (1 - ease) * 50 * U)
     elif anim == "fade":
