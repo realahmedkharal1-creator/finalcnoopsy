@@ -82,9 +82,10 @@ facts into broken fragments to save time, and the user called it bad. **To save 
   - **When a script covers several phones, do not read the prices as one list** ("jin ki prices 99, 1 lakh 30 aur 1 lakh 90 hain" is confusing).
     Name each phone with its own price: "M8 ki price almost 99 hazaar 999 rupay hai. M8 Pro ki price almost 1 lakh 30 hazaar rupay hai." Same for every comparison.
   - The price comes from the user's list (current market price), not from the source video.
-- **No commas anywhere in the voice text (rule from the user):** ElevenLabs turns a comma into extra space and the voice stops for a moment.
-  Use no commas at all: not in sentences, not in numbers, not in lists. Where a comma would have been, either join with a word ("aur", "jabke", "lekin", "jo") or
-  end the sentence with a full stop and start a new short one. Check with `scripts/script_check.py`, which flags every comma.
+- **Commas are back (rule from the user, replaces the earlier no-comma rule):** write the voice text with normal commas where a speaker would pause: after an
+  opening phrase ("Design ki baat karein to,"), before "jabke", "lekin", "jo", "aur" when it joins two clauses, between list items, and before the verdict.
+  The user generates the video in HeyGen from the ElevenLabs voice, and without the commas the lip sync does not match the pauses. Never put a comma inside a
+  number ("99 hazaar 999", not "99,999"); `scripts/script_check.py` flags that. Do not stack commas: at most one pause every five or six words.
 - **Spelling of "bada" and "bade" (rule from the user):** ElevenLabs read "bade" as "twelve" once (the Pixel 9a bezels sentence). Always write
   **"bada"** for bada (big, masculine singular) and **"baday"** for bade (big, plural or oblique: "baday bezels", "baday size ka"). Never "bara", "bare" or "bade".
   (Feminine "badi" stays as it is.) Same idea for any word the voice misreads: the user sends the spelling that worked.

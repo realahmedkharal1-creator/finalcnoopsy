@@ -44,8 +44,8 @@ def main():
         line = re.sub(r"\b11[ .]11\b", "eleven eleven", line)      # approved by the user: "11 11 sale" is read correctly
         line = re.sub(r"\b\d{1,3}(?:,\d{3})+(?= rupay)", "price", line)   # old comma style (now an error below)
         line = re.sub(r"\b\d+(?: (?:hazaar|lakh|crore))*(?: \d+)?(?= (?:hazaar|lakh|crore|rupay)\b)", "price", line)   # new style: 99 hazaar 999 rupay
-        if "," in orig:
-            errors.append(f"line {n}: comma: ElevenLabs adds a pause for it: no commas at all, use a full stop or a joining word")
+        if re.search(r"\d,\d", orig):
+            errors.append(f"line {n}: comma inside a number: write '99 hazaar 999', no digit commas")
         for bad in re.findall(r"\b(?:bara|bare|bade)\b", orig, re.I):
             errors.append(f"line {n}: write 'bada' or 'baday' instead of '{bad}' (the voice read 'bade' as twelve)")
         if "lagbhag" in orig.lower():
