@@ -1,0 +1,7 @@
+Not in the voice text; confirm before recording:
+- PRICE: the host says 12 GB 256 GB is about "pauney teen lakh" non PTA (garbled) and the 16 GB 512 GB around 2.5 lakh (garbled, probably 3.25). The script uses "almost 2 lakh 75 hazaar" as a guess: send your own price.
+- Chipset name was heard as "Snapdragon 8 Elite Extreme" (5.01 GHz, 3 nm, Adreno 850): the script says only "Snapdragon eight Elite".
+- Display: 6.78 inch LTPO 1.5K (1272 x 2772), adaptive 1 to 165 Hz, 185 Hz only in some games, 2000 nits high brightness mode and "5000 to 6000 nits peak" (heard); the script says only "peak brightness bohat zyada".
+- Battery 9000 mAh, 100 W wired, 50 W wireless, 27 W reverse (heard clearly). Cameras: 200 MP main, 50 MP 3.5x telephoto, 50 MP ultrawide, 8K 30 fps video (heard clearly).
+- The host says the host-brand name confusion: box and ColorOS 17 say Oppo, no OxygenOS.
+- Cut for length: weight comparison with Honor Magic 9 Pro Max, touch sampling rates, G3 gaming chip, gyroscope, haptics, reverse charging, 32 5G bands, AI feature list, the taxes and the 16 GB variant price.

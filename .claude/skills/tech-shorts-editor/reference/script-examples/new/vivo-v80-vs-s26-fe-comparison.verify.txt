@@ -1,0 +1,6 @@
+Not in the voice text; confirm before recording:
+- Prices come from the earlier list (V80 almost 2 lakh 10 hazaar; S26 FE almost 2 lakh 28 hazaar 500), not from the video. The video said V80 2,10,000 and S26 FE 2,50,000 (retail); the host says the offline gap is about 40 to 50 hazaar.
+- Vivo display refresh: the transcript says "114 Hz" (garbled), the earlier script used 144 Hz, so refresh rate is left out of the voice text. Peak brightness figures (Vivo 5000 nits, Samsung 1900 HBM / 4500 peak) were unclear and are left out.
+- Battery test: "Samsung 1 percent, Vivo 60 percent left" is the host's own test (heard clearly). Throttling: Samsung 60 to 70 percent against Vivo about 90 percent sustained.
+- Chipsets: Exynos 2500 (3.3 GHz, 3 nm) and Snapdragon 7 Gen 4 (heard as "74"). Cameras: Samsung 50 MP main, 8 MP telephoto, 12 MP ultrawide; Vivo 50 MP main, 50 MP telephoto, 8 MP ultrawide (heard clearly).
+- Cut for length: UFS storage, 5G bands (17 and 14), IR blaster, eSIM, speakers, thickness and weight, Samsung 120 fps gaming against Vivo 90 fps, AI feature list, CapCut and benchmark timings.
