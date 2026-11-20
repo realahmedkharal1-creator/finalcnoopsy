@@ -86,6 +86,7 @@ facts into broken fragments to save time, and the user called it bad. **To save 
   opening phrase ("Design ki baat karein to,"), before "jabke", "lekin", "jo", "aur" when it joins two clauses, between list items, and before the verdict.
   The user generates the video in HeyGen from the ElevenLabs voice, and without the commas the lip sync does not match the pauses. Never put a comma inside a
   number ("99 hazaar 999", not "99,999"); `scripts/script_check.py` flags that. Do not stack commas: at most one pause every five or six words.
+- **Urdu number words (rule from the user):** 7 is always written "saat" (never "saath", which means 60). Write 60 as the English "sixty" so the two cannot be confused.
 - **Spelling of "bada" and "bade" (rule from the user):** ElevenLabs read "bade" as "twelve" once (the Pixel 9a bezels sentence). Always write
   **"bada"** for bada (big, masculine singular) and **"baday"** for bade (big, plural or oblique: "baday bezels", "baday size ka"). Never "bara", "bare" or "bade".
   (Feminine "badi" stays as it is.) Same idea for any word the voice misreads: the user sends the spelling that worked.
