@@ -1,0 +1,4 @@
+- Prices: host said both are around one lakh something (garbled), so no price in the script. Add from the screenshot.
+- Chipset 'Snapdragon 7 Gen 4' (heard as '74'). Updates: Reno 5 OS; Vivo 4 OS (as heard).
+- Battery 7,200 vs 6,700 mAh; Vivo 90 W, Reno 80 W (as heard).
+- Cut: weight and thickness, Vivo 144 Hz vs Reno 120 Hz (garbled), speed tests, slow motion, eSIM, bands, AI features.

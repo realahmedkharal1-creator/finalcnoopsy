@@ -1,0 +1,3 @@
+- Price: transcript mein Pakistan ki price nahi hai, is liye opening mein price nahi hai. Screenshot se price milne par opening mein 'jis ki price almost X rupay hai' add karein.
+- Video says the 11 Pro XL costs 200 to 300 dollars more (US). Battery score about 17 h vs 12.5 h. Charging about 20 min faster. CPU at least 20 percent.
+- Cut: RAM drop on base model, 4K 60 HDR video, Canyon colour, Highlight LED, selfie detail.

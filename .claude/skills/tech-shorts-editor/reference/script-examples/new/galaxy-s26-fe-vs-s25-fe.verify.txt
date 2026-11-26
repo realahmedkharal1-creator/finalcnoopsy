@@ -1,0 +1,3 @@
+- Price: transcript mein Pakistan ki price nahi hai, is liye opening mein price nahi hai. Screenshot se price milne par opening mein 'jis ki price almost X rupay hai' add karein.
+- Video: S26 FE about 50 euro / 100 dollars more. CPU +16 percent, graphics +25 percent. Battery score about 15 h vs 12 h. S25 FE has USB 3.2 and wired DeX.
+- Cut: One UI 9 and update years, colours, optical fingerprint, camera comparisons, speakers detail.

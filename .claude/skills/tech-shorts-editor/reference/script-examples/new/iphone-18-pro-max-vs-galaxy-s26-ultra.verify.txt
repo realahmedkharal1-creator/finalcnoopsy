@@ -1,0 +1,4 @@
+- Price: transcript mein Pakistan ki price nahi hai, is liye opening mein price nahi hai. Screenshot se price milne par opening mein 'jis ki price almost X rupay hai' add karein.
+- Video: iPhone about 35 g heavier (script says 38 g in the other video, check). Water: iPhone 6 m, Galaxy 1.5 m. Battery 5,391 vs 5,000 mAh; scores over 19 h vs 16 h. Script says 'untees ghante' for 19 h.
+- Note: the S26 Ultra script uses 'das gram' lighter for Pixel; this script says 'paintees gram' for iPhone vs Galaxy, as in this video.
+- Cut: Face ID vs face unlock, Dynamic Island shortcuts, storage tiers, AI region limits, MagSafe.

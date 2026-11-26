@@ -1,0 +1,3 @@
+- Price: transcript mein Pakistan ki price nahi hai, is liye opening mein price nahi hai. Screenshot se price milne par opening mein 'jis ki price almost X rupay hai' add karein.
+- XL about 200 dollars more (US). Battery 5,115 vs 4,850 mAh; 45 W vs 30 W; XL 20 min faster full charge; Pro about 20 g lighter.
+- Cut: storage tiers, RAM 12/16 GB, camera sample details, Highlight LED.

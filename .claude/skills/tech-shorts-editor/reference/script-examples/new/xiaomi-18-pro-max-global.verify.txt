@@ -1,0 +1,3 @@
+- Price: transcript mein Pakistan ki price nahi hai, is liye opening mein price nahi hai. Screenshot se price milne par opening mein 'jis ki price almost X rupay hai' add karein.
+- Battery score 'over 23.5 hours' and 74 min full charge are from the video. Chipset name 'Snapdragon 8 Elite Extreme Gen 6' as heard.
+- Cut: 3 speakers, HyperOS 4, shortcut button, rear-screen apps, camera pro tools, video specs, colours.
